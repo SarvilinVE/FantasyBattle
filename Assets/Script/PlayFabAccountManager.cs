@@ -6,7 +6,13 @@ using UnityEngine;
 public class PlayFabAccountManager : MonoBehaviour
 {
     [SerializeField]
-    private TMP_Text _titleLabel;
+    private TMP_Text _userId;
+
+    [SerializeField]
+    private TMP_Text _userName;
+
+    [SerializeField]
+    private TMP_Text _DateCreationAccount;
 
     private void Start()
     {
@@ -15,7 +21,9 @@ public class PlayFabAccountManager : MonoBehaviour
 
     private void OnGetAccount(GetAccountInfoResult result)
     {
-        _titleLabel.text = $"User: {result.AccountInfo.PlayFabId}";
+        _userId.text = $"User ID: {result.AccountInfo.PlayFabId}";
+        _userName.text = $"User Name: {result.AccountInfo.Username}";
+        _DateCreationAccount.text = $"Date of creation account: {result.AccountInfo.Created}";
     }
 
     private void OnError(PlayFabError error)
