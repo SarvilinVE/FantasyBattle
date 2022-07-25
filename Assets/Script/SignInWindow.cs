@@ -5,13 +5,23 @@ using UnityEngine.UI;
 
 public class SignInWindow : AccountDataWindowsBase
 {
+    #region Fields
+
     [SerializeField]
     private Button _signInButton;
+
+    [SerializeField]
+    private Canvas _restoreAccountWindow;
+
+    #endregion
+
+    #region Methods
 
     protected override void SubscriptionElementsUi()
     {
         base.SubscriptionElementsUi();
 
+        _restoreAccountWindow.enabled = false;
         _signInButton.onClick.AddListener(SignIn);
     }
 
@@ -28,8 +38,9 @@ public class SignInWindow : AccountDataWindowsBase
         }, error =>
         {
             Debug.LogError($"Fail: {error.ErrorMessage}");
-        });
-
-        
+            _restoreAccountWindow.enabled = true;
+        }); 
     }
+
+    #endregion
 }

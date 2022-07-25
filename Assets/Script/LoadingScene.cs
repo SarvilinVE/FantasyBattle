@@ -15,6 +15,9 @@ public class LoadingScene : MonoBehaviour
     [SerializeField]
     private Slider _bar;
 
+    [SerializeField]
+    private float _deltaTimer;
+
     #endregion
 
     #region UnityMethods
@@ -29,7 +32,7 @@ public class LoadingScene : MonoBehaviour
     {
         if (_bar.value <= 0.99f)
         {
-            _bar.value += Time.deltaTime * 0.1f;
+            _bar.value += Time.deltaTime * _deltaTimer;
         }
         else
         {
