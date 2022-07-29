@@ -1,0 +1,87 @@
+{
+  "CatalogVersion": "MainCatalog",
+  "Catalog": [
+    {
+      "ItemId": "Simple staff",
+      "ItemClass": "Staffs",
+      "CatalogVersion": "MainCatalog",
+      "DisplayName": "Simple staff",
+      "Description": "Sample wooden staff for beginners",
+      "VirtualCurrencyPrices": {
+        "VC": 10
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [],
+      "CustomData": "{\"Magic attack\":\"5\"}",
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "Sample robe",
+      "ItemClass": "Robes",
+      "CatalogVersion": "MainCatalog",
+      "DisplayName": "Sample robe",
+      "Description": "Sample cotton robe for beginners",
+      "VirtualCurrencyPrices": {
+        "VC": 20
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [],
+      "CustomData": "{\"Magic defense\":\"3\"}",
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    },
+    {
+      "ItemId": "Iron ring",
+      "ItemClass": "Rings",
+      "CatalogVersion": "MainCatalog",
+      "DisplayName": "Iron ring",
+      "Description": "Iron ring for beginners",
+      "VirtualCurrencyPrices": {
+        "VC": 10
+      },
+      "RealCurrencyPrices": {},
+      "Tags": [],
+      "CustomData": "{\"Magic attack\":\"1\"}",
+      "Consumable": {
+        "UsageCount": null,
+        "UsagePeriod": null,
+        "UsagePeriodGroup": null
+      },
+      "Container": null,
+      "Bundle": null,
+      "CanBecomeCharacter": false,
+      "IsStackable": false,
+      "IsTradable": false,
+      "ItemImageUrl": null,
+      "IsLimitedEdition": false,
+      "InitialLimitedEditionCount": 0,
+      "ActivatedMembership": null
+    }
+  ],
+  "DropTables": []
+}
