@@ -5,13 +5,13 @@ using Photon.Realtime;
 using Photon.Pun;
 using TMPro;
 
-public class ConnectAndJoinRandomLobby : MonoBehaviour, IConnectionCallbacks, IMatchmakingCallbacks, ILobbyCallbacks
+public class ConnectAndJoinRandomLobby : IConnectionCallbacks, IMatchmakingCallbacks, ILobbyCallbacks
 {
-    [SerializeField]
-    private ServerSettings _serverSettings;
+    //[SerializeField]
+    //private ServerSettings _serverSettings;
 
-    [SerializeField]
-    private TMP_Text _stateUiText;
+    //[SerializeField]
+    //private TMP_Text _stateUiText;
 
     private LoadBalancingClient _lbc;
 
@@ -21,32 +21,36 @@ public class ConnectAndJoinRandomLobby : MonoBehaviour, IConnectionCallbacks, IM
     private const string EXP_KEY = "C0";
     private const string MAP_KEY = "C1";
 
+    private int _numRoom = 1;
+
     private TypedLobby _sqlLobby = new TypedLobby("sqlLobby", LobbyType.SqlLobby);
 
     private TypedLobby _customLobby = new TypedLobby("customLobby", LobbyType.Default);
 
     private Dictionary<string, RoomInfo> _cachedRoomList = new Dictionary<string, RoomInfo>();
 
+    public LoadBalancingClient lbc => _lbc;
 
-    private void Start()
+
+    public ConnectAndJoinRandomLobby(ServerSettings serverSettings)
     {
         _lbc = new LoadBalancingClient();
         _lbc.AddCallbackTarget(this);
 
-        _lbc.ConnectUsingSettings(_serverSettings.AppSettings);
+        _lbc.ConnectUsingSettings(serverSettings.AppSettings);
     }
-    private void Update()
+    public void Execute(TMP_Text stateText)
     {
         if (_lbc == null)
             return;
 
         _lbc.Service();
 
-        var state = _lbc.State.ToString();
-        if(state == "Joined")
-        _stateUiText.text = $"State: {state}, UserID: {_lbc.UserId}, Room: {_lbc.CurrentRoom.Name}";
+        stateText.text = _lbc.State.ToString();
+
+        //_stateUiText.text = $"State: {state}, UserID: {_lbc.UserId}";
     }
-    private void OnDestroy()
+    private void RemoveCallback()
     {
         _lbc.RemoveCallbackTarget(this);
     }
@@ -59,29 +63,29 @@ public class ConnectAndJoinRandomLobby : MonoBehaviour, IConnectionCallbacks, IM
     {
         Debug.Log("On connected master");
 
-        var roomOptions = new RoomOptions
-        {
-            MaxPlayers = 4,
-            IsVisible = true,
-            CustomRoomPropertiesForLobby = new[]
-            {
-                EXP_KEY,
-                MAP_KEY
-            },
-            CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
-            {
-                {EXP_KEY, 400 },
-                {MAP_KEY, "Green Garden" }
-            }
-        };
+        //var roomOptions = new RoomOptions
+        //{
+        //    MaxPlayers = 4,
+        //    IsVisible = true,
+        //    CustomRoomPropertiesForLobby = new[]
+        //    {
+        //        EXP_KEY,
+        //        MAP_KEY
+        //    },
+        //    CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
+        //    {
+        //        {EXP_KEY, 400 },
+        //        {MAP_KEY, "Green Garden" }
+        //    }
+        //};
 
-        var enterRoomParams = new EnterRoomParams
-        {
-            RoomName = "NewRoom",
-            RoomOptions = roomOptions,
-            ExpectedUsers = new[] {"@sd78s76awwa"},
-            Lobby = _customLobby
-        };
+        //var enterRoomParams = new EnterRoomParams
+        //{
+        //    RoomName = "NewRoom",
+        //    RoomOptions = roomOptions,
+        //    ExpectedUsers = new[] {"@sd78s76awwa"},
+        //    Lobby = _customLobby
+        //};
 
         //_lbc.OpCreateRoom(enterRoomParams);
         _lbc.OpJoinLobby(_customLobby);
@@ -145,9 +149,33 @@ public class ConnectAndJoinRandomLobby : MonoBehaviour, IConnectionCallbacks, IM
         //};
 
         //Debug.Log("On join Lobby");
-        _lbc.OpCreateRoom(new EnterRoomParams());
+        var roomOptions = new RoomOptions
+        {
+            MaxPlayers = 4,
+            IsVisible = true,
+            CustomRoomPropertiesForLobby = new[]
+            {
+                EXP_KEY,
+                MAP_KEY
+            },
+            CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
+            {
+                {EXP_KEY, 400 },
+                {MAP_KEY, "Green Garden" }
+            }
+        };
 
-        Debug.Log("On join Lobby");
+        var enterRoomParams = new EnterRoomParams
+        {
+            RoomName = $"NewRoom {_numRoom}",
+            RoomOptions = roomOptions,
+            ExpectedUsers = new[] { "@sd78s76awwa" },
+            Lobby = _customLobby
+        };
+
+        _lbc.OpCreateRoom(enterRoomParams);
+        _numRoom++;
+        Debug.Log($"{_lbc.CurrentLobby.Name}");
     }
 
     public void OnJoinedRoom()
@@ -178,7 +206,7 @@ public class ConnectAndJoinRandomLobby : MonoBehaviour, IConnectionCallbacks, IM
 
     public void OnLobbyStatisticsUpdate(List<TypedLobbyInfo> lobbyStatistics)
     {
-
+        Debug.Log($"LobbyInfo");
     }
 
     public void OnRegionListReceived(RegionHandler regionHandler)
