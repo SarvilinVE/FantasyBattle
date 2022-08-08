@@ -7,7 +7,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using System;
 
-public class CurrentRoomInfo : MonoBehaviour
+public class CurrentRoomInfo : MonoBehaviour, IInRoomCallbacks
 {
     [SerializeField]
     private Button _visibleRoom;
@@ -30,6 +30,8 @@ public class CurrentRoomInfo : MonoBehaviour
     private Room _room;
     private ConnectAndJoinRandomLobby _connectLobby;
 
+    public bool isOpen;
+
     public void OpenRoom(ConnectAndJoinRandomLobby connectAndJoin, Room room)
     {
         _room = room;
@@ -37,11 +39,8 @@ public class CurrentRoomInfo : MonoBehaviour
         _countPlayersRoom.text = $"Players: {_room.PlayerCount}/{_room.MaxPlayers}";
         _visibleText.text = $"Visible room: {_room.IsVisible}";
         _openText.text = $"Open room: {_room.IsOpen}";
+        isOpen = _room.IsOpen;
         _connectLobby = connectAndJoin;
-
-        _visibleRoom.onClick.AddListener(SwitchVisibleRoom);
-        _openRoom.onClick.AddListener(SwitchOpenRoom);
-        _startGame.onClick.AddListener(StartGame);
     }
     void Start()
     {
@@ -58,26 +57,36 @@ public class CurrentRoomInfo : MonoBehaviour
 
     private void SwitchOpenRoom()
     {
-        if (_room.IsOpen)
-        {
-            var buttonColor = _openRoom.colors;
-            buttonColor.normalColor = Color.red;
-            _openRoom.colors = buttonColor;
+        //if (PhotonNetwork.CurrentRoom.IsOpen)
+        //{
+        //    var buttonColor = _openRoom.colors;
+        //    buttonColor.normalColor = Color.red;
+        //    _openRoom.colors = buttonColor;
 
-            _room.IsOpen = false;
-        }
+        //    _room.IsOpen = false;
+        //}
+        //else
+        //{
+        //    var buttonColor = _openRoom.colors;
+        //    buttonColor.normalColor = Color.yellow;
+        //    _openRoom.colors = buttonColor;
+
+        //    _room.IsOpen = true;
+        //}
+        if (isOpen)
+            isOpen = false;
         else
-        {
-            var buttonColor = _openRoom.colors;
-            buttonColor.normalColor = Color.yellow;
-            _openRoom.colors = buttonColor;
+            isOpen = true;
 
-            _room.IsOpen = true;
-        }
     }
 
     private void SwitchVisibleRoom()
     {
+        Debug.Log($"{PhotonNetwork.IsMasterClient}");
+
+        if (!PhotonNetwork.IsMasterClient)
+            return;
+
         if (_room.IsVisible)
         {
             var buttonColor = _visibleRoom.colors;
@@ -96,7 +105,6 @@ public class CurrentRoomInfo : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
     void Update()
     {
         
@@ -106,5 +114,30 @@ public class CurrentRoomInfo : MonoBehaviour
         _visibleRoom.onClick.RemoveAllListeners();
         _openRoom.onClick.RemoveAllListeners();
         _startGame.onClick.RemoveAllListeners();
+    }
+
+    public void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        
+    }
+
+    public void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        
+    }
+
+    public void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
+    {
+        Debug.Log($"{propertiesThatChanged.Count}");
+    }
+
+    public void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    {
+        
+    }
+
+    public void OnMasterClientSwitched(Player newMasterClient)
+    {
+        
     }
 }

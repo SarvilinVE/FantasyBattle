@@ -38,6 +38,8 @@ public class PhotonLobbyManager : MonoBehaviour
         _roomSlots = new List<RoomSlot>();
         _createRoom.onClick.AddListener(CreateRoom);
 
+        
+
         _connectLobby = new ConnectAndJoinRandomLobby(_serverSettings, _roomInfoPrefab, _roomInfoParent);
     }
 
@@ -52,7 +54,6 @@ public class PhotonLobbyManager : MonoBehaviour
         _roomSlots.Add(_roomSlot);
 
         Instantiate(_roomInfoPrefab, _roomInfoParent.transform);
-        
     }
 
     private void EnterRoom()

@@ -54,6 +54,8 @@ public class ConnectAndJoinRandomLobby : IConnectionCallbacks, IMatchmakingCallb
 
         stateText.text = _lbc.State.ToString();
 
+        
+
         //_stateUiText.text = $"State: {state}, UserID: {_lbc.UserId}";
     }
     private void RemoveCallback()
@@ -68,32 +70,8 @@ public class ConnectAndJoinRandomLobby : IConnectionCallbacks, IMatchmakingCallb
     public void OnConnectedToMaster()
     {
         Debug.Log("On connected master");
+        
 
-        //var roomOptions = new RoomOptions
-        //{
-        //    MaxPlayers = 4,
-        //    IsVisible = true,
-        //    CustomRoomPropertiesForLobby = new[]
-        //    {
-        //        EXP_KEY,
-        //        MAP_KEY
-        //    },
-        //    CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
-        //    {
-        //        {EXP_KEY, 400 },
-        //        {MAP_KEY, "Green Garden" }
-        //    }
-        //};
-
-        //var enterRoomParams = new EnterRoomParams
-        //{
-        //    RoomName = "NewRoom",
-        //    RoomOptions = roomOptions,
-        //    ExpectedUsers = new[] {"@sd78s76awwa"},
-        //    Lobby = _customLobby
-        //};
-
-        //_lbc.OpCreateRoom(enterRoomParams);
         _lbc.OpJoinLobby(_customLobby);
     }
 
@@ -215,15 +193,18 @@ public class ConnectAndJoinRandomLobby : IConnectionCallbacks, IMatchmakingCallb
 
     public void OnJoinedRoom()
     {
-        Debug.Log("On join room");
-
+        Debug.Log($"On join room");
+        _lbc.CurrentRoom.IsOpen = _currentRoomInfo.isOpen;
         _currentRoomInfo.OpenRoom(this, _lbc.CurrentRoom);
+
+        _lbc.CurrentRoom.IsOpen = _currentRoomInfo.isOpen;
+        _currentRoomInfo.OpenRoom(this, _lbc.CurrentRoom);
+
     }
 
     public void OnJoinRandomFailed(short returnCode, string message)
     {
         Debug.Log("On join room failsed");
-        
     }
 
     public void OnJoinRoomFailed(short returnCode, string message)
