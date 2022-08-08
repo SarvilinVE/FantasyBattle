@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.574817, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1836,6 +1836,8 @@ MonoBehaviour:
   _lobbyPanel: {fileID: 1429842280}
   _stateLobby: {fileID: 1756811458}
   _roomSlot: {fileID: 8452936786058867062, guid: afd768f636f6162448cb34629ff3120a, type: 3}
+  _roomInfoPrefab: {fileID: 3915535440893243153, guid: d8adacd4e6b16c943b0f1dbd53a7b57a, type: 3}
+  _roomInfoParent: {fileID: 264430843}
 --- !u!114 &1429842284
 MonoBehaviour:
   m_ObjectHideFlags: 0

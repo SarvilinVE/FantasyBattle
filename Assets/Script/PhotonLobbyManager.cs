@@ -23,6 +23,12 @@ public class PhotonLobbyManager : MonoBehaviour
     [SerializeField]
     private RoomSlot _roomSlot;
 
+    [SerializeField]
+    private CurrentRoomInfo _roomInfoPrefab;
+
+    [SerializeField]
+    private GameObject _roomInfoParent;
+
     private List<RoomSlot> _roomSlots;
 
     private ConnectAndJoinRandomLobby _connectLobby;
@@ -32,7 +38,7 @@ public class PhotonLobbyManager : MonoBehaviour
         _roomSlots = new List<RoomSlot>();
         _createRoom.onClick.AddListener(CreateRoom);
 
-        _connectLobby = new ConnectAndJoinRandomLobby(_serverSettings);
+        _connectLobby = new ConnectAndJoinRandomLobby(_serverSettings, _roomInfoPrefab, _roomInfoParent);
     }
 
     private void CreateRoom()
@@ -40,11 +46,12 @@ public class PhotonLobbyManager : MonoBehaviour
         _roomSlot = Instantiate(_roomSlot, _lobbyPanel.transform);
         _connectLobby.OnCreatedRoom();
         _roomSlot.enterRoomButtonText.text = "Enter Room";
-        _roomSlot.nameRoomText.text = _connectLobby.lbc.CurrentRoom.ToStringFull();
+        _roomSlot.nameRoomText.text = "Room";
         _roomSlot.enterRoom.onClick.AddListener(EnterRoom);
 
         _roomSlots.Add(_roomSlot);
 
+        Instantiate(_roomInfoPrefab, _roomInfoParent.transform);
         
     }
 
@@ -53,7 +60,6 @@ public class PhotonLobbyManager : MonoBehaviour
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         _connectLobby.Execute(_stateLobby);

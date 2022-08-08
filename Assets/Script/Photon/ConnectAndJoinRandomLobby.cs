@@ -23,6 +23,9 @@ public class ConnectAndJoinRandomLobby : IConnectionCallbacks, IMatchmakingCallb
 
     private int _numRoom = 1;
 
+    private CurrentRoomInfo _currentRoomInfo;
+    private GameObject _parentPrefab;
+
     private TypedLobby _sqlLobby = new TypedLobby("sqlLobby", LobbyType.SqlLobby);
 
     private TypedLobby _customLobby = new TypedLobby("customLobby", LobbyType.Default);
@@ -32,12 +35,15 @@ public class ConnectAndJoinRandomLobby : IConnectionCallbacks, IMatchmakingCallb
     public LoadBalancingClient lbc => _lbc;
 
 
-    public ConnectAndJoinRandomLobby(ServerSettings serverSettings)
+    public ConnectAndJoinRandomLobby(ServerSettings serverSettings, CurrentRoomInfo currentRoomInfo, GameObject parentPrefab)
     {
         _lbc = new LoadBalancingClient();
         _lbc.AddCallbackTarget(this);
 
         _lbc.ConnectUsingSettings(serverSettings.AppSettings);
+
+        _currentRoomInfo = currentRoomInfo;
+        _parentPrefab = parentPrefab;
     }
     public void Execute(TMP_Text stateText)
     {
@@ -106,11 +112,39 @@ public class ConnectAndJoinRandomLobby : IConnectionCallbacks, IMatchmakingCallb
             }
         }
     }
+    public void CreateRoom()
+    {
+        var roomOptions = new RoomOptions
+        {
+            MaxPlayers = 4,
+            IsVisible = true,
+            CustomRoomPropertiesForLobby = new[]
+            {
+                EXP_KEY,
+                MAP_KEY
+            },
+            CustomRoomProperties = new ExitGames.Client.Photon.Hashtable
+            {
+                {EXP_KEY, 400 },
+                {MAP_KEY, "Green Garden" }
+            }
+        };
 
+        var enterRoomParams = new EnterRoomParams
+        {
+            RoomName = $"NewRoom {_numRoom}",
+            RoomOptions = roomOptions,
+            ExpectedUsers = new[] { "@sd78s76awwa" },
+            Lobby = _customLobby
+        };
+
+        _lbc.OpCreateRoom(enterRoomParams);
+        _numRoom++;
+    }
 
     public void OnCreatedRoom()
     {
-
+        
     }
 
     public void OnCreateRoomFailed(short returnCode, string message)
@@ -175,13 +209,16 @@ public class ConnectAndJoinRandomLobby : IConnectionCallbacks, IMatchmakingCallb
 
         _lbc.OpCreateRoom(enterRoomParams);
         _numRoom++;
+
         Debug.Log($"{_lbc.CurrentLobby.Name}");
     }
 
     public void OnJoinedRoom()
     {
         Debug.Log("On join room");
-     }
+
+        _currentRoomInfo.OpenRoom(this, _lbc.CurrentRoom);
+    }
 
     public void OnJoinRandomFailed(short returnCode, string message)
     {
@@ -216,8 +253,6 @@ public class ConnectAndJoinRandomLobby : IConnectionCallbacks, IMatchmakingCallb
 
     public void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        UpdateCachedRoomList(roomList);
 
-        Debug.Log($"Count room: {roomList.Count}");
     }
 }
