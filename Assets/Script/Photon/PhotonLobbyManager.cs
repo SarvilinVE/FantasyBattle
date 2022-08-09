@@ -1,6 +1,5 @@
 using Photon.Pun;
 using Photon.Realtime;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -28,15 +27,12 @@ public class PhotonLobbyManager : MonoBehaviour
     [SerializeField]
     private GameObject _roomInfoParent;
 
-    private List<RoomSlot> _roomSlots;
-
     private ConnectAndJoinRandomLobby _connectLobby;
 
     private int _numberRoom = 1;
 
     void Start()
     {
-        _roomSlots = new List<RoomSlot>();
         _createRoom.onClick.AddListener(CreateRoom);
 
         _connectLobby = new ConnectAndJoinRandomLobby(_serverSettings, _roomInfoPrefab);
@@ -50,7 +46,7 @@ public class PhotonLobbyManager : MonoBehaviour
         _roomSlot.RoomParams = EnterRoomParam(_roomSlot.nameRoomText.text, TypedLobby.Default);
         _roomSlot.enterRoom.onClick.AddListener(EnterRoom);
 
-        _roomSlots.Add(_roomSlot);
+        _createRoom.enabled = false;
         _numberRoom++;
     }
     private EnterRoomParams EnterRoomParam(string roomName, TypedLobby typedLobby)
@@ -90,10 +86,6 @@ public class PhotonLobbyManager : MonoBehaviour
     {
         _createRoom.onClick.RemoveAllListeners();
         _connectLobby.RemoveCallback();
-
-        foreach(var slot in _roomSlots)
-        {
-            slot.enterRoom.onClick.RemoveAllListeners();
-        }
+        _roomSlot.enterRoom.onClick.RemoveAllListeners();
     }
 }

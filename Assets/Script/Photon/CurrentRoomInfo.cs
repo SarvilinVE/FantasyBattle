@@ -37,11 +37,7 @@ public class CurrentRoomInfo : MonoBehaviour
     {
         _connectLobby = connectAndJoin;
 
-        var lbc = _connectLobby.lbc;
-        var roomName = lbc.CurrentRoom.Name;
-        Debug.Log($"{roomName}");
-
-        _nameRoomText.text = $"Name room: {roomName}";
+        _nameRoomText.text = $"Name room: {_connectLobby.lbc.CurrentRoom.Name}";
         _countPlayersRoom.text = $"Players: {_connectLobby.lbc.CurrentRoom.PlayerCount}/{_connectLobby.lbc.CurrentRoom.MaxPlayers}";
         _visibleText.text = $"Visible room: {_connectLobby.lbc.CurrentRoom.IsVisible}";
         _openText.text = $"Open room: {_connectLobby.lbc.CurrentRoom.IsOpen}";
