@@ -1,13 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using Photon.Pun;
-using Photon.Realtime;
-using System;
 
-public class CurrentRoomInfo : MonoBehaviour, IInRoomCallbacks
+public class CurrentRoomInfo : MonoBehaviour
 {
     [SerializeField]
     private Button _visibleRoom;
@@ -19,6 +14,9 @@ public class CurrentRoomInfo : MonoBehaviour, IInRoomCallbacks
     private Button _startGame;
 
     [SerializeField]
+    private TMP_Text _nameRoomText;
+
+    [SerializeField]
     private TMP_Text _countPlayersRoom;
 
     [SerializeField]
@@ -27,73 +25,77 @@ public class CurrentRoomInfo : MonoBehaviour, IInRoomCallbacks
     [SerializeField]
     private TMP_Text _openText;
 
-    private Room _room;
     private ConnectAndJoinRandomLobby _connectLobby;
-
-    public bool isOpen;
-
-    public void OpenRoom(ConnectAndJoinRandomLobby connectAndJoin, Room room)
+    private void Awake()
     {
-        _room = room;
-
-        _countPlayersRoom.text = $"Players: {_room.PlayerCount}/{_room.MaxPlayers}";
-        _visibleText.text = $"Visible room: {_room.IsVisible}";
-        _openText.text = $"Open room: {_room.IsOpen}";
-        isOpen = _room.IsOpen;
-        _connectLobby = connectAndJoin;
+        _nameRoomText.text = $"Name room:";
+        _countPlayersRoom.text = $"Players:";
+        _visibleText.text = $"Visible room:";
+        _openText.text = $"Open room:";
     }
-    void Start()
+    public void OpenRoom(ConnectAndJoinRandomLobby connectAndJoin)
     {
+        _connectLobby = connectAndJoin;
+
+        var lbc = _connectLobby.lbc;
+        var roomName = lbc.CurrentRoom.Name;
+        Debug.Log($"{roomName}");
+
+        _nameRoomText.text = $"Name room: {roomName}";
+        _countPlayersRoom.text = $"Players: {_connectLobby.lbc.CurrentRoom.PlayerCount}/{_connectLobby.lbc.CurrentRoom.MaxPlayers}";
+        _visibleText.text = $"Visible room: {_connectLobby.lbc.CurrentRoom.IsVisible}";
+        _openText.text = $"Open room: {_connectLobby.lbc.CurrentRoom.IsOpen}";
+
         _visibleRoom.onClick.AddListener(SwitchVisibleRoom);
         _openRoom.onClick.AddListener(SwitchOpenRoom);
         _startGame.onClick.AddListener(StartGame);
+
+        Debug.Log($"open room finish");
     }
 
     private void StartGame()
     {
-        _connectLobby.lbc.OpLeaveRoom(true);
-        Destroy(this);
+        if (_connectLobby.lbc.CurrentRoom.IsOpen)
+        {
+            _connectLobby.lbc.CurrentRoom.IsOpen = false;
+        }
+
+        Debug.Log("Start Game");
+        _connectLobby.lbc.OpLeaveRoom(_connectLobby.lbc.CurrentRoom.IsOpen);
     }
 
     private void SwitchOpenRoom()
     {
-        //if (PhotonNetwork.CurrentRoom.IsOpen)
-        //{
-        //    var buttonColor = _openRoom.colors;
-        //    buttonColor.normalColor = Color.red;
-        //    _openRoom.colors = buttonColor;
+        Debug.Log($"{_connectLobby.lbc.CurrentRoom.IsOpen}");
+        if (_connectLobby.lbc.CurrentRoom.IsOpen)
+        {
+            var buttonColor = _visibleRoom.colors;
+            buttonColor.normalColor = Color.red;
+            _openRoom.colors = buttonColor;
 
-        //    _room.IsOpen = false;
-        //}
-        //else
-        //{
-        //    var buttonColor = _openRoom.colors;
-        //    buttonColor.normalColor = Color.yellow;
-        //    _openRoom.colors = buttonColor;
-
-        //    _room.IsOpen = true;
-        //}
-        if (isOpen)
-            isOpen = false;
+            _connectLobby.lbc.CurrentRoom.IsOpen = false;
+        }
         else
-            isOpen = true;
+        {
+            var buttonColor = _visibleRoom.colors;
+            buttonColor.normalColor = Color.yellow;
+            _openRoom.colors = buttonColor;
 
+            _connectLobby.lbc.CurrentRoom.IsOpen = true;
+        }
+
+        _openText.text = $"Open room: {_connectLobby.lbc.CurrentRoom.IsOpen}";
     }
 
     private void SwitchVisibleRoom()
     {
-        Debug.Log($"{PhotonNetwork.IsMasterClient}");
-
-        if (!PhotonNetwork.IsMasterClient)
-            return;
-
-        if (_room.IsVisible)
+        if (_connectLobby.lbc.CurrentRoom.IsVisible)
         {
             var buttonColor = _visibleRoom.colors;
             buttonColor.normalColor = Color.red;
             _visibleRoom.colors = buttonColor;
 
-            _room.IsVisible = false;
+            _connectLobby.lbc.CurrentRoom.IsVisible = false;
         }
         else
         {
@@ -101,43 +103,19 @@ public class CurrentRoomInfo : MonoBehaviour, IInRoomCallbacks
             buttonColor.normalColor = Color.yellow;
             _visibleRoom.colors = buttonColor;
 
-            _room.IsVisible = true;
+            _connectLobby.lbc.CurrentRoom.IsVisible = true;
         }
-    }
 
-    void Update()
+        _visibleText.text = $"Visible room: {_connectLobby.lbc.CurrentRoom.IsVisible}";
+    }
+    public void LeaveRoom()
     {
-        
+        gameObject.SetActive(false);
     }
     private void OnDestroy()
     {
         _visibleRoom.onClick.RemoveAllListeners();
         _openRoom.onClick.RemoveAllListeners();
         _startGame.onClick.RemoveAllListeners();
-    }
-
-    public void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        
-    }
-
-    public void OnPlayerLeftRoom(Player otherPlayer)
-    {
-        
-    }
-
-    public void OnRoomPropertiesUpdate(ExitGames.Client.Photon.Hashtable propertiesThatChanged)
-    {
-        Debug.Log($"{propertiesThatChanged.Count}");
-    }
-
-    public void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
-    {
-        
-    }
-
-    public void OnMasterClientSwitched(Player newMasterClient)
-    {
-        
     }
 }

@@ -1,10 +1,9 @@
-using System.Collections;
+using Photon.Pun;
+using Photon.Realtime;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
-using Photon.Pun;
-using System;
 
 public class PhotonLobbyManager : MonoBehaviour
 {
@@ -33,32 +32,53 @@ public class PhotonLobbyManager : MonoBehaviour
 
     private ConnectAndJoinRandomLobby _connectLobby;
 
+    private int _numberRoom = 1;
+
     void Start()
     {
         _roomSlots = new List<RoomSlot>();
         _createRoom.onClick.AddListener(CreateRoom);
 
-        
-
-        _connectLobby = new ConnectAndJoinRandomLobby(_serverSettings, _roomInfoPrefab, _roomInfoParent);
+        _connectLobby = new ConnectAndJoinRandomLobby(_serverSettings, _roomInfoPrefab);
     }
 
     private void CreateRoom()
     {
         _roomSlot = Instantiate(_roomSlot, _lobbyPanel.transform);
-        _connectLobby.OnCreatedRoom();
         _roomSlot.enterRoomButtonText.text = "Enter Room";
-        _roomSlot.nameRoomText.text = "Room";
+        _roomSlot.nameRoomText.text = $"Room {_numberRoom}";
+        _roomSlot.RoomParams = EnterRoomParam(_roomSlot.nameRoomText.text, TypedLobby.Default);
         _roomSlot.enterRoom.onClick.AddListener(EnterRoom);
 
         _roomSlots.Add(_roomSlot);
-
-        Instantiate(_roomInfoPrefab, _roomInfoParent.transform);
+        _numberRoom++;
     }
+    private EnterRoomParams EnterRoomParam(string roomName, TypedLobby typedLobby)
+    {
+        var roomOptions = new RoomOptions
+        {
+            MaxPlayers = 4,
+            IsVisible = true
+        };
 
+        var enterRoomParams = new EnterRoomParams
+        {
+            RoomName = roomName,
+            RoomOptions = roomOptions,
+            ExpectedUsers = new[] { "@sd78s76awwa" },
+            Lobby = typedLobby
+        };
+
+        return enterRoomParams;
+    }
     private void EnterRoom()
     {
-        
+        var roomWindow = CreateWindowRoom();
+        _connectLobby.CreateRoom(roomWindow, _roomSlot.RoomParams);
+    }
+    private CurrentRoomInfo CreateWindowRoom()
+    {
+        return Instantiate(_roomInfoPrefab, _roomInfoParent.transform);
     }
 
     void Update()
@@ -69,6 +89,7 @@ public class PhotonLobbyManager : MonoBehaviour
     private void OnDestroy()
     {
         _createRoom.onClick.RemoveAllListeners();
+        _connectLobby.RemoveCallback();
 
         foreach(var slot in _roomSlots)
         {

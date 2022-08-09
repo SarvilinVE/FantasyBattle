@@ -1,8 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
+using Photon.Realtime;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 
 public class RoomSlot : MonoBehaviour
 {
@@ -15,7 +14,10 @@ public class RoomSlot : MonoBehaviour
     [SerializeField]
     private TMP_Text _nameRoomText;
 
+    private EnterRoomParams _roomParams;
+
     public Button enterRoom => _enterRoom;
     public TMP_Text enterRoomButtonText => _enterRoomButtonText;
     public TMP_Text nameRoomText => _nameRoomText;
+    public EnterRoomParams RoomParams { get => _roomParams; set => _roomParams = value; }
 }
