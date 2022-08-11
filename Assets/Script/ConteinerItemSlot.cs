@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using System;
 using PlayFab;
 using PlayFab.ClientModels;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class ConteinerItemSlot : MonoBehaviour
 { 
@@ -25,12 +24,13 @@ public class ConteinerItemSlot : MonoBehaviour
     private PanelItemInfo _panelItemInfo;
 
     private CatalogItem _catalogItem;
-    private bool _showInfo = false;
-    public TMP_Text ItemName => _itemName;
-    public TMP_Text ItemCost => _itemCost;
+
+    private string _typeCurrency;
+    private uint _costItem;
+
     private void Start()
     {
-        _openInfoButton.onClick.AddListener(ShowItemInfo);
+        _openInfoButton.onClick.AddListener(BuyItem);
     }
 
     private void ShowItemInfo()
@@ -38,12 +38,45 @@ public class ConteinerItemSlot : MonoBehaviour
         Instantiate(_panelItemInfo, this.transform).ShowItemInfo(_catalogItem);
     }
 
-    public void ShowItemSlot(string itemName, string itemCost, CatalogItem catalogItem)
+    private void BuyItem()
+    {
+        PlayFabClientAPI.PurchaseItem(new PurchaseItemRequest
+        {
+            CatalogVersion = _catalogItem.CatalogVersion,
+            ItemId = _catalogItem.ItemId,
+            Price = (int)_costItem,
+            VirtualCurrency = _typeCurrency
+        },
+        result => 
+        {
+            Debug.Log($"Buy complete");
+        },
+        OnLoginError);
+        GetInventory();
+    }
+
+    private void OnLoginError(PlayFabError error)
+    {
+        Debug.Log($"{error.ErrorMessage}");
+    }
+
+    public void ShowItemSlot(string itemName, string itemCost, uint cost, string currency, CatalogItem catalogItem)
     {
         _itemName.text = itemName;
         _itemCost.text = itemCost;
         _catalogItem = catalogItem;
 
-        //Instantiate(_itemSlot, parentTransform);
+        _typeCurrency = currency;
+        _costItem = cost;
+    }
+    public void GetInventory()
+    {
+        PlayFabClientAPI.GetUserInventory(new GetUserInventoryRequest(), result => ShowInventory(result.Inventory), OnLoginError);
+    }
+
+    public void ShowInventory(List<ItemInstance> items)
+    {
+        foreach(var item in items)
+            Debug.Log($"{item.ItemId}");
     }
 }

@@ -52,12 +52,16 @@ public class PlayFabCatalogManager : MonoBehaviour
         for(var i = 0; i < catalog.Count; i++)
         {
             string priceString =  $"";
+            string currency = "";
+            uint cost = 0;
             foreach(var price in catalog[i].VirtualCurrencyPrices)
             {
-                priceString += $"{price.Value} {price.Key} "; 
+                priceString += $"{price.Value} {price.Key} ";
+                currency = price.Key;
+                cost = price.Value;
             }
 
-            _items[i].ShowItemSlot(catalog[i].ItemId, $"{priceString}", catalog[i]);
+            _items[i].ShowItemSlot(catalog[i].ItemId, $"{priceString}", cost, currency, catalog[i]);
         }
     }
 
