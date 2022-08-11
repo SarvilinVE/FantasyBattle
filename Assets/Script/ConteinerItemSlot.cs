@@ -30,7 +30,7 @@ public class ConteinerItemSlot : MonoBehaviour
 
     private void Start()
     {
-        _openInfoButton.onClick.AddListener(BuyItem);
+        _openInfoButton.onClick.AddListener(ShowItemInfo);
     }
 
     private void ShowItemInfo()

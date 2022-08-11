@@ -25,6 +25,9 @@ namespace Photon.Pun.Demo.PunBasics
 
         [Tooltip("The current Health of our player")]
         public float Health = 1f;
+        
+        [Tooltip("The current Health of our player")]
+        public float Mana = 1f;
 
         [Tooltip("The local player instance. Use this to know if the local player is represented in the Scene")]
         public static GameObject LocalPlayerInstance;
@@ -139,12 +142,27 @@ namespace Photon.Pun.Demo.PunBasics
                 {
                     GameManager.Instance.LeaveRoom();
                 }
+
+                
             }
 
             if (this.beams != null && this.IsFiring != this.beams.activeInHierarchy)
             {
                 this.beams.SetActive(this.IsFiring);
             }
+
+            if (IsFiring && (Mana - 0.1f * Time.deltaTime) > 0)
+            {
+                Debug.Log($"TUT {Mana}");
+                Mana -= 0.1f * Time.deltaTime;
+            }
+            else
+            {
+                IsFiring = false;
+            }
+
+            if (Mana < 1)
+                Mana += 0.01f * Time.deltaTime;
         }
 
         /// <summary>
@@ -275,12 +293,14 @@ namespace Photon.Pun.Demo.PunBasics
                 // We own this player: send the others our data
                 stream.SendNext(this.IsFiring);
                 stream.SendNext(this.Health);
+                stream.SendNext(this.Mana);
             }
             else
             {
                 // Network player, receive data
                 this.IsFiring = (bool)stream.ReceiveNext();
                 this.Health = (float)stream.ReceiveNext();
+                this.Mana = (float)stream.ReceiveNext();
             }
         }
 

@@ -35,7 +35,11 @@ namespace Photon.Pun.Demo.PunBasics
 	    [SerializeField]
 	    private Slider playerHealthSlider;
 
-        PlayerManager target;
+		[Tooltip("UI Slider to display Player's Mana")]
+		[SerializeField]
+		private Slider playerManaSlider;
+
+		PlayerManager target;
 
 		float characterControllerHeight;
 
@@ -78,6 +82,13 @@ namespace Photon.Pun.Demo.PunBasics
 			// Reflect the Player Health
 			if (playerHealthSlider != null) {
 				playerHealthSlider.value = target.Health;
+			}
+
+			if(playerManaSlider != null)
+            {
+				playerManaSlider.value = target.Mana;
+				Debug.Log($"{playerManaSlider.value} {target.Mana}");
+
 			}
 		}
 
