@@ -46,6 +46,8 @@ public class PlayFabAccountManager : MonoBehaviour
 
         _playFabId = result.AccountInfo.PlayFabId;
         SetUserData();
+
+        PlayerPrefs.SetString(LobbyStatus.USER_NAME, result.AccountInfo.Username);
     }
 
     private void OnError(PlayFabError error)

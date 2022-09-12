@@ -72,7 +72,7 @@ public class PhotonLobbyManager : MonoBehaviourPunCallbacks
         CreateRoomButton.onClick.AddListener(OnCreateRoomButtonClicked);
         LeaveRoomButton.onClick.AddListener(OnLeaveGameButtonClicked);
 
-        string playerName = "Player"; //Поменять на юзверь нейм из плейфаба
+        string playerName = PlayerPrefs.GetString(LobbyStatus.USER_NAME); //Поменять на юзверь нейм из плейфаба
 
         if (!playerName.Equals(""))
         {
@@ -269,8 +269,9 @@ public class PhotonLobbyManager : MonoBehaviourPunCallbacks
 
     public void OnCreateRoomButtonClicked()
     {
-        string roomName = RoomNameInputField.text;
-        roomName = (roomName.Equals(string.Empty)) ? "Room " + Random.Range(1000, 10000) : roomName;
+        string roomName = $"{RoomNameInputField.text}";
+        roomName = (roomName.Equals(string.Empty)) ? $"Room {Random.Range(1000, 10000)} ({PhotonNetwork.LocalPlayer.NickName})" : 
+            $"{roomName} {PhotonNetwork.LocalPlayer.NickName}";
 
         byte maxPlayers;
         byte.TryParse(MaxPlayersInputField.text, out maxPlayers);
