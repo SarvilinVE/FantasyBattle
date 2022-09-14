@@ -14,5 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _unitClass: 1
   _iconClass: {fileID: 0}
+  _spellClass: {fileID: 11400000, guid: ada8b0494ca3d1a44886b63849f18083, type: 2}
   _baseHp: 90
   _baseDamage: 15
+  _isLocked: 0

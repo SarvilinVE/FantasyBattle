@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FantasyBattle.Spells;
 using UnityEngine;
 
@@ -16,10 +17,16 @@ namespace FantasyBattle.Classes
         private Sprite _iconClass;
 
         [SerializeField]
+        private SpellConteiner _spellClass;
+
+        [SerializeField]
         private float _baseHp;
 
         [SerializeField]
         private float _baseDamage;
+
+        [SerializeField]
+        private bool _isLocked;
 
         #endregion
 
@@ -29,6 +36,7 @@ namespace FantasyBattle.Classes
         public Sprite _IconClass => _iconClass;
         public float BaseHp => _baseHp;
         public float BaseDamage => _baseDamage;
+        public bool IsLocked => _isLocked;
 
         #endregion
 

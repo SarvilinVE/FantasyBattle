@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: FrostMageClass
   m_EditorClassIdentifier: 
   _unitClass: 2
-  _iconClass: {fileID: 0}
+  _iconClass: {fileID: 21300000, guid: ec724a8048197144f8ec239ea06782c2, type: 3}
+  _spellClass: {fileID: 11400000, guid: f39b92aacea4bd14e9bba2cea1cdccf7, type: 2}
   _baseHp: 120
   _baseDamage: 10
+  _isLocked: 0
