@@ -90,17 +90,15 @@ namespace FantasyBattle.Play
         #region IPunObservable realization
         public override void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
-            //Vector3 pos = transform.position;
-            //Quaternion rot = transform.rotation;
-            int health = Health;
-            //stream.Serialize(ref pos);
-            //stream.Serialize(ref rot);
-            stream.Serialize(ref health);
-            if (stream.IsReading)
+            if (stream.IsWriting)
             {
-                //transform.position = pos;
-                //transform.rotation = rot;
-                Health = health;
+                // We own this player: send the others our data
+                stream.SendNext(this.Health);
+            }
+            else
+            {
+                // Network player, receive data
+                this.Health = (int)stream.ReceiveNext();
             }
         }
 

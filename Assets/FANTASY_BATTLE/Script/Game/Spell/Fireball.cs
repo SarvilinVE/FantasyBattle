@@ -31,7 +31,7 @@ namespace FantasyBattle.Spells
         public void Move()
         {
             var velocity = transform.forward * _speed;
-            velocity.y = _rb.velocity.y;
+            //velocity.y = _rb.velocity.y;
             _rb.velocity = velocity;
             Debug.Log($"Tut");
         }

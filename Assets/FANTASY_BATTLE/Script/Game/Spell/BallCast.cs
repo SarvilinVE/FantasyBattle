@@ -50,10 +50,12 @@ namespace FantasyBattle.Play
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit))
                 {
-                    _spellPrefab = Instantiate(spellConteiner.Spells[0].SpellPrefab);
-                    _spellPrefab.transform.position = transform.TransformPoint(Vector3.forward * 1.5f);
-                    _spellPrefab.transform.rotation = transform.rotation;
-                    Debug.Log("Hit " + hit.point);
+                    //_spellPrefab = Instantiate(spellConteiner.Spells[0].SpellPrefab);
+
+                    //_spellPrefab.transform.position = transform.TransformPoint(Vector3.forward * 1.5f);
+                    //_spellPrefab.transform.rotation = transform.rotation;
+                    _spellPrefab = PhotonNetwork.Instantiate(spellConteiner.Spells[0].SpellPrefab.name,
+                        transform.TransformPoint(Vector3.forward * 0.7f), transform.rotation);
                     _spellPrefab.GetComponent<Fireball>().Init(hit.point, spellConteiner.Spells[0].TimeLife);
                 }
             }

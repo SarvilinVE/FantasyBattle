@@ -11,31 +11,49 @@ namespace FantasyBattle.Battle
         [SerializeField]
         private GameObject _resultHolder;
 
+        [Header("Game UI")]
+        [SerializeField]
+        private GameObject _gameUI;
+
         [Header("Play Manager")]
         [SerializeField]
         private PlayerManager _playerManager;
 
         private void Awake()
         {
-            _resultHolder.SetActive(true);
+            _playerManager.SetupPlayer();
+            SetActivePanel(_resultHolder.name);
             StartCoroutine("ShowTabPlayers");
         }
 
         IEnumerator ShowTabPlayers()
         {
             yield return new WaitForSecondsRealtime(5.0f);
-            _resultHolder.SetActive(false);
-            _playerManager.SetupPlayer();
+            SetActivePanel(_gameUI.name);
+            //_playerManager.SetupPlayer();
+        }
+
+        private void SetActivePanel(string activePanel)
+        {
+            _resultHolder.SetActive(activePanel.Equals(_resultHolder.name));
+            _gameUI.SetActive(activePanel.Equals(_gameUI.name));
         }
         void Start()
         {
 
         }
 
-        // Update is called once per frame
         void Update()
         {
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                SetActivePanel(_resultHolder.name);
+            }
 
+            if (Input.GetKeyUp(KeyCode.Tab))
+            {
+                SetActivePanel(_gameUI.name);
+            }
         }
     }
 }
