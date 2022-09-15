@@ -9,9 +9,14 @@ namespace FantasyBattle.Play
     {
         protected Action OnUpdateAction { get; set; }
 
-        //protected abstract FireAction {get; set;}
+        [Range(0, 100)]
+        [SerializeField]
+        private int _health = 100;
 
-        protected virtual void Initiate()
+        public int Health { get => _health; set => _health = value; }
+        protected abstract FireAction FireAction { get; set; }
+
+    protected virtual void Initiate()
         {
             OnUpdateAction += Movement;
         }
@@ -25,6 +30,11 @@ namespace FantasyBattle.Play
         void Update()
         {
             OnUpdate();
+            Debug.Log($"{this.name}  {_health}");
+            if(_health < 60)
+            {
+                GetComponent<MeshRenderer>().material.color = Color.blue;
+            }
         }
 
         public abstract void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info);

@@ -480,10 +480,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Health: 1
-<<<<<<< Updated upstream
   Mana: 1
-=======
->>>>>>> Stashed changes
   playerUiPrefab: {fileID: 170056, guid: e41946a981c3b444a84d15eb7c608ca4, type: 3}
   beams: {fileID: 170262}
 --- !u!114 &11400008

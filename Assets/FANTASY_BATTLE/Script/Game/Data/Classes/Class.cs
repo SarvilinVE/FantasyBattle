@@ -37,6 +37,7 @@ namespace FantasyBattle.Classes
         public float BaseHp => _baseHp;
         public float BaseDamage => _baseDamage;
         public bool IsLocked => _isLocked;
+        public SpellConteiner SpellClass => _spellClass;
 
         #endregion
 

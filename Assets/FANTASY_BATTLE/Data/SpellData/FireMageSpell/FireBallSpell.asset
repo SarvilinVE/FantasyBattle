@@ -17,3 +17,5 @@ MonoBehaviour:
   _unitClass: 1
   _unitLevels: 0
   _additionalDamage: 5
+  _spellPrefab: {fileID: 2379737869392944503, guid: 14428f32938f99b49a8bce81b6c91d01, type: 3}
+  _timeLife: 3

@@ -24,6 +24,12 @@ namespace FantasyBattle.Spells
         [SerializeField]
         private float _additionalDamage;
 
+        [SerializeField]
+        private GameObject _spellPrefab;
+
+        [SerializeField]
+        private float _timeLife;
+
         #endregion
 
         #region Properties
@@ -34,6 +40,12 @@ namespace FantasyBattle.Spells
         public UnitClass UnitClass => _unitClass;
         public UnitLevels UnitLevels => _unitLevels;
         public float AdditionalDamage => _additionalDamage;
+        public GameObject SpellPrefab => _spellPrefab;
+        public float TimeLife => _timeLife;
+
+        #endregion
+
+        #region UnityMethods
 
         #endregion
     }
