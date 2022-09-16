@@ -1,3 +1,4 @@
+using FantasyBattle;
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
@@ -15,10 +16,10 @@ public class RoomListEntry : MonoBehaviour
     {
         JoinRoomButton.onClick.AddListener(() =>
         {
-            if (PhotonNetwork.InLobby)
-            {
-                PhotonNetwork.LeaveLobby();
-            }
+        if (PhotonNetwork.InLobby)
+        {
+            PhotonNetwork.LeaveLobby();
+        }
 
             PhotonNetwork.JoinRoom(roomName);
         });

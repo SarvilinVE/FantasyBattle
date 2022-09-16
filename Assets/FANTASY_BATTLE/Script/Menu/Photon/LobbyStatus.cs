@@ -16,10 +16,14 @@ namespace FantasyBattle
         public const string PLAYER_LIVES = "PlayerLives";
         public const string PLAYER_READY = "IsPlayerReady";
         public const string PLAYER_LOADED_LEVEL = "PlayerLoadedLevel";
-
+        //Player CustomProperties
         public const string USER_NAME = "User Name";
         public const string GROUP_COVEN = "Group Coven";
-
+        public const string RED_COVEN = "Red coven";
+        public const string BLUE_COVEN = "Blue coven";
+        //Room CustomProperties
+        public const string RED_COVEN_COUNT_PLAYERS = "RED_COVEN_COUNT_PLAYERS";
+        public const string BLUE_COVEN_COUNT_PLAYERS = "BLUE_COVEN_COUNT_PLAYERS";
         public static Color GetColor(int colorChoice)
         {
             switch (colorChoice)

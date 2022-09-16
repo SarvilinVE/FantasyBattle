@@ -57,7 +57,7 @@ namespace FantasyBattle.Menu
         private Dictionary<string, RoomInfo> _cachedRoomList;
         private Dictionary<string, GameObject> _roomListEntries;
         private Dictionary<int, GameObject> _playerListEntries;
-        private Hashtable _properties = new Hashtable();
+        private Hashtable _propertiesPlayers = new Hashtable();
 
         #region NEW_VERSON
 
@@ -116,6 +116,12 @@ namespace FantasyBattle.Menu
             _cachedRoomList.Clear();
             ClearRoomListView();
             _stateLobby.text = PhotonNetwork.NetworkClientState.ToString();
+
+            PhotonNetwork.LocalPlayer.SetCustomProperties(
+            new Hashtable
+            {
+                { LobbyStatus.GROUP_COVEN, LobbyStatus.RED_COVEN }
+            });
         }
 
         public override void OnLeftLobby()
@@ -148,8 +154,6 @@ namespace FantasyBattle.Menu
             // joining (or entering) a room invalidates any cached lobby room list (even if LeaveLobby was not called due to just joining a room)
             _cachedRoomList.Clear();
 
-
-            //SetActivePanel(InsideRoomPanel.name);
             InsideRoomPanel.SetActive(true);
 
             if (_playerListEntries == null)
@@ -157,22 +161,31 @@ namespace FantasyBattle.Menu
                 _playerListEntries = new Dictionary<int, GameObject>();
             }
 
+            var currentRoom = PhotonNetwork.CurrentRoom;
             foreach (Player p in PhotonNetwork.PlayerList)
             {
                 GameObject entry = Instantiate(PlayerListEntryPrefab);
 
-                if (GroupOnePlayerPanel.transform.childCount + 1 >= PhotonNetwork.CurrentRoom.MaxPlayers)
+                Debug.Log($"[JoinRoom1] {p.NickName} {p.CustomProperties[LobbyStatus.GROUP_COVEN]}");
+
+                SortingPlayers(p);
+
+                if (p.CustomProperties[LobbyStatus.GROUP_COVEN].ToString() == LobbyStatus.BLUE_COVEN)
                 {
                     entry.transform.SetParent(GroupTwoPlayerPanel.transform);
 
-                    p.SetCustomProperties(InsertOrUpdateProperties(LobbyStatus.GROUP_COVEN, "Blue coven"));
+                    currentRoom.SetCustomProperties(InsertOrUpdateProperties(LobbyStatus.BLUE_COVEN_COUNT_PLAYERS,
+                        (int)currentRoom.CustomProperties[LobbyStatus.BLUE_COVEN_COUNT_PLAYERS] + 1, currentRoom.CustomProperties));
                 }
                 else
                 {
                     entry.transform.SetParent(GroupOnePlayerPanel.transform);
 
-                    p.SetCustomProperties(InsertOrUpdateProperties(LobbyStatus.GROUP_COVEN, "Red coven"));
+                    currentRoom.SetCustomProperties(InsertOrUpdateProperties(LobbyStatus.RED_COVEN_COUNT_PLAYERS,
+                        (int)currentRoom.CustomProperties[LobbyStatus.RED_COVEN_COUNT_PLAYERS] + 1, currentRoom.CustomProperties));
                 }
+
+                Debug.Log($"[JoinRoom2] {p.NickName} {p.CustomProperties[LobbyStatus.GROUP_COVEN]}");
 
                 entry.transform.localScale = Vector3.one;
                 entry.GetComponent<PlayerListEntry>().Initialize(p.ActorNumber, p.NickName);
@@ -194,13 +207,29 @@ namespace FantasyBattle.Menu
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
-            _stateLobby.text = $"Joined Room";
+            _stateLobby.text = $"[Join Room] RED : {currentRoom.CustomProperties[LobbyStatus.RED_COVEN_COUNT_PLAYERS]} BLUE: {currentRoom.CustomProperties[LobbyStatus.BLUE_COVEN_COUNT_PLAYERS]}";
             Debug.Log($"{_stateLobby.text}");
+        }
+
+        private void SortingPlayers(Player player)
+        {
+            var currentRoom = PhotonNetwork.CurrentRoom;
+
+            if ((int)currentRoom.CustomProperties[LobbyStatus.RED_COVEN_COUNT_PLAYERS] > 
+                (int)currentRoom.CustomProperties[LobbyStatus.BLUE_COVEN_COUNT_PLAYERS])
+            {
+                player.SetCustomProperties(InsertOrUpdateProperties(LobbyStatus.GROUP_COVEN, LobbyStatus.BLUE_COVEN, _propertiesPlayers));
+            }
+            else
+            {
+                player.SetCustomProperties(InsertOrUpdateProperties(LobbyStatus.GROUP_COVEN, LobbyStatus.RED_COVEN, _propertiesPlayers));
+            }
         }
 
         public override void OnLeftRoom()
         {
-            //SetActivePanel(RoomListContent.name);
+            Debug.Log($"OnLeftRoom: {PhotonNetwork.LocalPlayer.NickName} leave room");
+
             InsideRoomPanel.SetActive(false);
 
             foreach (GameObject entry in _playerListEntries.Values)
@@ -221,17 +250,17 @@ namespace FantasyBattle.Menu
         {
             GameObject entry = Instantiate(PlayerListEntryPrefab);
 
-            if (GroupOnePlayerPanel.transform.childCount + 1 >= PhotonNetwork.CurrentRoom.MaxPlayers)
+            if(newPlayer.CustomProperties[LobbyStatus.GROUP_COVEN].ToString() == LobbyStatus.BLUE_COVEN)
             {
                 entry.transform.SetParent(GroupTwoPlayerPanel.transform);
 
-                newPlayer.SetCustomProperties(InsertOrUpdateProperties(LobbyStatus.GROUP_COVEN, "Blue coven"));
+                newPlayer.SetCustomProperties(InsertOrUpdateProperties(LobbyStatus.GROUP_COVEN, LobbyStatus.BLUE_COVEN, _propertiesPlayers));
             }
             else
             {
                 entry.transform.SetParent(GroupOnePlayerPanel.transform);
 
-                newPlayer.SetCustomProperties(InsertOrUpdateProperties(LobbyStatus.GROUP_COVEN, "Red coven"));
+                newPlayer.SetCustomProperties(InsertOrUpdateProperties(LobbyStatus.GROUP_COVEN, LobbyStatus.RED_COVEN, _propertiesPlayers));
             }
 
             entry.transform.localScale = Vector3.one;
@@ -239,12 +268,31 @@ namespace FantasyBattle.Menu
 
             StartGameButton.gameObject.SetActive(CheckPlayersReady());
 
-            _stateLobby.text = $"Enter Room";
+            _stateLobby.text = $"[Enter Room] {newPlayer.NickName} RED : {PhotonNetwork.CurrentRoom.CustomProperties[LobbyStatus.RED_COVEN_COUNT_PLAYERS]} BLUE: {PhotonNetwork.CurrentRoom.CustomProperties[LobbyStatus.BLUE_COVEN_COUNT_PLAYERS]}";
             Debug.Log($"{_stateLobby.text}");
         }
 
         public override void OnPlayerLeftRoom(Player otherPlayer)
         {
+            object typeCoven;
+            otherPlayer.CustomProperties.TryGetValue(LobbyStatus.GROUP_COVEN, out typeCoven);
+
+            Debug.Log($"{typeCoven} leave room");
+
+            //var currentRoom = PhotonNetwork.CurrentRoom;
+            //if ((string)typeCoven == LobbyStatus.RED_COVEN)
+            //{
+            //    currentRoom.SetCustomProperties(InsertOrUpdateProperties(LobbyStatus.RED_COVEN_COUNT_PLAYERS,
+            //        (int)currentRoom.CustomProperties[LobbyStatus.RED_COVEN_COUNT_PLAYERS] - 1, currentRoom.CustomProperties));
+            //}
+            //else
+            //{
+            //    currentRoom.SetCustomProperties(InsertOrUpdateProperties(LobbyStatus.BLUE_COVEN_COUNT_PLAYERS,
+            //        (int)currentRoom.CustomProperties[LobbyStatus.BLUE_COVEN_COUNT_PLAYERS] - 1, currentRoom.CustomProperties));
+            //}
+
+            Debug.Log($"OnPlayerLeftRoom: {otherPlayer.NickName} leave room");
+
             Destroy(_playerListEntries[otherPlayer.ActorNumber].gameObject);
             _playerListEntries.Remove(otherPlayer.ActorNumber);
 
@@ -259,6 +307,10 @@ namespace FantasyBattle.Menu
             }
         }
 
+        public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
+        {
+            Debug.Log($"RoomPropertiesUpdate RED: {propertiesThatChanged[LobbyStatus.RED_COVEN_COUNT_PLAYERS]} BLUE: {propertiesThatChanged[LobbyStatus.BLUE_COVEN_COUNT_PLAYERS]}");
+        }
         public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
         {
             if (_playerListEntries == null)
@@ -313,20 +365,42 @@ namespace FantasyBattle.Menu
 
             RoomOptions options = new RoomOptions { MaxPlayers = maxPlayers, PlayerTtl = 10000 };
 
-            PhotonNetwork.CreateRoom(roomName, options, null);
+            Hashtable propertiesRoom = new Hashtable
+            {
+                {LobbyStatus.BLUE_COVEN_COUNT_PLAYERS, 0 },
+                {LobbyStatus.RED_COVEN_COUNT_PLAYERS, 0 }
+            };
 
+            options.CustomRoomProperties = propertiesRoom;
+
+
+            PhotonNetwork.CreateRoom(roomName, options, null);
             CreateRoomPanel.SetActive(false);
         }
 
         public void OnJoinRandomRoomButtonClicked()
         {
-            //SetActivePanel(JoinRandomRoomPanel.name);
-
-            //PhotonNetwork.JoinRandomRoom();
         }
 
         public void OnLeaveGameButtonClicked()
         {
+            object typeCoven;
+            PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue(LobbyStatus.GROUP_COVEN, out typeCoven);
+            
+            Debug.Log($"{typeCoven} leave room");
+
+            var currentRoom = PhotonNetwork.CurrentRoom;
+            if ((string)typeCoven == LobbyStatus.RED_COVEN)
+            {
+                currentRoom.SetCustomProperties(InsertOrUpdateProperties(LobbyStatus.RED_COVEN_COUNT_PLAYERS,
+                    (int)currentRoom.CustomProperties[LobbyStatus.RED_COVEN_COUNT_PLAYERS] - 1, currentRoom.CustomProperties));
+            }
+            else
+            {
+                currentRoom.SetCustomProperties(InsertOrUpdateProperties(LobbyStatus.BLUE_COVEN_COUNT_PLAYERS,
+                    (int)currentRoom.CustomProperties[LobbyStatus.BLUE_COVEN_COUNT_PLAYERS] - 1, currentRoom.CustomProperties));
+            }
+
             PhotonNetwork.LeaveRoom();
         }
 
@@ -457,25 +531,25 @@ namespace FantasyBattle.Menu
             }
         }
 
-        private Hashtable InsertOrUpdateProperties(object key, object value)
+        private Hashtable InsertOrUpdateProperties(object key, object value, Hashtable entries)
         {
-            if(_properties.ContainsKey(key))
+            if(entries.ContainsKey(key))
             {
-                _properties[key] = value;
+                entries[key] = value;
             }
             else
             {
-                _properties.Add(key, value);
+                entries.Add(key, value);
             }
 
-            return _properties;
+            return entries;
         }
 
         private void OnDestroy()
         {
             _cachedRoomList.Clear();
             _roomListEntries.Clear();
-            _properties.Clear();
+            _propertiesPlayers.Clear();
 
             _createRoom.onClick.RemoveAllListeners();
             CreateRoomButton.onClick.RemoveAllListeners();
