@@ -50,31 +50,25 @@ namespace FantasyBattle.Play
                 RaycastHit hit;
                 if (Physics.Raycast(ray, out hit))
                 {
-                    //_spellPrefab = Instantiate(spellConteiner.Spells[0].SpellPrefab);
-
-                    //_spellPrefab.transform.position = transform.TransformPoint(Vector3.forward * 1.5f);
-                    //_spellPrefab.transform.rotation = transform.rotation;
-                    _spellPrefab = PhotonNetwork.Instantiate(spellConteiner.Spells[0].SpellPrefab.name,
+                    _spellPrefab = PhotonNetwork.InstantiateRoomObject(spellConteiner.Spells[0].SpellPrefab.name,
                         transform.TransformPoint(Vector3.forward * 0.7f), transform.rotation);
                     _spellPrefab.GetComponent<Fireball>().Init(hit.point, spellConteiner.Spells[0].TimeLife);
+                    _spellPrefab.GetComponent<Fireball>().OnDestroyFireball += DestroySpell;
                 }
             }
         }
 
+        public void DestroySpell(bool isTarget)
+        {
+            if (isTarget)
+            {
+                PhotonNetwork.Destroy(_spellPrefab.gameObject);
+
+            }
+        }
         public override void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
-            //if (_spellPrefab != null)
-            //{
-            //    Vector3 pos = _spellPrefab.transform.position;
-            //    Quaternion rot = _spellPrefab.transform.rotation;
-            //    stream.Serialize(ref pos);
-            //    stream.Serialize(ref rot);
-            //    if (stream.IsReading)
-            //    {
-            //        transform.position = pos;
-            //        transform.rotation = rot;
-            //    }
-            //}
+
         }
     }
 }

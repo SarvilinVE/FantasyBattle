@@ -216,11 +216,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57d6dae373dd796439f6c3af0583fa2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _health: 100
+  _classType: {fileID: 11400000, guid: 780c46b70ef0fb8448fb8ed7a14dab93, type: 2}
+  _health: 200
+  _mana: 200
+  _slotUIObject: {fileID: 5618759148399692342, guid: 2156ce05f9de0ee459fab12c3ef681d9, type: 3}
   _movingSpeed: 8
   _acceleration: 3
   _castPoint: {fileID: 2431808980634353319}
-  _class: {fileID: 11400000, guid: 780c46b70ef0fb8448fb8ed7a14dab93, type: 2}
+  controllable: 1
 --- !u!114 &1353949987907557594
 MonoBehaviour:
   m_ObjectHideFlags: 0

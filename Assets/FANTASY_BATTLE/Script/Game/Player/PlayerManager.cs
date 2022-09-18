@@ -1,8 +1,4 @@
-using ExitGames.Client.Photon;
 using Photon.Pun;
-using Photon.Realtime;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace FantasyBattle.Play
@@ -25,13 +21,15 @@ namespace FantasyBattle.Play
         [SerializeField]
         private Transform[] _blueSpawnPoints;
 
+        public bool controllable = true;
+
         #endregion
 
         #region IPunObservable
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
-            throw new System.NotImplementedException();
+
         }
 
         #endregion
@@ -39,31 +37,35 @@ namespace FantasyBattle.Play
 
         #region Methods
 
-        public void SetupPlayer()
+        public void SetupPlayer(GameObject parent)
         {
-            if(PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue(LobbyStatus.GROUP_COVEN, out var group))
+            if (controllable)
             {
-                if (group.ToString() == "Red coven")
+                if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue(LobbyStatus.GROUP_COVEN, out var group))
                 {
-                    PhotonNetwork.Instantiate(_playerPrefab[0].name, _redSpawnPoints[0].position, _redSpawnPoints[0].rotation);
+                    if (group.ToString() == LobbyStatus.RED_COVEN)
+                    {
+                        PhotonNetwork.Instantiate(_playerPrefab[0].name, _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)].position,
+                            _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)].rotation);
+                    }
+                    else
+                    {
+                        PhotonNetwork.Instantiate(_playerPrefab[0].name, _blueSpawnPoints[Random.Range(0, _blueSpawnPoints.Length)].position,
+                            _blueSpawnPoints[Random.Range(0, _blueSpawnPoints.Length)].rotation);
+                    }
                 }
-                else
-                {
-                    PhotonNetwork.Instantiate(_playerPrefab[0].name, _blueSpawnPoints[0].position, _redSpawnPoints[0].rotation);
-                }
+
+                return;
             }
         }
 
+        public void SetupBot(GameObject botPrefab)
+        {
+            PhotonNetwork.InstantiateRoomObject(botPrefab.name, _blueSpawnPoints[0].position, _blueSpawnPoints[0].rotation).
+                GetComponent<BotCharacter>().Coven = LobbyStatus.BLUE_COVEN;
+        }
+
         #endregion
-        void Start()
-        {
 
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-
-        }
     }
 }

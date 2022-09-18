@@ -22,6 +22,9 @@ namespace FantasyBattle.Spells
         private UnitLevels _unitLevels;
 
         [SerializeField]
+        private float _costMP;
+
+        [SerializeField]
         private float _additionalDamage;
 
         [SerializeField]
@@ -39,6 +42,7 @@ namespace FantasyBattle.Spells
         public Sprite IconSpell => _iconSpell;
         public UnitClass UnitClass => _unitClass;
         public UnitLevels UnitLevels => _unitLevels;
+        public float CostMP => _costMP;
         public float AdditionalDamage => _additionalDamage;
         public GameObject SpellPrefab => _spellPrefab;
         public float TimeLife => _timeLife;

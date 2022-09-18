@@ -11,15 +11,13 @@ namespace FantasyBattle.Menu
     public class PlayFabCharacterManager : MonoBehaviour
     {
         private const string CUPPON = "Character_cuppon";
-        private const string M_ATTACK = "Magic Attack";
-        private const string LEVEL = "Level";
-        private const string XP = "XP";
+
 
         [SerializeField]
         private Button _emptySlot;
 
         [SerializeField]
-        private GameObject _characterCreateWindow;
+        private GameObject _selectCharacterPanel;
 
         [SerializeField]
         private Button _createCharacterButton;
@@ -33,6 +31,9 @@ namespace FantasyBattle.Menu
         [SerializeField]
         private CharacterSlot _characterSlot;
 
+        [SerializeField]
+        private Button _lobby;
+
         private List<CharacterSlot> _slots = new List<CharacterSlot>();
 
         void Start()
@@ -40,48 +41,68 @@ namespace FantasyBattle.Menu
             GetCharacters();
 
             _emptySlot.onClick.AddListener(CharacterCreateWindow);
-            _createCharacterButton.onClick.AddListener(CreateCharacter);
+            //_createCharacterButton.onClick.AddListener(CreateCharacter);
         }
-
-        private void CreateCharacter()
+        public void CreateCharacter(ClassCard card)
         {
-            if (_nameCharacter.text == "")
-                return;
+            //if (_nameCharacter.text == "")
+            //    return;
+            PlayerPrefs.GetString(LobbyStatus.NAME_CLASS, card.NameClass.text);
 
             PlayFabClientAPI.GrantCharacterToUser(new GrantCharacterToUserRequest
             {
-                CharacterName = _nameCharacter.text,
+                CharacterName = card.NameClass.text,
                 ItemId = CUPPON
             },
             result =>
             {
-                UpdateCharacterStatisticsRequest(result.CharacterId);
+                UpdateCharacterStatisticsRequest(result.CharacterId, card);
             }, OnError);
         }
 
-        private void UpdateCharacterStatisticsRequest(string characterId)
+        private void UpdateCharacterStatisticsRequest(string characterId, ClassCard card)
         {
             PlayFabClientAPI.UpdateCharacterStatistics(new UpdateCharacterStatisticsRequest
             {
                 CharacterId = characterId,
                 CharacterStatistics = new Dictionary<string, int>
-            {
-                {LEVEL, 1 },
-                {M_ATTACK, 10 },
-                {XP, 0 }
-            }
+                {
+                    {LobbyStatus.CHARACTER_LEVEL, 1 },
+                    {LobbyStatus.CHARACTER_EXP, 0 },
+                    {LobbyStatus.CHARACTER_HP, int.Parse(card.ClassHP.text) },
+                    {LobbyStatus.CHARACTER_MP, int.Parse(card.ClassMP.text) },
+                    {LobbyStatus.CHARACTER_DAMAGE, int.Parse(card.ClassDamage.text) },
+                }
             }, result =>
                 {
                     Debug.Log($"Character create complete");
 
-                    _characterCreateWindow.SetActive(false);
+                    _selectCharacterPanel.SetActive(false);
+
+                    _emptySlot.gameObject.SetActive(true);
+                    foreach (var slot in _slots)
+                    {
+                        slot.gameObject.SetActive(true);
+                    }
                     GetCharacters();
                 }, OnError);
         }
 
         private void CharacterCreateWindow()
         {
-            _characterCreateWindow.SetActive(true);
+            _emptySlot.gameObject.SetActive(false);
+            foreach(var slot in _slots)
+            {
+                slot.gameObject.SetActive(false);
+            }
+
+            _selectCharacterPanel.SetActive(true);
+            _selectCharacterPanel.GetComponent<SelectCharacterPanel>().ShowClassCards();
+            var classCards = _selectCharacterPanel.GetComponent<SelectCharacterPanel>().ClassCardsReturn();
+            foreach(var card in classCards)
+            {
+                card.SelectClass.onClick.AddListener(() => CreateCharacter(card));
+            }
         }
 
         private void GetCharacters()
@@ -114,15 +135,16 @@ namespace FantasyBattle.Menu
                     },
                     result =>
                     {
-                        var level = result.CharacterStatistics[LEVEL];
-                        var mAttack = result.CharacterStatistics[M_ATTACK];
-                        var xp = result.CharacterStatistics[XP];
+                        var level = result.CharacterStatistics[LobbyStatus.CHARACTER_LEVEL];
+                        var mAttack = result.CharacterStatistics[LobbyStatus.CHARACTER_DAMAGE];
+                        var xp = result.CharacterStatistics[LobbyStatus.CHARACTER_EXP];
 
                         var slot = Instantiate(_characterSlot, _parentCharacterSlot.transform);
+                        slot.SetButton(_lobby);
                         slot.NameCharacter.text = character.CharacterName;
-                        slot.LevelCharacter.text = $"{LEVEL}: {level}";
-                        slot.MattackCharacter.text = $"{M_ATTACK}: {mAttack}";
-                        slot.XpCharacter.text = $"{XP}: {xp}";
+                        slot.LevelCharacter.text = $"Level: {level}";
+                        slot.MattackCharacter.text = $"Damage: {mAttack}";
+                        slot.XpCharacter.text = $"Exp: {xp}";
                         slot.CharacterId = character.CharacterId;
                         _slots.Add(slot);
 

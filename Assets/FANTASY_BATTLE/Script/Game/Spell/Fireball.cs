@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using FantasyBattle.Play;
+using Photon.Pun;
 
 namespace FantasyBattle.Spells
 {
     public class Fireball : MonoBehaviour
     {
         protected Action OnUpdateAction { get; set; }
+        public Action<bool> OnDestroyFireball { get; set; }
 
         [SerializeField]
         private float _speed;
 
         private Rigidbody _rb;
+        private bool _isTarget = false;
         private float _timeLife;
 
         private void Start()
@@ -22,18 +25,21 @@ namespace FantasyBattle.Spells
         }
         public void Init(Vector3 targetPosition, float timeLife)
         {
-            _timeLife = timeLife;
             transform.LookAt(targetPosition);
             OnUpdateAction += Move;
-            Destroy(gameObject, timeLife);
+            _timeLife = timeLife;
+            StartCoroutine(LifeFireball());
             
+        }
+        IEnumerator LifeFireball()
+        {
+            yield return new WaitForSecondsRealtime(_timeLife);
+            PhotonNetwork.Destroy(this.gameObject);
         }
         public void Move()
         {
             var velocity = transform.forward * _speed;
-            //velocity.y = _rb.velocity.y;
             _rb.velocity = velocity;
-            Debug.Log($"Tut");
         }
 
         public void OnUpdate()
@@ -52,9 +58,14 @@ namespace FantasyBattle.Spells
             if(collision.gameObject.TryGetComponent<Character>(out var component))
             {
                 component.Health -= 10;
+                _isTarget = true;
+            }
+            else
+            {
+                _isTarget = true;
             }
 
-            Destroy(gameObject);
+            OnDestroyFireball?.Invoke(_isTarget);
         }
     }
 }

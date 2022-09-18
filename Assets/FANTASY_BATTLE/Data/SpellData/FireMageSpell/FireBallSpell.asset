@@ -16,6 +16,7 @@ MonoBehaviour:
   _iconSpell: {fileID: 21300000, guid: 97616f8e7cb1b06489f3fdb40e4dd58f, type: 3}
   _unitClass: 1
   _unitLevels: 0
+  _costMP: 5
   _additionalDamage: 5
   _spellPrefab: {fileID: 2379737869392944503, guid: 14428f32938f99b49a8bce81b6c91d01, type: 3}
   _timeLife: 3

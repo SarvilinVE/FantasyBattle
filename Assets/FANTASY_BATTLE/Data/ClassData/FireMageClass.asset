@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: FireMageClass
   m_EditorClassIdentifier: 
   _unitClass: 1
-  _iconClass: {fileID: 0}
+  _iconClass: {fileID: 21300000, guid: 97616f8e7cb1b06489f3fdb40e4dd58f, type: 3}
   _spellClass: {fileID: 11400000, guid: ada8b0494ca3d1a44886b63849f18083, type: 2}
   _baseHp: 90
+  _baseMp: 90
   _baseDamage: 15
   _isLocked: 0

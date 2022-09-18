@@ -1,9 +1,6 @@
 using Photon.Pun;
-using ExitGames.Client.Photon;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 namespace FantasyBattle.Battle
 {
@@ -21,10 +18,17 @@ namespace FantasyBattle.Battle
             {
                 var entry = Instantiate(_userInfoText, _userHolder.transform);
                 entry.text = $"{player.ActorNumber} {player.NickName}";
-                Debug.Log($"{player.NickName}");
             }
         }
 
+        public void ShowTab()
+        {
+            foreach (var player in PhotonNetwork.PlayerList)
+            {
+                var entry = Instantiate(_userInfoText, _userHolder.transform);
+                entry.text = $"{player.ActorNumber} {player.NickName}";
+            }
+        }
         // Update is called once per frame
         void Update()
         {

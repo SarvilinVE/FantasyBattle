@@ -39,6 +39,7 @@ namespace FantasyBattle.Menu
             else
             {
                 _loadingScreen.SetActive(false);
+                //PlayerPrefs.SetString(LobbyStatus.CHARACTER_ID, LobbyStatus.EMPTY);
                 _gamePanel.SetActive(true);
             }
         }

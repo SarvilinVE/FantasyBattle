@@ -10,9 +10,6 @@ namespace FantasyBattle.Menu
 
     public class CharacterSlot : MonoBehaviour
     {
-        private const string M_ATTACK = "Magic Attack";
-        private const string LEVEL = "Level";
-        private const string XP = "XP";
         private const int REWARD_XP = 100;
 
         [SerializeField]
@@ -30,12 +27,15 @@ namespace FantasyBattle.Menu
         [SerializeField]
         private Button _fightButton;
 
+        private Button _lobby;
+
         public TMP_Text NameCharacter => _nameCharacter;
         public TMP_Text LevelCharacter => _levelCharacter;
         public TMP_Text MattackCharacter => _mattackCharacter;
         public TMP_Text XpCharacter => _xpCharacter;
         public string CharacterId { get; set; }
 
+        private string _name;
         private int _level;
         private int _xp;
 
@@ -46,6 +46,11 @@ namespace FantasyBattle.Menu
             GetCharacter();
         }
 
+        public void SetButton(Button button)
+        {
+            _lobby = button;
+        }
+
         private void GetCharacter()
         {
             PlayFabClientAPI.GetCharacterStatistics(new GetCharacterStatisticsRequest
@@ -54,25 +59,30 @@ namespace FantasyBattle.Menu
             },
             result =>
             {
-                _level = result.CharacterStatistics[LEVEL];
-                _xp = result.CharacterStatistics[XP];
+                _level = result.CharacterStatistics[LobbyStatus.CHARACTER_LEVEL];
+                _xp = result.CharacterStatistics[LobbyStatus.CHARACTER_EXP];
             }, OnError);
         }
 
         private void OnFight()
         {
-            var player = Random.Range(0.0f, 100.0f);
-            var enemy = Random.Range(0.0f, 100.0f);
+            PlayerPrefs.SetString(LobbyStatus.CHARACTER_ID, CharacterId);
+            PlayerPrefs.SetString(LobbyStatus.NAME_CLASS, _nameCharacter.text);
+            PlayerPrefs.Save();
+            Debug.Log($"Character {PlayerPrefs.GetString(LobbyStatus.CHARACTER_ID)} select. GO TO LOBBY");
+            _lobby.enabled = true;
+            //var player = Random.Range(0.0f, 100.0f);
+            //var enemy = Random.Range(0.0f, 100.0f);
 
-            if (player < enemy)
-            {
-                Debug.Log($"Character {_nameCharacter.text} lose");
-                return;
-            }
+            //if (player < enemy)
+            //{
+            //    Debug.Log($"Character {_nameCharacter.text} lose");
+            //    return;
+            //}
 
-            Debug.Log($"Character {_nameCharacter.text} win. He given {REWARD_XP} XP");
+            //Debug.Log($"Character {_nameCharacter.text} win. He given {REWARD_XP} XP");
 
-            GetReward();
+            //GetReward();
         }
 
         private void GetReward()
@@ -87,17 +97,16 @@ namespace FantasyBattle.Menu
                 _xp += REWARD_XP;
             }
 
-            _levelCharacter.text = $"{LEVEL}: {_level}";
-            _xpCharacter.text = $"{XP}: {_xp}";
+            _levelCharacter.text = $"{LobbyStatus.CHARACTER_LEVEL}: {_level}";
+            _xpCharacter.text = $"{LobbyStatus.CHARACTER_EXP}: {_xp}";
 
             PlayFabClientAPI.UpdateCharacterStatistics(new UpdateCharacterStatisticsRequest
             {
                 CharacterId = CharacterId,
                 CharacterStatistics = new Dictionary<string, int>
             {
-                {LEVEL, _level },
-                {M_ATTACK, 10 },
-                {XP, _xp }
+                {LobbyStatus.CHARACTER_LEVEL, _level },
+                {LobbyStatus.CHARACTER_EXP, _xp }
             }
             }, result =>
             {

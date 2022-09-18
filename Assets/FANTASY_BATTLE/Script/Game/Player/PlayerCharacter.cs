@@ -22,13 +22,13 @@ namespace FantasyBattle.Play
         [SerializeField]
         private Transform _castPoint;
 
-        [SerializeField]
-        private Class _class;
-
         private const float GRAVITY = -9.8f;
         private CharacterController _characterController;
         private MouseLook _mouseLook;
-        private Vector3 _currentVelocity;
+        private PhotonView _photonView;
+        private SlotUI _slot;
+
+        public bool controllable = true;
 
         protected override FireAction FireAction { get; set; }
 
@@ -40,9 +40,15 @@ namespace FantasyBattle.Play
         {
             base.Initiate();
 
+            this.gameObject.tag = PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.GROUP_COVEN].ToString();
+
+            _photonView = GetComponent<PhotonView>();
+
             FireAction = gameObject.AddComponent<BallCast>();
-            FireAction.spellConteiner = _class.SpellClass;
+            FireAction.spellConteiner = ClassType.SpellClass;
             FireAction.CastPoint = _castPoint;
+
+            _slot = SlotUI.GetComponent<SlotUI>();
 
             _characterController = GetComponentInChildren<CharacterController>();
             _characterController ??= gameObject.AddComponent<CharacterController>();
@@ -52,14 +58,27 @@ namespace FantasyBattle.Play
 
         public override void Movement()
         {
-            if (_mouseLook != null && _mouseLook.PlayerCamera != null)
+            if (!_photonView.AmOwner || !controllable)
             {
-                _mouseLook.PlayerCamera.enabled = photonView.IsMine;
+                Debug.Log($"111111111");
+                return;
             }
 
-
-            if (photonView.IsMine)
+            if (this.photonView.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
             {
+                Debug.Log($"2222222222");
+                return;
+            }
+
+            if (_mouseLook != null && _mouseLook.PlayerCamera != null)
+            {
+                _mouseLook.PlayerCamera.enabled = _photonView.IsMine;
+            }
+
+            if (_photonView.IsMine)
+            {
+                Debug.Log($"33333333333");
+
                 var moveX = Input.GetAxis("Horizontal") * _movingSpeed;
                 var moveZ = Input.GetAxis("Vertical") * _movingSpeed;
                 var movement = new Vector3(moveX, 0, moveZ);
@@ -73,6 +92,17 @@ namespace FantasyBattle.Play
                 movement = transform.TransformDirection(movement);
                 _characterController.Move(movement);
                 _mouseLook.Rotation();
+
+                UpdateUI();
+            }
+        }
+
+        private void UpdateUI()
+        {
+            if (_photonView.IsMine)
+            {
+                _slot.BarHP.value = Health;
+                _slot.BarMP.value = Mana;
             }
         }
 
@@ -84,6 +114,15 @@ namespace FantasyBattle.Play
         {
             Initiate();
         }
+
+        //private void Update()
+        //{
+        //    if(_photonView.IsMine)
+        //    {
+        //        _slot.BarHP.value = Health;
+        //        _slot.BarMP.value = Mana; 
+        //    }
+        //}
 
         #endregion
 

@@ -6,6 +6,8 @@ namespace FantasyBattle
 {
     public class LobbyStatus
     {
+        public const string EMPTY = "EMPTY";
+
         public const float ASTEROIDS_MIN_SPAWN_TIME = 5.0f;
         public const float ASTEROIDS_MAX_SPAWN_TIME = 10.0f;
 
@@ -24,7 +26,15 @@ namespace FantasyBattle
         //Room CustomProperties
         public const string RED_COVEN_COUNT_PLAYERS = "RED_COVEN_COUNT_PLAYERS";
         public const string BLUE_COVEN_COUNT_PLAYERS = "BLUE_COVEN_COUNT_PLAYERS";
-        public static Color GetColor(int colorChoice)
+        //CharacterProperties
+        public const string CHARACTER_ID = "CHARACTER_ID";
+        public const string NAME_CLASS = "NAME_CLASS";
+        public const string CHARACTER_LEVEL = "CHARACTER_LEVEL";
+        public const string CHARACTER_HP = "CHARACTER_HP";
+        public const string CHARACTER_MP = "CHARACTER_MP";
+        public const string CHARACTER_DAMAGE = "CHARACTER_DAMAGE";
+        public const string CHARACTER_EXP = "CHARACTER_EXP";
+         public static Color GetColor(int colorChoice)
         {
             switch (colorChoice)
             {

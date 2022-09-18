@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using FantasyBattle.Spells;
 using UnityEngine;
 
@@ -23,6 +22,9 @@ namespace FantasyBattle.Classes
         private float _baseHp;
 
         [SerializeField]
+        private float _baseMp;
+
+        [SerializeField]
         private float _baseDamage;
 
         [SerializeField]
@@ -35,6 +37,7 @@ namespace FantasyBattle.Classes
         public UnitClass UnitClass => _unitClass;
         public Sprite _IconClass => _iconClass;
         public float BaseHp => _baseHp;
+        public float BaseMp => _baseMp;
         public float BaseDamage => _baseDamage;
         public bool IsLocked => _isLocked;
         public SpellConteiner SpellClass => _spellClass;
