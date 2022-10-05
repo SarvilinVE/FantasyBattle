@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using FantasyBattle.Play;
 using Photon.Pun;
+using Photon.Realtime;
 
 namespace FantasyBattle.Spells
 {
@@ -21,30 +22,39 @@ namespace FantasyBattle.Spells
 
         private void Start()
         {
-            _rb = GetComponent<Rigidbody>();
-        }
-        public void Init(Vector3 targetPosition, float timeLife)
-        {
-            transform.LookAt(targetPosition);
-            OnUpdateAction += Move;
-            _timeLife = timeLife;
-            StartCoroutine(LifeFireball());
             
         }
-        IEnumerator LifeFireball()
+        public void Init(Player owner, Vector3 targetPosition, float timeLife)
         {
-            yield return new WaitForSecondsRealtime(_timeLife);
-            PhotonNetwork.Destroy(this.gameObject);
+            //transform.LookAt(targetPosition);
+            //OnUpdateAction += Move;
+            //_timeLife = timeLife;
+            //StartCoroutine(LifeFireball());
+            var info = new PhotonMessageInfo();
+            float lag = (float)(PhotonNetwork.Time - info.SentServerTime);
+
+            transform.forward = targetPosition;
+
+            _rb = GetComponent<Rigidbody>();
+            _rb.velocity = transform.forward;
+            //_rb.position += _rb.velocity * lag;
+            Destroy(gameObject, timeLife);
+
         }
-        public void Move()
-        {
-            var velocity = transform.forward * _speed;
-            _rb.velocity = velocity;
-        }
+        //IEnumerator LifeFireball()
+        //{
+        //    yield return new WaitForSecondsRealtime(_timeLife);
+        //    Destroy(this.gameObject);
+        //}
+        //public void Move()
+        //{
+        //    var velocity = transform.forward * _speed;
+        //    _rb.velocity = velocity;
+        //}
 
         public void OnUpdate()
         {
-            OnUpdateAction?.Invoke();
+            //OnUpdateAction?.Invoke();
         }
 
         private void FixedUpdate()
@@ -54,18 +64,19 @@ namespace FantasyBattle.Spells
 
         private void OnCollisionEnter(Collision collision)
         {
-            
-            if(collision.gameObject.TryGetComponent<Character>(out var component))
-            {
-                component.Health -= 10;
-                _isTarget = true;
-            }
-            else
-            {
-                _isTarget = true;
-            }
 
-            OnDestroyFireball?.Invoke(_isTarget);
+            //if(collision.gameObject.TryGetComponent<Character>(out var component))
+            //{
+            //    component.Health -= 10;
+            //    _isTarget = true;
+            //}
+            //else
+            //{
+            //    _isTarget = true;
+            //}
+
+            //OnDestroyFireball?.Invoke(_isTarget);
+            Destroy(gameObject);
         }
     }
 }

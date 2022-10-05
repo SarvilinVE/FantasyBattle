@@ -52,7 +52,7 @@ namespace FantasyBattle.Play
                 {
                     _spellPrefab = PhotonNetwork.InstantiateRoomObject(spellConteiner.Spells[0].SpellPrefab.name,
                         transform.TransformPoint(Vector3.forward * 0.7f), transform.rotation);
-                    _spellPrefab.GetComponent<Fireball>().Init(hit.point, spellConteiner.Spells[0].TimeLife);
+                    //_spellPrefab.GetComponent<Fireball>().Init(hit.point, spellConteiner.Spells[0].TimeLife);
                     _spellPrefab.GetComponent<Fireball>().OnDestroyFireball += DestroySpell;
                 }
             }

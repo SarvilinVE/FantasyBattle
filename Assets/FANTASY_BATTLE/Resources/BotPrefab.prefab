@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 8325937507794923693}
   m_Layer: 0
   m_Name: BotPrefab
-  m_TagString: Untagged
+  m_TagString: Bot
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -172,6 +172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _classType: {fileID: 11400000, guid: 780c46b70ef0fb8448fb8ed7a14dab93, type: 2}
+  _classConteiner: {fileID: 0}
   _health: 200
   _mana: 200
   _slotUIObject: {fileID: 5618759148399692342, guid: 2156ce05f9de0ee459fab12c3ef681d9, type: 3}

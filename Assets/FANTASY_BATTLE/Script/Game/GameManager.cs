@@ -58,13 +58,20 @@ namespace FantasyBattle.Battle
 
         #region COROUTINES
 
-        //private IEnumerator SpawnBot()
-        //{
+        private IEnumerator SpawnBot()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(Random.Range(LobbyStatus.ASTEROIDS_MIN_SPAWN_TIME, LobbyStatus.ASTEROIDS_MAX_SPAWN_TIME));
 
-        //}
+                _playerManager.SetupBot(_botPrefabs[0]);
+            }
+        }
 
         private IEnumerator EndOfGame(string winner, int score)
         {
+            SetActivePanel(_resultHolder.name);
+
             yield return new WaitForSecondsRealtime(5);
             PhotonNetwork.LeaveRoom();
         }
@@ -87,7 +94,7 @@ namespace FantasyBattle.Battle
         {
             if (PhotonNetwork.LocalPlayer.ActorNumber == newMasterClient.ActorNumber)
             {
-                //StartCoroutine(SpawnAsteroid());
+                StartCoroutine(SpawnBot());
             }
         }
 
@@ -157,13 +164,18 @@ namespace FantasyBattle.Battle
 
             if (PhotonNetwork.IsMasterClient)
             {
-                var countPlayerOnline = PhotonNetwork.CurrentRoom.PlayerCount;
-                while(countPlayerOnline < PhotonNetwork.CurrentRoom.MaxPlayers)
-                {
-                    _playerManager.SetupBot(_botPrefabs[0]);
-                    countPlayerOnline++;
-                }
+                StartCoroutine(SpawnBot());
             }
+
+            //if (PhotonNetwork.IsMasterClient)
+            //{
+            //    var countPlayerOnline = PhotonNetwork.CurrentRoom.PlayerCount;
+            //    while(countPlayerOnline < PhotonNetwork.CurrentRoom.MaxPlayers)
+            //    {
+            //        _playerManager.SetupBot(_botPrefabs[0]);
+            //        countPlayerOnline++;
+            //    }
+            //}
         }
 
         private bool CheckAllPlayerLoadedLevel()
@@ -192,10 +204,10 @@ namespace FantasyBattle.Battle
 
             foreach (Player p in PhotonNetwork.PlayerList)
             {
-                object lives;
-                if (p.CustomProperties.TryGetValue(LobbyStatus.PLAYER_LIVES, out lives))
+                object currentHP;
+                if (p.CustomProperties.TryGetValue(LobbyStatus.CURRENT_HP, out currentHP))
                 {
-                    if ((int)lives > 0)
+                    if ((int)currentHP > 0)
                     {
                         allDestroyed = false;
                         break;

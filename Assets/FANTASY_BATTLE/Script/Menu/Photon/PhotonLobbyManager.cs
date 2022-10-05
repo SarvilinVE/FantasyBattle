@@ -463,7 +463,9 @@ namespace FantasyBattle.Menu
                             {LobbyStatus.CHARACTER_ID, PlayerPrefs.GetString(LobbyStatus.CHARACTER_ID) },
                             {LobbyStatus.NAME_CLASS, PlayerPrefs.GetString(LobbyStatus.NAME_CLASS) },
                             {LobbyStatus.CHARACTER_HP, result.CharacterStatistics[LobbyStatus.CHARACTER_HP].ToString() },
+                            {LobbyStatus.CURRENT_HP, result.CharacterStatistics[LobbyStatus.CHARACTER_HP].ToString() },
                             {LobbyStatus.CHARACTER_MP, result.CharacterStatistics[LobbyStatus.CHARACTER_MP].ToString() },
+                            {LobbyStatus.CURRENT_MP, result.CharacterStatistics[LobbyStatus.CHARACTER_MP].ToString() },
                             {LobbyStatus.CHARACTER_DAMAGE, result.CharacterStatistics[LobbyStatus.CHARACTER_DAMAGE].ToString() }
                         });
                     }, OnError);

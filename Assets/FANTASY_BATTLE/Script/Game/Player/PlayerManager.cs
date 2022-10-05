@@ -41,19 +41,8 @@ namespace FantasyBattle.Play
         {
             if (controllable)
             {
-                if (PhotonNetwork.LocalPlayer.CustomProperties.TryGetValue(LobbyStatus.GROUP_COVEN, out var group))
-                {
-                    if (group.ToString() == LobbyStatus.RED_COVEN)
-                    {
-                        PhotonNetwork.Instantiate(_playerPrefab[0].name, _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)].position,
+                PhotonNetwork.Instantiate(_playerPrefab[0].name, _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)].position,
                             _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)].rotation);
-                    }
-                    else
-                    {
-                        PhotonNetwork.Instantiate(_playerPrefab[0].name, _blueSpawnPoints[Random.Range(0, _blueSpawnPoints.Length)].position,
-                            _blueSpawnPoints[Random.Range(0, _blueSpawnPoints.Length)].rotation);
-                    }
-                }
 
                 return;
             }

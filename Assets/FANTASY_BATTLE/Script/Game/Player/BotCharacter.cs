@@ -46,7 +46,7 @@ namespace FantasyBattle.Play
                 
                 if (hitObject.GetComponent<Character>())
                 {
-                    Fire(hitObject);
+                    //Fire(hitObject);
                 }
                 else if (hit.distance < _obstacleRange)
                 {
@@ -60,7 +60,8 @@ namespace FantasyBattle.Play
         {
             var position = transform.TransformPoint(Vector3.forward * 1.5f);
             var rotation = transform.rotation;
-            PhotonNetwork.Instantiate(_fireball.name, position, rotation).GetComponent<Fireball>().Init(hitObject.transform.position, 5);
+            var fireball = Instantiate(_fireball, position, rotation);
+            fireball.GetComponent<Fireball>().Init(_photonView.Owner, hitObject.transform.position, 5);
         }
         private void Start()
         {

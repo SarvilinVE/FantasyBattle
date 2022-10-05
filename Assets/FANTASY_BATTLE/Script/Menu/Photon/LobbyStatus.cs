@@ -23,6 +23,8 @@ namespace FantasyBattle
         public const string GROUP_COVEN = "Group Coven";
         public const string RED_COVEN = "Red coven";
         public const string BLUE_COVEN = "Blue coven";
+        public const string CURRENT_HP = "CURRENT_HP";
+        public const string CURRENT_MP = "CURRENT_MP";
         //Room CustomProperties
         public const string RED_COVEN_COUNT_PLAYERS = "RED_COVEN_COUNT_PLAYERS";
         public const string BLUE_COVEN_COUNT_PLAYERS = "BLUE_COVEN_COUNT_PLAYERS";

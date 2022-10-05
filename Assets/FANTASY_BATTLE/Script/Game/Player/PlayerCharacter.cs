@@ -1,6 +1,7 @@
 using Photon.Pun;
 using UnityEngine;
 using FantasyBattle.Classes;
+using FantasyBattle.Spells;
 
 namespace FantasyBattle.Play
 {
@@ -27,6 +28,7 @@ namespace FantasyBattle.Play
         private MouseLook _mouseLook;
         private PhotonView _photonView;
         private SlotUI _slot;
+        private Class _playerClass;
 
         public bool controllable = true;
 
@@ -40,13 +42,13 @@ namespace FantasyBattle.Play
         {
             base.Initiate();
 
-            this.gameObject.tag = PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.GROUP_COVEN].ToString();
+            //this.gameObject.tag = PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.GROUP_COVEN].ToString();
 
             _photonView = GetComponent<PhotonView>();
 
-            FireAction = gameObject.AddComponent<BallCast>();
-            FireAction.spellConteiner = ClassType.SpellClass;
-            FireAction.CastPoint = _castPoint;
+            //FireAction = gameObject.AddComponent<BallCast>();
+            //FireAction.spellConteiner = ClassType.SpellClass;
+            //FireAction.CastPoint = _castPoint;
 
             _slot = SlotUI.GetComponent<SlotUI>();
 
@@ -54,19 +56,22 @@ namespace FantasyBattle.Play
             _characterController ??= gameObject.AddComponent<CharacterController>();
             _mouseLook = GetComponentInChildren<MouseLook>();
             _mouseLook ??= gameObject.AddComponent<MouseLook>();
+
+            _playerClass = ClassType;
+            Debug.Log($"Class: {_playerClass.UnitClass}");
+            Debug.Log($"SpellClass: {_playerClass.SpellClass.name}");
+            Debug.Log($"SpellName: {_playerClass.SpellClass.Spells[0].NameSpell}");
         }
 
         public override void Movement()
         {
             if (!_photonView.AmOwner || !controllable)
             {
-                Debug.Log($"111111111");
                 return;
             }
 
             if (this.photonView.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
             {
-                Debug.Log($"2222222222");
                 return;
             }
 
@@ -77,7 +82,6 @@ namespace FantasyBattle.Play
 
             if (_photonView.IsMine)
             {
-                Debug.Log($"33333333333");
 
                 var moveX = Input.GetAxis("Horizontal") * _movingSpeed;
                 var moveZ = Input.GetAxis("Vertical") * _movingSpeed;
@@ -94,7 +98,22 @@ namespace FantasyBattle.Play
                 _mouseLook.Rotation();
 
                 UpdateUI();
+
+                if (Input.GetMouseButtonDown(0))
+                {
+                    //Fire();
+                    _photonView.RPC("Fire", RpcTarget.AllViaServer, _castPoint.position, _castPoint.rotation);
+                }
             }
+        }
+
+        [PunRPC]
+        public void Fire(Vector3 position, Quaternion rotation, PhotonMessageInfo info)
+        {
+            GameObject fireball;
+            fireball = Instantiate(_playerClass.SpellClass.Spells[0].SpellPrefab, position, Quaternion.identity);
+            fireball.GetComponent<Fireball>().Init(_photonView.Owner, (rotation * Vector3.forward), 5);
+            Mana -= (int)_playerClass.SpellClass.Spells[0].CostMP;
         }
 
         private void UpdateUI()
@@ -106,6 +125,11 @@ namespace FantasyBattle.Play
             }
         }
 
+        private void RestoreMana()
+        {
+
+        }
+
         #endregion
 
         #region UnityMethods
@@ -115,30 +139,21 @@ namespace FantasyBattle.Play
             Initiate();
         }
 
-        //private void Update()
-        //{
-        //    if(_photonView.IsMine)
-        //    {
-        //        _slot.BarHP.value = Health;
-        //        _slot.BarMP.value = Mana; 
-        //    }
-        //}
-
         #endregion
 
         #region IPunObservable realization
         public override void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
-            if (stream.IsWriting)
-            {
-                // We own this player: send the others our data
-                stream.SendNext(this.Health);
-            }
-            else
-            {
-                // Network player, receive data
-                this.Health = (int)stream.ReceiveNext();
-            }
+            //if (stream.IsWriting)
+            //{
+            //    // We own this player: send the others our data
+            //    stream.SendNext(this.Health);
+            //}
+            //else
+            //{
+            //    // Network player, receive data
+            //    this.Health = (int)stream.ReceiveNext();
+            //}
         }
 
         #endregion

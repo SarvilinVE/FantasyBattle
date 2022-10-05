@@ -13,6 +13,9 @@ namespace FantasyBattle.Play
         [SerializeField]
         private Class _classType;
 
+        [SerializeField]
+        private ClassConteiner _classConteiner;
+
         [Range(0, 200)]
         [SerializeField]
         private int _health = 200;
@@ -29,6 +32,8 @@ namespace FantasyBattle.Play
         private GameObject _slotUI;
 
         public Class ClassType { get => _classType; set => _classType = value; }
+
+        public ClassConteiner ClassConteiner { get => _classConteiner; }
         public GameObject SlotUI { get => _slotUI; set => _slotUI = value; }
         public int Health { get => _health; set => _health = value; }
         public int Mana { get => _mana; set => _mana = value; }
