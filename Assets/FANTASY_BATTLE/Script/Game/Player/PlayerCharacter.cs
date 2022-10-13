@@ -70,7 +70,7 @@ namespace FantasyBattle.Play
                 return;
             }
 
-            if (this.photonView.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
+            if (_photonView.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
             {
                 return;
             }
