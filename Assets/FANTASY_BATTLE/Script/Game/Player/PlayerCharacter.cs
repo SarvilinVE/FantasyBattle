@@ -42,45 +42,38 @@ namespace FantasyBattle.Play
         {
             base.Initiate();
 
-            //this.gameObject.tag = PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.GROUP_COVEN].ToString();
-
             _photonView = GetComponent<PhotonView>();
 
-            //FireAction = gameObject.AddComponent<BallCast>();
-            //FireAction.spellConteiner = ClassType.SpellClass;
-            //FireAction.CastPoint = _castPoint;
-
+            gameObject.name = $"{photonView.ViewID} {gameObject.name}";
             _slot = SlotUI.GetComponent<SlotUI>();
 
-            _characterController = GetComponentInChildren<CharacterController>();
+            _characterController = GetComponent<CharacterController>();
             _characterController ??= gameObject.AddComponent<CharacterController>();
-            _mouseLook = GetComponentInChildren<MouseLook>();
+            //_mouseLook = GetComponentInChildren<MouseLook>();
+            _mouseLook = GetComponent<MouseLook>();
             _mouseLook ??= gameObject.AddComponent<MouseLook>();
 
             _playerClass = ClassType;
-            Debug.Log($"Class: {_playerClass.UnitClass}");
-            Debug.Log($"SpellClass: {_playerClass.SpellClass.name}");
-            Debug.Log($"SpellName: {_playerClass.SpellClass.Spells[0].NameSpell}");
         }
 
         public override void Movement()
         {
-            if (!_photonView.AmOwner || !controllable)
-            {
-                return;
-            }
+            //if (!this.photonView.AmOwner || !controllable)
+            //{
+            //    return;
+            //}
 
-            if (_photonView.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
-            {
-                return;
-            }
+            //if (this.photonView.CreatorActorNr != PhotonNetwork.LocalPlayer.ActorNumber)
+            //{
+            //    return;
+            //}
 
             if (_mouseLook != null && _mouseLook.PlayerCamera != null)
             {
-                _mouseLook.PlayerCamera.enabled = _photonView.IsMine;
+                _mouseLook.PlayerCamera.enabled = this.photonView.IsMine;
             }
 
-            if (_photonView.IsMine)
+            if (this.photonView.IsMine)
             {
 
                 var moveX = Input.GetAxis("Horizontal") * _movingSpeed;
@@ -97,12 +90,13 @@ namespace FantasyBattle.Play
                 _characterController.Move(movement);
                 _mouseLook.Rotation();
 
-                UpdateUI();
+                //UpdateUI();
+                photonView.RPC("UpdateUI", RpcTarget.AllViaServer);
 
                 if (Input.GetMouseButtonDown(0))
                 {
                     //Fire();
-                    _photonView.RPC("Fire", RpcTarget.AllViaServer, _castPoint.position, _castPoint.rotation);
+                    this.photonView.RPC("Fire", RpcTarget.AllViaServer, _castPoint.position, _castPoint.rotation);
                 }
             }
         }
@@ -110,15 +104,19 @@ namespace FantasyBattle.Play
         [PunRPC]
         public void Fire(Vector3 position, Quaternion rotation, PhotonMessageInfo info)
         {
-            GameObject fireball;
-            fireball = Instantiate(_playerClass.SpellClass.Spells[0].SpellPrefab, position, Quaternion.identity);
-            fireball.GetComponent<Fireball>().Init(_photonView.Owner, (rotation * Vector3.forward), 5);
-            Mana -= (int)_playerClass.SpellClass.Spells[0].CostMP;
+            if (Mana - (int)_playerClass.SpellClass.Spells[0].CostMP >= 0)
+            {
+                GameObject fireball;
+                fireball = Instantiate(_playerClass.SpellClass.Spells[0].SpellPrefab, position, Quaternion.identity);
+                fireball.GetComponent<Fireball>().Init(_photonView.Owner, (rotation * Vector3.forward), 5);
+                Mana -= (int)_playerClass.SpellClass.Spells[0].CostMP;
+            }
         }
 
+        [PunRPC]
         private void UpdateUI()
         {
-            if (_photonView.IsMine)
+            if (this.photonView.IsMine)
             {
                 _slot.BarHP.value = Health;
                 _slot.BarMP.value = Mana;

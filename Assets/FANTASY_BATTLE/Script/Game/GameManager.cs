@@ -144,6 +144,7 @@ namespace FantasyBattle.Battle
 
         #endregion
 
+
         private void StartGame()
         {
             Debug.Log("StartGame!");

@@ -1,5 +1,8 @@
 using Photon.Pun;
+using Photon.Pun.UtilityScripts;
+using Photon.Realtime;
 using UnityEngine;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 namespace FantasyBattle.Play
 {
@@ -25,6 +28,7 @@ namespace FantasyBattle.Play
 
         #endregion
 
+
         #region IPunObservable
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -41,10 +45,9 @@ namespace FantasyBattle.Play
         {
             if (controllable)
             {
-                PhotonNetwork.Instantiate(_playerPrefab[0].name, _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)].position,
-                            _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)].rotation);
-
-                return;
+                var transformPlayer = _redSpawnPoints[Random.Range(0,_redSpawnPoints.Length)];
+                PhotonNetwork.Instantiate(_playerPrefab[0].name, transformPlayer.position,
+                            transformPlayer.rotation);
             }
         }
 
@@ -56,5 +59,16 @@ namespace FantasyBattle.Play
 
         #endregion
 
+
+        #region MonoBehaviourPunCallbacks
+
+        public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+        {
+            base.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
+
+            
+        }
+
+        #endregion
     }
 }

@@ -20,4 +20,15 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Photon/PhotonUnityNetworking/Demos/DemoAsteroids/Scenes/DemoAsteroids-GameScene.unity
     guid: 98efc37d6307844488eb3e4247dde7e9
+  - enabled: 0
+    path: Assets/Photon/PhotonUnityNetworking/Demos/PunBasics-Tutorial/Scenes/PunBasics-Launcher.unity
+    guid: bff77b01b50254edbb6edeeaba5ae8b3
+  - enabled: 0
+    path: Assets/Photon/PhotonUnityNetworking/Demos/PunBasics-Tutorial/Scenes/PunBasics-Room
+      for 1.unity
+    guid: 9b8561c6e396849a5ba48c3eb9524049
+  - enabled: 0
+    path: Assets/Photon/PhotonUnityNetworking/Demos/PunBasics-Tutorial/Scenes/PunBasics-Room
+      for 2.unity
+    guid: 764428c63577f4580af4ce54ca9f4b1b
   m_configObjects: {}

@@ -217,7 +217,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _classType: {fileID: 11400000, guid: 780c46b70ef0fb8448fb8ed7a14dab93, type: 2}
-  _classConteiner: {fileID: 0}
+  _classConteiner: {fileID: 11400000, guid: 864c45eb33b494e4a8f19dcc2715da64, type: 2}
   _health: 200
   _mana: 200
   _slotUIObject: {fileID: 5618759148399692342, guid: 2156ce05f9de0ee459fab12c3ef681d9, type: 3}
@@ -264,7 +264,7 @@ MonoBehaviour:
   m_SynchronizePosition: 1
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
-  m_UseLocal: 1
+  m_UseLocal: 0
 --- !u!114 &7907010799970475167
 MonoBehaviour:
   m_ObjectHideFlags: 0
