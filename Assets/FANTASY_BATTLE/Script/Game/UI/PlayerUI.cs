@@ -13,7 +13,7 @@ namespace FantasyBattle.Play
         [SerializeField] private GameObject _slot;
         [SerializeField] private ClassConteiner _classConteiner;
 
-        private List<SlotUI> _slots = new List<SlotUI>();
+        private Dictionary<int, SlotUI> _slots = new Dictionary<int, SlotUI>();
         public Transform ParentUI { get => transform; }
 
         public void CreateSlot() 
@@ -21,12 +21,14 @@ namespace FantasyBattle.Play
             foreach (var player in PhotonNetwork.PlayerList)
             {
                 var slot = Instantiate(_slot, transform);
+                var slotPlayer = slot.GetComponent<SlotUI>();
+
                 var health = Convert.ToInt32(player.CustomProperties[LobbyStatus.CHARACTER_HP]);
                 var mana = Convert.ToInt32(player.CustomProperties[LobbyStatus.CHARACTER_MP]);
-
                 var classType = GetClass(player);
 
-                slot.GetComponent<SlotUI>().InitSlot(player.NickName, GetIconClass(classType), health, mana);
+                slotPlayer.InitSlot(player.NickName, GetIconClass(classType), health, mana);
+                _slots.Add(player.ActorNumber, slotPlayer);
             }
         }
 
@@ -37,7 +39,16 @@ namespace FantasyBattle.Play
 
         public void PlayersInfoUpdate() 
         {
+            foreach (var player in PhotonNetwork.PlayerList)
+            {
+                var health = Convert.ToInt32(player.CustomProperties[LobbyStatus.CURRENT_HP]);
+                var mana = Convert.ToInt32(player.CustomProperties[LobbyStatus.CURRENT_MP]);
 
+                if(_slots.TryGetValue(player.ActorNumber, out var slot))
+                {
+                    slot.UpdateData(health, mana);
+                }
+            }
         }
         private Class GetClass(Player player)
         {

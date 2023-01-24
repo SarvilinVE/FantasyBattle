@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Photon.Realtime;
 
 namespace FantasyBattle.Play
 {
@@ -31,8 +32,9 @@ namespace FantasyBattle.Play
             
         }
 
-        public void InitSlot(string PlayerName, Sprite icon, float hp, float mp)
+        public void InitSlot(string PlayerName, Sprite icon, int hp, int mp)
         {
+            Debug.Log($"ХП равно {hp} МП равно {mp}");
             _nameText.text = PlayerName;
             _icon.sprite = icon;
             _barHP.maxValue = hp;
@@ -41,6 +43,12 @@ namespace FantasyBattle.Play
             _barMP.value = mp;
 
             transform.gameObject.name = $"{PlayerName} slot";
+            Debug.Log($"ХП равно {_barHP.value} МП равно {_barMP.value}");
+        }
+        public void UpdateData(int hp, int mp)
+        {
+            _barHP.value = hp;
+            _barMP.value = mp;
         }
     }
 }

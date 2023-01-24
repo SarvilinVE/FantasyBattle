@@ -53,7 +53,7 @@ namespace FantasyBattle.Play
 
         public void SetupBot(GameObject botPrefab)
         {
-            PhotonNetwork.InstantiateRoomObject(botPrefab.name, _blueSpawnPoints[0].position, _blueSpawnPoints[0].rotation).
+            PhotonNetwork.Instantiate(botPrefab.name, _blueSpawnPoints[0].position, _blueSpawnPoints[0].rotation).
                 GetComponent<BotCharacter>().Coven = LobbyStatus.BLUE_COVEN;
         }
 

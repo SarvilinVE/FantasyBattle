@@ -33,6 +33,7 @@ namespace FantasyBattle.Battle
         private PlayerManager _playerManager;
 
         private bool _isStart = false;
+        private int _countBots;
 
         #region UNITY
 
@@ -48,6 +49,8 @@ namespace FantasyBattle.Battle
                 {LobbyStatus.PLAYER_LOADED_LEVEL, true}
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
+
+            _countBots = 0;
         }
         public override void OnEnable()
         {
@@ -66,7 +69,11 @@ namespace FantasyBattle.Battle
             {
                 yield return new WaitForSeconds(Random.Range(LobbyStatus.ASTEROIDS_MIN_SPAWN_TIME, LobbyStatus.ASTEROIDS_MAX_SPAWN_TIME));
 
-                _playerManager.SetupBot(_botPrefabs[0]);
+                if (_countBots + 1 <= 3)
+                {
+                    _playerManager.SetupBot(_botPrefabs[0]);
+                    _countBots++;
+                }
             }
         }
 
@@ -119,7 +126,7 @@ namespace FantasyBattle.Battle
             }
             if(_isStart = true && _gameUI.activeSelf)
             {
-                _playerSlotHolder.GetComponent<PlayerUI>().CreateSlot();
+                _playerSlotHolder.GetComponent<PlayerUI>().PlayersInfoUpdate();
             }
 
             if (!PhotonNetwork.IsMasterClient)
@@ -156,9 +163,9 @@ namespace FantasyBattle.Battle
 
         private void StartGame()
         {
-            Debug.Log("StartGame!");
-
             _isStart = true;
+
+            _playerSlotHolder.GetComponent<PlayerUI>().CreateSlot();
             // on rejoin, we have to figure out if the spaceship exists or not
             // if this is a rejoin (the ship is already network instantiated and will be setup via event) we don't need to call PN.Instantiate
 

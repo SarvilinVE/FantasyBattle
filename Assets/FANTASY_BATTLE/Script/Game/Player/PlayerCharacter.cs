@@ -2,6 +2,7 @@ using Photon.Pun;
 using UnityEngine;
 using FantasyBattle.Classes;
 using FantasyBattle.Spells;
+using ExitGames.Client.Photon;
 
 namespace FantasyBattle.Play
 {
@@ -45,7 +46,7 @@ namespace FantasyBattle.Play
             _photonView = GetComponent<PhotonView>();
 
             gameObject.name = $"{photonView.ViewID} {gameObject.name}";
-            _slot = SlotUI.GetComponent<SlotUI>();
+            //_slot = SlotUI.GetComponent<SlotUI>();
 
             _characterController = GetComponent<CharacterController>();
             _characterController ??= gameObject.AddComponent<CharacterController>();
@@ -91,12 +92,13 @@ namespace FantasyBattle.Play
                 _mouseLook.Rotation();
 
                 //UpdateUI();
-                photonView.RPC("UpdateUI", RpcTarget.AllViaServer);
+                //photonView.RPC("UpdateUI", RpcTarget.AllViaServer);
 
                 if (Input.GetMouseButtonDown(0))
                 {
                     //Fire();
                     this.photonView.RPC("Fire", RpcTarget.AllViaServer, _castPoint.position, _castPoint.rotation);
+                    photonView.RPC("UpdateUI", RpcTarget.AllViaServer);
                 }
             }
         }
@@ -118,8 +120,14 @@ namespace FantasyBattle.Play
         {
             if (this.photonView.IsMine)
             {
-                _slot.BarHP.value = Health;
-                _slot.BarMP.value = Mana;
+                //_slot.BarHP.value = Health;
+                //_slot.BarMP.value = Mana;
+                var hashTab = new Hashtable
+                {
+                    {LobbyStatus.CURRENT_HP, Health.ToString() },
+                    {LobbyStatus.CURRENT_MP, Mana.ToString() },
+                };
+                PhotonNetwork.LocalPlayer.SetCustomProperties(hashTab);
             }
         }
 
