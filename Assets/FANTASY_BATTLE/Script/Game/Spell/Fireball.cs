@@ -28,7 +28,7 @@ namespace FantasyBattle.Spells
         {
             //transform.LookAt(targetPosition);
             //OnUpdateAction += Move;
-            //_timeLife = timeLife;
+            _timeLife = timeLife;
             //StartCoroutine(LifeFireball());
             var info = new PhotonMessageInfo();
             float lag = (float)(PhotonNetwork.Time - info.SentServerTime);
@@ -38,14 +38,15 @@ namespace FantasyBattle.Spells
             _rb = GetComponent<Rigidbody>();
             _rb.velocity = transform.forward;
             //_rb.position += _rb.velocity * lag;
-            Destroy(gameObject, timeLife);
+            //Destroy(gameObject, timeLife);
+            StartCoroutine(LifeFireball());
 
         }
-        //IEnumerator LifeFireball()
-        //{
-        //    yield return new WaitForSecondsRealtime(_timeLife);
-        //    Destroy(this.gameObject);
-        //}
+        IEnumerator LifeFireball()
+        {
+            yield return new WaitForSeconds(_timeLife);
+            PhotonNetwork.Destroy(gameObject);
+        }
         //public void Move()
         //{
         //    var velocity = transform.forward * _speed;
@@ -76,7 +77,8 @@ namespace FantasyBattle.Spells
             //}
 
             //OnDestroyFireball?.Invoke(_isTarget);
-            Destroy(gameObject);
+            //Destroy(gameObject);
+            PhotonNetwork.Destroy(gameObject);
         }
     }
 }

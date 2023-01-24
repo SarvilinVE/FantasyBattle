@@ -13,11 +13,11 @@ namespace FantasyBattle.Play
         //[SerializeField] 
         //private int _health = 100;
 
-        [Range(0.5f, 10.0f)] 
-        [SerializeField] 
+        [Range(0.5f, 10.0f)]
+        [SerializeField]
         private float _movingSpeed = 8.0f;
 
-        [SerializeField] 
+        [SerializeField]
         private float _acceleration = 3.0f;
 
         [SerializeField]
@@ -107,7 +107,7 @@ namespace FantasyBattle.Play
             if (Mana - (int)_playerClass.SpellClass.Spells[0].CostMP >= 0)
             {
                 GameObject fireball;
-                fireball = Instantiate(_playerClass.SpellClass.Spells[0].SpellPrefab, position, Quaternion.identity);
+                fireball = PhotonNetwork.InstantiateRoomObject(_playerClass.SpellClass.Spells[0].SpellPrefab.name, position, Quaternion.identity);
                 fireball.GetComponent<Fireball>().Init(_photonView.Owner, (rotation * Vector3.forward), 5);
                 Mana -= (int)_playerClass.SpellClass.Spells[0].CostMP;
             }

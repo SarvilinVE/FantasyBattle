@@ -32,6 +32,8 @@ namespace FantasyBattle.Battle
         [SerializeField]
         private PlayerManager _playerManager;
 
+        private bool _isStart = false;
+
         #region UNITY
 
         private void Awake()
@@ -111,6 +113,15 @@ namespace FantasyBattle.Battle
                 return;
             }
 
+            if(_isStart == false)
+            {
+                SetActivePanel(_resultHolder.name);
+            }
+            if(_isStart = true && _gameUI.activeSelf)
+            {
+                _playerSlotHolder.GetComponent<PlayerUI>().CreateSlot();
+            }
+
             if (!PhotonNetwork.IsMasterClient)
             {
                 return;
@@ -127,8 +138,6 @@ namespace FantasyBattle.Battle
                 {
                     if (!startTimeIsSet)
                     {
-                        SetActivePanel(_resultHolder.name);
-
                         CountdownTimer.SetStartTime();
                     }
                 }
@@ -149,6 +158,7 @@ namespace FantasyBattle.Battle
         {
             Debug.Log("StartGame!");
 
+            _isStart = true;
             // on rejoin, we have to figure out if the spaceship exists or not
             // if this is a rejoin (the ship is already network instantiated and will be setup via event) we don't need to call PN.Instantiate
 

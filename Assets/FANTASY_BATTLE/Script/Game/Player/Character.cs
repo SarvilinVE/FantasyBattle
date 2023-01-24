@@ -39,16 +39,16 @@ namespace FantasyBattle.Play
         public int Mana { get => _mana; set => _mana = value; }
         protected abstract FireAction FireAction { get; set; }
 
-    protected virtual void Initiate()
+        protected virtual void Initiate()
         {
             OnUpdateAction += Movement;
-            
-            _slotUI = Instantiate(_slotUIObject, FindObjectOfType<PlayerUI>().gameObject.transform);
 
-            _health = Convert.ToInt32(PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.CHARACTER_HP]);
-            _mana = Convert.ToInt32(PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.CHARACTER_MP]);
+            //_slotUI = Instantiate(_slotUIObject, FindObjectOfType<PlayerUI>().gameObject.transform);
 
-            _slotUI.GetComponent<SlotUI>().InitSlot(PhotonNetwork.LocalPlayer.NickName, _classType._IconClass, Health, Mana);
+            //_health = Convert.ToInt32(PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.CHARACTER_HP]);
+            //_mana = Convert.ToInt32(PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.CHARACTER_MP]);
+
+            //_slotUI.GetComponent<SlotUI>().InitSlot(PhotonNetwork.LocalPlayer.NickName, _classType._IconClass, Health, Mana);
         }
 
         private void OnUpdate()
@@ -56,7 +56,7 @@ namespace FantasyBattle.Play
             OnUpdateAction?.Invoke();
         }
         public abstract void Movement();
-        
+
         void Update()
         {
             OnUpdate();
