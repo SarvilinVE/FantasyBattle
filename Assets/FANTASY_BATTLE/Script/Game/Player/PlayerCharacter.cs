@@ -98,7 +98,6 @@ namespace FantasyBattle.Play
                 {
                     //Fire();
                     this.photonView.RPC("Fire", RpcTarget.AllViaServer, _castPoint.position, _castPoint.rotation);
-                    photonView.RPC("UpdateUI", RpcTarget.AllViaServer);
                 }
             }
         }
@@ -112,10 +111,10 @@ namespace FantasyBattle.Play
                 fireball = PhotonNetwork.InstantiateRoomObject(_playerClass.SpellClass.Spells[0].SpellPrefab.name, position, Quaternion.identity);
                 fireball.GetComponent<Fireball>().Init(_photonView.Owner, (rotation * Vector3.forward), 5);
                 Mana -= (int)_playerClass.SpellClass.Spells[0].CostMP;
+                UpdateUI();
             }
         }
 
-        [PunRPC]
         private void UpdateUI()
         {
             if (this.photonView.IsMine)
@@ -143,6 +142,11 @@ namespace FantasyBattle.Play
         private void Start()
         {
             Initiate();
+        }
+
+        private void OnDestroy()
+        {
+            PhotonNetwork.Destroy(gameObject);
         }
 
         #endregion

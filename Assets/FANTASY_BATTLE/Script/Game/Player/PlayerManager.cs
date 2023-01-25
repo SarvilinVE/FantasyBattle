@@ -1,6 +1,7 @@
 using Photon.Pun;
 using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
+using System.IO;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
@@ -26,6 +27,9 @@ namespace FantasyBattle.Play
 
         public bool controllable = true;
 
+        private Vector3 _botPosition;
+        private Quaternion _botRotation;
+
         #endregion
 
 
@@ -33,7 +37,6 @@ namespace FantasyBattle.Play
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
-
         }
 
         #endregion
@@ -53,21 +56,16 @@ namespace FantasyBattle.Play
 
         public void SetupBot(GameObject botPrefab)
         {
-            PhotonNetwork.Instantiate(botPrefab.name, _blueSpawnPoints[0].position, _blueSpawnPoints[0].rotation).
+            PhotonNetwork.InstantiateRoomObject(botPrefab.name, _blueSpawnPoints[0].position, _blueSpawnPoints[0].rotation).
                 GetComponent<BotCharacter>().Coven = LobbyStatus.BLUE_COVEN;
         }
 
         #endregion
 
 
-        #region MonoBehaviourPunCallbacks
+        #region IPunObservable
 
-        public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
-        {
-            base.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
-
-            
-        }
+        
 
         #endregion
     }

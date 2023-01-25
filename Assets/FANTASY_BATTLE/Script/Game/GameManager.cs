@@ -40,6 +40,7 @@ namespace FantasyBattle.Battle
         private void Awake()
         {
             Instance = this;
+            PhotonNetwork.AutomaticallySyncScene = true;
         }
 
         private void Start()
