@@ -15,5 +15,9 @@ MonoBehaviour:
   _nameSpell: FrostBall
   _iconSpell: {fileID: 21300000, guid: ec724a8048197144f8ec239ea06782c2, type: 3}
   _unitClass: 2
-  _unitLevels: 0
+  _unitLevels: 1
+  _costMP: 0
   _additionalDamage: 3
+  _durationTime: 2
+  _spellPrefab: {fileID: 0}
+  _timeLife: 0

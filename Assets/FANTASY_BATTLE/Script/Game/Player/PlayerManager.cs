@@ -27,9 +27,6 @@ namespace FantasyBattle.Play
 
         public bool controllable = true;
 
-        private Vector3 _botPosition;
-        private Quaternion _botRotation;
-
         #endregion
 
 
@@ -57,15 +54,8 @@ namespace FantasyBattle.Play
         public void SetupBot(GameObject botPrefab)
         {
             PhotonNetwork.InstantiateRoomObject(botPrefab.name, _blueSpawnPoints[0].position, _blueSpawnPoints[0].rotation).
-                GetComponent<BotCharacter>().Coven = LobbyStatus.BLUE_COVEN;
+                GetComponent<BotCharacter>().Coven = LobbyStatus.ENEMY_TAG;
         }
-
-        #endregion
-
-
-        #region IPunObservable
-
-        
 
         #endregion
     }

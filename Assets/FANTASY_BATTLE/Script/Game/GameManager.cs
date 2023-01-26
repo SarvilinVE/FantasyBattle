@@ -68,7 +68,7 @@ namespace FantasyBattle.Battle
         {
             while (true)
             {
-                yield return new WaitForSeconds(Random.Range(LobbyStatus.ASTEROIDS_MIN_SPAWN_TIME, LobbyStatus.ASTEROIDS_MAX_SPAWN_TIME));
+                yield return new WaitForSeconds(Random.Range(LobbyStatus.ENEMY_SPAWN_TIME, LobbyStatus.ENEMY_MAX_SPAWN_TIME));
 
                 if (_countBots + 1 <= 3)
                 {

@@ -36,7 +36,7 @@ namespace FantasyBattle.Spells
             transform.forward = targetPosition;
 
             _rb = GetComponent<Rigidbody>();
-            _rb.velocity = transform.forward;
+            _rb.velocity = transform.forward * _speed;
             //_rb.position += _rb.velocity * lag;
             //Destroy(gameObject, timeLife);
             StartCoroutine(LifeFireball());

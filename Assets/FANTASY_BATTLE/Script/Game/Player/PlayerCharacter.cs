@@ -3,16 +3,18 @@ using UnityEngine;
 using FantasyBattle.Classes;
 using FantasyBattle.Spells;
 using ExitGames.Client.Photon;
+using FantasyBattle.UI;
+using System;
 
 namespace FantasyBattle.Play
 {
     public sealed class PlayerCharacter : Character
     {
         #region Fields
+        public event Action<bool> onFire;
 
-        //[Range(0, 100)] 
-        //[SerializeField] 
-        //private int _health = 100;
+        
+        private SkillUI _skillUi;
 
         [Range(0.5f, 10.0f)]
         [SerializeField]
@@ -30,6 +32,7 @@ namespace FantasyBattle.Play
         private PhotonView _photonView;
         private SlotUI _slot;
         private Class _playerClass;
+        private int _playerLevel;
 
         public bool controllable = true;
 
@@ -55,6 +58,14 @@ namespace FantasyBattle.Play
             _mouseLook ??= gameObject.AddComponent<MouseLook>();
 
             _playerClass = ClassType;
+
+            if(photonView.IsMine)
+            {
+                _skillUi = FindObjectOfType<SkillUI>();
+
+                _playerLevel = Convert.ToInt32(PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.CHARACTER_LEVEL]);
+                _skillUi.SetData(_playerClass.SpellClass, _playerLevel);
+            }
         }
 
         public override void Movement()
@@ -112,6 +123,7 @@ namespace FantasyBattle.Play
                 fireball.GetComponent<Fireball>().Init(_photonView.Owner, (rotation * Vector3.forward), 5);
                 Mana -= (int)_playerClass.SpellClass.Spells[0].CostMP;
                 UpdateUI();
+                _skillUi.RollbackSkill();
             }
         }
 
