@@ -1,4 +1,5 @@
 using FantasyBattle.Spells;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -20,6 +21,7 @@ namespace FantasyBattle.UI
 
         private float _currentDurationTime;
         private bool _isActive;
+        private bool _isBlockSkill;
 
         #endregion
 
@@ -31,6 +33,7 @@ namespace FantasyBattle.UI
         public Image PanelNumberSkill { get => _panelNumberSkill; set => _panelNumberSkill = value; }
         public TMP_Text NumberSkill { get => _numberSkill; set => _numberSkill = value; }
         public bool IsActive { get => _isActive; set => _isActive = value; }
+        public bool IsBlockSkill { get => _isBlockSkill; set => _isBlockSkill = value; }
 
         #endregion
 
@@ -41,7 +44,6 @@ namespace FantasyBattle.UI
         {
             Debug.Log($"ACTIVATE SKILL SLOT {spell.name} NUMBER SKILL {numberSkill}");
             _iconSkill.sprite = spell.IconSpell;
-            _durationSkill.fillAmount = spell.DurationTime;
             _currentDurationTime = spell.DurationTime;
             _numberSkill.text = numberSkill.ToString();
             if(numberSkill == 1)
@@ -57,24 +59,41 @@ namespace FantasyBattle.UI
         }
         public void Rollback()
         {
-            DurationSkill.gameObject.SetActive(true);
-            _durationSkill.fillAmount = _currentDurationTime;
+            if (_isActive)
+            {
+                DurationSkill.gameObject.SetActive(true);
 
-            StartCoroutine(RollbackSkill());
-
-            //_durationSkill.fillAmount = _currentDurationTime;
-            //_durationSkill.gameObject.SetActive(false);
+                StartCoroutine(RollbackSkill());
+            }
         }
         public IEnumerator RollbackSkill()
         {
-            if (_durationSkill.fillAmount > 0)
-            {
-                _durationSkill.fillAmount -= Time.deltaTime;
+            _isBlockSkill = true;
 
-                yield return new WaitForSeconds(_currentDurationTime);
+            var timeLeft = _currentDurationTime;
+            while (timeLeft > 0)
+            {
+                timeLeft -= Time.deltaTime;
+                var normalizedValue = Mathf.Clamp(timeLeft / _currentDurationTime, 0.0f, 1.0f);
+                _durationSkill.fillAmount = normalizedValue;
+                yield return null;
             }
-            _durationSkill.fillAmount = _currentDurationTime;
+
+            _isBlockSkill= false;
             _durationSkill.gameObject.SetActive(false);
+        }
+        public void SetActive(bool isSetActive)
+        {
+            if (isSetActive)
+            {
+                _panelNumberSkill.color = _activeSkill;
+                _isActive = true;
+            }
+            else
+            {
+                _panelNumberSkill.color = _inactiveSkill;
+                _isActive = false;
+            }
         }
 
         #endregion

@@ -1,6 +1,7 @@
 using FantasyBattle.Spells;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 
@@ -12,7 +13,10 @@ namespace FantasyBattle.UI
 
         [SerializeField] private GameObject _skillSlotUi;
         
-        private List<SkillSlotUI> _slots;
+        private Dictionary<Spell, SkillSlotUI> _slots;
+        private bool _isBlockSkill;
+
+        public bool IsBlockSkill { get => _isBlockSkill; protected set => _isBlockSkill = value; }
 
         #endregion
 
@@ -21,7 +25,12 @@ namespace FantasyBattle.UI
 
         private void Start()
         {
-            _slots= new List<SkillSlotUI>();
+            _slots = new Dictionary<Spell, SkillSlotUI>();
+        }
+
+        private void OnDestroy()
+        {
+            _slots.Clear();
         }
 
         #endregion
@@ -43,17 +52,45 @@ namespace FantasyBattle.UI
                     var slot = Instantiate(_skillSlotUi, parentTransform);
                     var skillSlotUi = slot.GetComponent<SkillSlotUI>();
                     skillSlotUi.Init(spell, numberSkill);
-                    _slots.Add(skillSlotUi);
+                    _slots.Add(spell, skillSlotUi);
                 }
             }
         }
+
         public void RollbackSkill()
         {
             foreach(var skill in _slots) 
             {
-                if(skill.IsActive)
+                skill.Value.Rollback();
+            }
+        }
+        public Spell GetActiveSpell()
+        {
+            foreach (var skill in _slots)
+            {
+                if (skill.Value.IsActive)
                 {
-                    skill.Rollback();
+                    _isBlockSkill = skill.Value.IsBlockSkill;
+                    return skill.Key;
+                }
+            }
+
+            return _slots.Keys.First();
+        }
+        public void ActiveSkill(string key, int numKey)
+        {
+            if(numKey <= _slots.Count && numKey != 0)
+            {
+                foreach(var skill in _slots)
+                {
+                    if(skill.Value.NumberSkill.text == key)
+                    {
+                        skill.Value.SetActive(true);
+                    }
+                    else
+                    {
+                        skill.Value.SetActive(false);
+                    }
                 }
             }
         }

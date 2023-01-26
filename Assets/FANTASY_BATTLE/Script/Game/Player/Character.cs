@@ -16,13 +16,10 @@ namespace FantasyBattle.Play
         [SerializeField]
         private ClassConteiner _classConteiner;
 
-        [Range(0, 200)]
-        [SerializeField]
-        private int _health = 200;
-
-        [Range(0, 200)]
-        [SerializeField]
-        private int _mana = 200;
+        private int _health;
+        private int _MaxHealth;
+        private int _mana;
+        private int _MaxMana;
 
         [Space]
         [Tooltip("CharacterUI")]
@@ -36,7 +33,9 @@ namespace FantasyBattle.Play
         public ClassConteiner ClassConteiner { get => _classConteiner; }
         public GameObject SlotUI { get => _slotUI; set => _slotUI = value; }
         public int Health { get => _health; set => _health = value; }
+        public int MaxHealth { get => _MaxHealth; set => _MaxHealth = value; }
         public int Mana { get => _mana; set => _mana = value; }
+        public int MaxMana { get => _MaxMana; set => _MaxMana = value; }
         protected abstract FireAction FireAction { get; set; }
 
         protected virtual void Initiate()
@@ -47,6 +46,9 @@ namespace FantasyBattle.Play
 
             _health = Convert.ToInt32(PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.CHARACTER_HP]);
             _mana = Convert.ToInt32(PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.CHARACTER_MP]);
+
+            _MaxHealth = _health;
+            _MaxMana = _mana;    
 
             //_slotUI.GetComponent<SlotUI>().InitSlot(PhotonNetwork.LocalPlayer.NickName, _classType._IconClass, Health, Mana);
         }

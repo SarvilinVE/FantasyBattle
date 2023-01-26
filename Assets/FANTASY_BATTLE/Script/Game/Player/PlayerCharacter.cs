@@ -5,6 +5,8 @@ using FantasyBattle.Spells;
 using ExitGames.Client.Photon;
 using FantasyBattle.UI;
 using System;
+using System.Collections;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 namespace FantasyBattle.Play
 {
@@ -102,12 +104,15 @@ namespace FantasyBattle.Play
                 _characterController.Move(movement);
                 _mouseLook.Rotation();
 
-                //UpdateUI();
-                //photonView.RPC("UpdateUI", RpcTarget.AllViaServer);
+                RestoreMana();
+
+                if(int.TryParse(Input.inputString,out int numKey))
+                {
+                    _skillUi.ActiveSkill(Input.inputString, numKey);
+                }
 
                 if (Input.GetMouseButtonDown(0))
                 {
-                    //Fire();
                     this.photonView.RPC("Fire", RpcTarget.AllViaServer, _castPoint.position, _castPoint.rotation);
                 }
             }
@@ -116,14 +121,22 @@ namespace FantasyBattle.Play
         [PunRPC]
         public void Fire(Vector3 position, Quaternion rotation, PhotonMessageInfo info)
         {
-            if (Mana - (int)_playerClass.SpellClass.Spells[0].CostMP >= 0)
+            var spell = _skillUi.GetActiveSpell();
+
+            if (_skillUi.IsBlockSkill)
+            {
+                return;
+            }
+
+            if (Mana - (int)spell.CostMP >= 0)
             {
                 GameObject fireball;
-                fireball = PhotonNetwork.InstantiateRoomObject(_playerClass.SpellClass.Spells[0].SpellPrefab.name, position, Quaternion.identity);
-                fireball.GetComponent<Fireball>().Init(_photonView.Owner, (rotation * Vector3.forward), 5);
-                Mana -= (int)_playerClass.SpellClass.Spells[0].CostMP;
+                fireball = PhotonNetwork.InstantiateRoomObject(spell.SpellPrefab.name, position, Quaternion.identity);
+                fireball.GetComponent<Fireball>().Init(_photonView.Owner, (rotation * Vector3.forward), spell.TimeLife);
+                Mana -= (int)spell.CostMP;
                 UpdateUI();
                 _skillUi.RollbackSkill();
+
             }
         }
 
@@ -131,8 +144,6 @@ namespace FantasyBattle.Play
         {
             if (this.photonView.IsMine)
             {
-                //_slot.BarHP.value = Health;
-                //_slot.BarMP.value = Mana;
                 var hashTab = new Hashtable
                 {
                     {LobbyStatus.CURRENT_HP, Health.ToString() },
@@ -144,7 +155,10 @@ namespace FantasyBattle.Play
 
         private void RestoreMana()
         {
-
+            if (Mana < MaxMana)
+            {
+                StartCoroutine(RestoreMP());
+            }
         }
 
         #endregion
@@ -176,6 +190,21 @@ namespace FantasyBattle.Play
             //    // Network player, receive data
             //    this.Health = (int)stream.ReceiveNext();
             //}
+        }
+
+        #endregion
+
+
+        #region Corutines
+
+        public IEnumerator RestoreMP()
+        {
+            while(Mana < MaxMana)
+            {
+                yield return new WaitForSeconds(ClassType.SpeedRestoreMp);
+                Mana++;
+                UpdateUI();
+            }
         }
 
         #endregion

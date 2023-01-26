@@ -25,6 +25,9 @@ namespace FantasyBattle.Classes
         private float _baseMp;
 
         [SerializeField]
+        private float _speedRestoreMp;
+
+        [SerializeField]
         private float _baseDamage;
 
         [SerializeField]
@@ -38,6 +41,7 @@ namespace FantasyBattle.Classes
         public Sprite _IconClass => _iconClass;
         public float BaseHp => _baseHp;
         public float BaseMp => _baseMp;
+        public float SpeedRestoreMp => _speedRestoreMp;
         public float BaseDamage => _baseDamage;
         public bool IsLocked => _isLocked;
         public SpellConteiner SpellClass => _spellClass;

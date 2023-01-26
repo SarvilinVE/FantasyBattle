@@ -173,8 +173,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _classType: {fileID: 11400000, guid: 780c46b70ef0fb8448fb8ed7a14dab93, type: 2}
   _classConteiner: {fileID: 11400000, guid: 864c45eb33b494e4a8f19dcc2715da64, type: 2}
-  _health: 200
-  _mana: 200
   _slotUIObject: {fileID: 5618759148399692342, guid: 2156ce05f9de0ee459fab12c3ef681d9, type: 3}
   _speed: 3
   _obstacleRange: 5
