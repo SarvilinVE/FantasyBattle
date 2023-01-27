@@ -37,10 +37,12 @@ namespace FantasyBattle.Play
         private int _playerLevel;
 
         public bool controllable = true;
+        private bool _isRestoringMp = false;
 
         protected override FireAction FireAction { get; set; }
 
         #endregion
+
 
         #region Methods
 
@@ -157,11 +159,16 @@ namespace FantasyBattle.Play
         {
             if (Mana < MaxMana)
             {
+                if(_isRestoringMp == true)
+                {
+                    return;
+                }
                 StartCoroutine(RestoreMP());
             }
         }
 
         #endregion
+
 
         #region UnityMethods
 
@@ -172,10 +179,12 @@ namespace FantasyBattle.Play
 
         private void OnDestroy()
         {
+            StopAllCoroutines();
             PhotonNetwork.Destroy(gameObject);
         }
 
         #endregion
+
 
         #region IPunObservable realization
         public override void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -199,11 +208,23 @@ namespace FantasyBattle.Play
 
         public IEnumerator RestoreMP()
         {
-            while(Mana < MaxMana)
+            _isRestoringMp = true;
+
+            while (true)
             {
-                yield return new WaitForSeconds(ClassType.SpeedRestoreMp);
-                Mana++;
-                UpdateUI();
+                if (Mana + ClassType.SpeedRestoreMp < MaxMana)
+                {
+                    Mana += (int)ClassType.SpeedRestoreMp;
+                    UpdateUI();
+                }
+                else
+                {
+                    Mana = MaxMana;
+                    _isRestoringMp = false;
+                    UpdateUI();
+                    yield break;
+                }
+                yield return new WaitForSeconds(1.0f);
             }
         }
 
