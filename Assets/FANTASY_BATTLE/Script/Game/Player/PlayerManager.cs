@@ -1,9 +1,9 @@
+using FantasyBattle.Abstractions;
+using FantasyBattle.Enemy;
+using FantasyBattle.Fabrica;
 using Photon.Pun;
-using Photon.Pun.UtilityScripts;
-using Photon.Realtime;
-using System.IO;
+using System.Collections.Generic;
 using UnityEngine;
-using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 namespace FantasyBattle.Play
 {
@@ -25,7 +25,12 @@ namespace FantasyBattle.Play
         [SerializeField]
         private Transform[] _blueSpawnPoints;
 
+        [SerializeField]
+        private int _enemyCount;
+
         public bool controllable = true;
+        private List<IEnemy> _enemys = new List<IEnemy>();
+
 
         #endregion
 
@@ -53,10 +58,38 @@ namespace FantasyBattle.Play
 
         public void SetupBot(GameObject botPrefab)
         {
-            PhotonNetwork.InstantiateRoomObject(botPrefab.name, _blueSpawnPoints[0].position, _blueSpawnPoints[0].rotation).
-                GetComponent<BotCharacter>().Coven = LobbyStatus.ENEMY_TAG;
+            //PhotonNetwork.InstantiateRoomObject(botPrefab.name, _blueSpawnPoints[0].position, _blueSpawnPoints[0].rotation).
+            //    GetComponent<BotCharacter>().Coven = LobbyStatus.ENEMY_TAG;
+            if (_enemyCount <= _enemys.Count)
+            {
+
+                EnemyData enemyData = new EnemyData
+                {
+                    PrefabName = botPrefab.name,
+                    Hp = 200,
+                    StartPostion = _blueSpawnPoints[0].position,
+                    StratRotation = _blueSpawnPoints[0].rotation
+                };
+
+                UnitCreator enemyCreator = new EnemyMagCreator();
+                _enemys.Add(enemyCreator.Create(enemyData));
+            }
         }
 
         #endregion
+
+
+        #region UnityMethods
+
+        private void Update()
+        {
+            foreach(var enemy in _enemys)
+            {
+                enemy.Movement();
+            }
+        }
+
+        #endregion
+
     }
 }

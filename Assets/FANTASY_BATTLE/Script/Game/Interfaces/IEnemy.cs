@@ -1,3 +1,5 @@
+using FantasyBattle.Enemy;
+
 namespace FantasyBattle.Abstractions
 {
     public interface IEnemy
@@ -13,7 +15,7 @@ namespace FantasyBattle.Abstractions
 
         #region Methods
 
-        public void CreateEnemy();
+        public void CreateEnemy(EnemyData enemyData);
         public void Movement();
         public void Attack();
 

@@ -19,12 +19,13 @@ namespace FantasyBattle.Spells
         private Rigidbody _rb;
         private bool _isTarget = false;
         private float _timeLife;
+        private int _damage;
 
         private void Start()
         {
             
         }
-        public void Init(Player owner, Vector3 targetPosition, float timeLife)
+        public void Init(Player owner, Vector3 targetPosition, float timeLife, int damage)
         {
             //transform.LookAt(targetPosition);
             //OnUpdateAction += Move;
@@ -40,6 +41,7 @@ namespace FantasyBattle.Spells
             //_rb.position += _rb.velocity * lag;
             //Destroy(gameObject, timeLife);
             StartCoroutine(LifeFireball());
+            _damage = damage;
 
         }
         IEnumerator LifeFireball()
@@ -78,6 +80,11 @@ namespace FantasyBattle.Spells
 
             //OnDestroyFireball?.Invoke(_isTarget);
             //Destroy(gameObject);
+            if(collision.gameObject.TryGetComponent<EnemyView>(out var enemyView))
+            {
+                enemyView.TakeDamage(_damage);
+            }
+
             PhotonNetwork.Destroy(gameObject);
         }
     }

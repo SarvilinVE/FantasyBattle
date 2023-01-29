@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3073840003712661982}
   - component: {fileID: 3073840003712661983}
   - component: {fileID: 3073840003712661968}
-  - component: {fileID: 8325937507794923693}
+  - component: {fileID: 2643139706784328811}
   m_Layer: 0
   m_Name: BotPrefab
   m_TagString: Bot
@@ -121,7 +121,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 3073840003712661983}
-  - {fileID: 8325937507794923693}
+  - {fileID: 2643139706784328811}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -159,7 +159,7 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8325937507794923693
+--- !u!114 &2643139706784328811
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -171,11 +171,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18e68e491526f6b4aa4dd6b702b95bc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _classType: {fileID: 11400000, guid: 780c46b70ef0fb8448fb8ed7a14dab93, type: 2}
-  _classConteiner: {fileID: 11400000, guid: 864c45eb33b494e4a8f19dcc2715da64, type: 2}
-  _slotUIObject: {fileID: 5618759148399692342, guid: 2156ce05f9de0ee459fab12c3ef681d9, type: 3}
-  _speed: 3
-  _obstacleRange: 5
+  _speed: 2
+  _obstacleRange: 0.5
   _fireball: {fileID: 2379737869392944503, guid: 14428f32938f99b49a8bce81b6c91d01, type: 3}
 --- !u!1 &3073840004418613951
 GameObject:

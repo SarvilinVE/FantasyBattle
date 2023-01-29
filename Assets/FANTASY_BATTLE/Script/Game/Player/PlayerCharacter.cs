@@ -134,7 +134,7 @@ namespace FantasyBattle.Play
             {
                 GameObject fireball;
                 fireball = PhotonNetwork.InstantiateRoomObject(spell.SpellPrefab.name, position, Quaternion.identity);
-                fireball.GetComponent<Fireball>().Init(_photonView.Owner, (rotation * Vector3.forward), spell.TimeLife);
+                fireball.GetComponent<Fireball>().Init(_photonView.Owner, (rotation * Vector3.forward), spell.TimeLife, (int)(spell.AdditionalDamage + _playerClass.BaseDamage));
                 Mana -= (int)spell.CostMP;
                 UpdateUI();
                 _skillUi.RollbackSkill();
