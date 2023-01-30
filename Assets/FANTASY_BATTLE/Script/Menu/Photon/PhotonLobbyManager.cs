@@ -227,7 +227,6 @@ namespace FantasyBattle.Menu
         {
             if (PhotonNetwork.LocalPlayer.ActorNumber == newMasterClient.ActorNumber)
             {
-                
                 StartGameButton.gameObject.SetActive(CheckPlayersReady());
             }
         }

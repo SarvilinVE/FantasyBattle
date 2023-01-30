@@ -1,5 +1,7 @@
 using FantasyBattle.Play;
 using Photon.Pun;
+using Photon.Pun.UtilityScripts;
+using Photon.Realtime;
 using UnityEngine;
 
 namespace FantasyBattle.Enemy
@@ -40,15 +42,24 @@ namespace FantasyBattle.Enemy
             MaxHp = CurrentHp;
 
             _enemyView.CurrentHp = CurrentHp;
+            _enemyView.MaxHp = MaxHp;
             _enemyView.OnTakeDamage += OnTakeDamage;
         }
 
-        private void OnTakeDamage(int damage)
+        private void OnTakeDamage(int damage, Player owner)
         {
             if(CurrentHp - damage > 0)
             {
                 CurrentHp -= damage;
                 _enemyView.CurrentHp = CurrentHp;
+                owner.AddScore(damage);
+                Debug.Log($"{owner.ActorNumber} give {owner.GetScore()}");
+            }
+            else
+            {
+                CurrentHp = 0;
+                _enemyView.CurrentHp = CurrentHp;
+
             }
         }
 

@@ -7,6 +7,7 @@ using FantasyBattle.UI;
 using System;
 using System.Collections;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using FantasyBattle.Enums;
 
 namespace FantasyBattle.Play
 {
@@ -27,6 +28,9 @@ namespace FantasyBattle.Play
 
         [SerializeField]
         private Transform _castPoint;
+
+        [SerializeField]
+        private UnitInfoUI _unitInfoUi;
 
         private const float GRAVITY = -9.8f;
         private CharacterController _characterController;
@@ -49,6 +53,9 @@ namespace FantasyBattle.Play
         protected override void Initiate()
         {
             base.Initiate();
+
+            _unitInfoUi = FindObjectOfType<UnitInfoUI>();
+            _unitInfoUi.gameObject.SetActive(false);
 
             _photonView = GetComponent<PhotonView>();
 
@@ -86,10 +93,10 @@ namespace FantasyBattle.Play
 
             if (_mouseLook != null && _mouseLook.PlayerCamera != null)
             {
-                _mouseLook.PlayerCamera.enabled = this.photonView.IsMine;
+                _mouseLook.PlayerCamera.enabled = photonView.IsMine;
             }
 
-            if (this.photonView.IsMine)
+            if (photonView.IsMine)
             {
 
                 var moveX = Input.GetAxis("Horizontal") * _movingSpeed;
@@ -107,6 +114,7 @@ namespace FantasyBattle.Play
                 _mouseLook.Rotation();
 
                 RestoreMana();
+                SearchUnit();
 
                 if(int.TryParse(Input.inputString,out int numKey))
                 {
@@ -115,7 +123,7 @@ namespace FantasyBattle.Play
 
                 if (Input.GetMouseButtonDown(0))
                 {
-                    this.photonView.RPC("Fire", RpcTarget.AllViaServer, _castPoint.position, _castPoint.rotation);
+                    photonView.RPC("Fire", RpcTarget.AllViaServer, _castPoint.position, _castPoint.rotation);
                 }
             }
         }
@@ -164,6 +172,29 @@ namespace FantasyBattle.Play
                     return;
                 }
                 StartCoroutine(RestoreMP());
+            }
+        }
+        private void SearchUnit()
+        {
+            Ray ray = new Ray(_castPoint.position, transform.forward);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 200.0f))
+            {
+                var hitObject = hit.transform.gameObject;
+
+                if (hitObject.TryGetComponent<PlayerCharacter>(out var player))
+                {
+                    _unitInfoUi.SetData(player.name, player.Health, player.MaxHealth, true);
+                }
+
+                if(hitObject.TryGetComponent<EnemyView>(out var enemy))
+                {
+                    _unitInfoUi.SetData(enemy.name, enemy.CurrentHp, enemy.MaxHp, true);
+                }
+                else
+                {
+                    _unitInfoUi.gameObject.SetActive(false);
+                }
             }
         }
 

@@ -179,7 +179,7 @@ namespace FantasyBattle.Battle
 
             //PhotonNetwork.Instantiate("Spaceship", position, rotation, 0);      // avoid this call on rejoin (ship was network instantiated before)
 
-            _playerManager.SetupPlayer(_playerSlotHolder);
+            _playerManager.SetupPlayer(PhotonNetwork.LocalPlayer);
 
             if (PhotonNetwork.IsMasterClient)
             {
@@ -273,12 +273,14 @@ namespace FantasyBattle.Battle
         {
             if (Input.GetKeyDown(KeyCode.Tab))
             {
-                SetActivePanel(_resultHolder.name);
+                _resultHolder.SetActive(true);
+                //SetActivePanel(_resultHolder.name);
             }
 
             if (Input.GetKeyUp(KeyCode.Tab))
             {
-                SetActivePanel(_gameUI.name);
+                _resultHolder.SetActive(false);
+                //SetActivePanel(_gameUI.name);
             }
         }
     }

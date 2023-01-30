@@ -1,6 +1,7 @@
 using FantasyBattle.Enums;
 using FantasyBattle.Spells;
 using Photon.Pun;
+using Photon.Realtime;
 using PlayFab.ClientModels;
 using System;
 using UnityEngine;
@@ -13,7 +14,7 @@ namespace FantasyBattle.Play
 
         #region Fields
 
-        public event Action<int> OnTakeDamage;
+        public event Action<int, Player> OnTakeDamage;
 
         [SerializeField]
         private float _speed;
@@ -32,6 +33,8 @@ namespace FantasyBattle.Play
         private Vector3 _currentVelocity = Vector3.zero;
         private EnemyState _enemyState;
         private int _currentHp;
+        private int _correctionHp;
+        private int _maxHp;
 
         #endregion
 
@@ -42,6 +45,11 @@ namespace FantasyBattle.Play
         {
             get { return _currentHp; }
             set { _currentHp = value; }
+        }
+        public int MaxHp
+        {
+            get { return _maxHp; }
+            set { _maxHp = value; }
         }
 
         #endregion
@@ -90,6 +98,7 @@ namespace FantasyBattle.Play
             {
                 transform.position = Vector3.SmoothDamp(transform.position, _botPostion, ref _currentVelocity, _speed * Time.deltaTime);
                 transform.rotation = Quaternion.Lerp(transform.rotation, _botRotation, 0);
+                _currentHp = _correctionHp;
             }
 
             Debug.Log($"{gameObject.name} current HP {_currentHp}");
@@ -103,9 +112,9 @@ namespace FantasyBattle.Play
             //fireball.GetComponent<Fireball>().Init(_photonView.Owner, hitObject.transform.position, 5);
         }
 
-        public void TakeDamage(int takeDamage)
+        public void TakeDamage(int takeDamage, Player owner)
         {
-            OnTakeDamage?.Invoke(takeDamage);
+            OnTakeDamage?.Invoke(takeDamage, owner);
         }
 
         #endregion
@@ -125,7 +134,7 @@ namespace FantasyBattle.Play
             {
                 _botPostion = (Vector3)stream.ReceiveNext();
                 _botRotation= (Quaternion)stream.ReceiveNext();
-                _currentHp = (int)stream.ReceiveNext();
+                _correctionHp = (int)stream.ReceiveNext();
             }
         }
 

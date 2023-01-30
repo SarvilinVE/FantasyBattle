@@ -20,6 +20,7 @@ namespace FantasyBattle.Spells
         private bool _isTarget = false;
         private float _timeLife;
         private int _damage;
+        private Player _ownerPlayer;
 
         private void Start()
         {
@@ -30,6 +31,7 @@ namespace FantasyBattle.Spells
             //transform.LookAt(targetPosition);
             //OnUpdateAction += Move;
             _timeLife = timeLife;
+            _ownerPlayer = owner;
             //StartCoroutine(LifeFireball());
             var info = new PhotonMessageInfo();
             float lag = (float)(PhotonNetwork.Time - info.SentServerTime);
@@ -82,7 +84,7 @@ namespace FantasyBattle.Spells
             //Destroy(gameObject);
             if(collision.gameObject.TryGetComponent<EnemyView>(out var enemyView))
             {
-                enemyView.TakeDamage(_damage);
+                enemyView.TakeDamage(_damage, _ownerPlayer);
             }
 
             PhotonNetwork.Destroy(gameObject);
