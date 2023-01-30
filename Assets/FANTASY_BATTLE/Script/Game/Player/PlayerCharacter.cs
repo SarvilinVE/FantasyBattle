@@ -16,7 +16,7 @@ namespace FantasyBattle.Play
         #region Fields
         public event Action<bool> onFire;
 
-        
+
         private SkillUI _skillUi;
 
         [Range(0.5f, 10.0f)]
@@ -43,8 +43,6 @@ namespace FantasyBattle.Play
         public bool controllable = true;
         private bool _isRestoringMp = false;
 
-        protected override FireAction FireAction { get; set; }
-
         #endregion
 
 
@@ -52,30 +50,35 @@ namespace FantasyBattle.Play
 
         protected override void Initiate()
         {
-            base.Initiate();
-
-            _unitInfoUi = FindObjectOfType<UnitInfoUI>();
-            _unitInfoUi.gameObject.SetActive(false);
-
-            _photonView = GetComponent<PhotonView>();
-
-            gameObject.name = $"{photonView.ViewID} {gameObject.name}";
-            //_slot = SlotUI.GetComponent<SlotUI>();
-
-            _characterController = GetComponent<CharacterController>();
-            _characterController ??= gameObject.AddComponent<CharacterController>();
-            //_mouseLook = GetComponentInChildren<MouseLook>();
-            _mouseLook = GetComponent<MouseLook>();
-            _mouseLook ??= gameObject.AddComponent<MouseLook>();
-
-            _playerClass = ClassType;
-
-            if(photonView.IsMine)
+            if (photonView.IsMine)
             {
+                base.Initiate();
+
+                _unitInfoUi = FindObjectOfType<UnitInfoUI>();
+                _unitInfoUi.gameObject.SetActive(false);
+
+                _photonView = GetComponent<PhotonView>();
+
+                gameObject.name = $"{photonView.ViewID} {gameObject.name}";
+                //_slot = SlotUI.GetComponent<SlotUI>();
+
+                _characterController = GetComponent<CharacterController>();
+                _characterController ??= gameObject.AddComponent<CharacterController>();
+                //_mouseLook = GetComponentInChildren<MouseLook>();
+                _mouseLook = GetComponent<MouseLook>();
+                _mouseLook ??= gameObject.AddComponent<MouseLook>();
+
+                _playerClass = ClassType;
+
                 _skillUi = FindObjectOfType<SkillUI>();
 
                 _playerLevel = Convert.ToInt32(PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.CHARACTER_LEVEL]);
                 _skillUi.SetData(_playerClass.SpellClass, _playerLevel);
+            }
+            else
+            {
+                controllable = false;
+                gameObject.name = $"Remote - {gameObject.name}";
             }
         }
 
@@ -91,13 +94,14 @@ namespace FantasyBattle.Play
             //    return;
             //}
 
-            if (_mouseLook != null && _mouseLook.PlayerCamera != null)
-            {
-                _mouseLook.PlayerCamera.enabled = photonView.IsMine;
-            }
+            //if (_mouseLook != null && _mouseLook.PlayerCamera != null)
+            //{
+            //    _mouseLook.PlayerCamera.enabled = photonView.IsMine;
+            //}
 
             if (photonView.IsMine)
             {
+                _mouseLook.PlayerCamera.enabled = true;
 
                 var moveX = Input.GetAxis("Horizontal") * _movingSpeed;
                 var moveZ = Input.GetAxis("Vertical") * _movingSpeed;
@@ -116,7 +120,7 @@ namespace FantasyBattle.Play
                 RestoreMana();
                 SearchUnit();
 
-                if(int.TryParse(Input.inputString,out int numKey))
+                if (int.TryParse(Input.inputString, out int numKey))
                 {
                     _skillUi.ActiveSkill(Input.inputString, numKey);
                 }
@@ -126,11 +130,17 @@ namespace FantasyBattle.Play
                     photonView.RPC("Fire", RpcTarget.AllViaServer, _castPoint.position, _castPoint.rotation);
                 }
             }
+            else
+            {
+                _mouseLook.PlayerCamera.enabled = false;
+            }
         }
 
         [PunRPC]
         public void Fire(Vector3 position, Quaternion rotation, PhotonMessageInfo info)
         {
+            if (!photonView.IsMine) return;
+
             var spell = _skillUi.GetActiveSpell();
 
             if (_skillUi.IsBlockSkill)
@@ -165,9 +175,11 @@ namespace FantasyBattle.Play
 
         private void RestoreMana()
         {
+            if (!photonView.IsMine) return;
+
             if (Mana < MaxMana)
             {
-                if(_isRestoringMp == true)
+                if (_isRestoringMp == true)
                 {
                     return;
                 }
@@ -176,6 +188,8 @@ namespace FantasyBattle.Play
         }
         private void SearchUnit()
         {
+            if (!photonView.IsMine) return;
+
             Ray ray = new Ray(_castPoint.position, transform.forward);
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit, 200.0f))
@@ -187,7 +201,7 @@ namespace FantasyBattle.Play
                     _unitInfoUi.SetData(player.name, player.Health, player.MaxHealth, true);
                 }
 
-                if(hitObject.TryGetComponent<EnemyView>(out var enemy))
+                if (hitObject.TryGetComponent<EnemyView>(out var enemy))
                 {
                     _unitInfoUi.SetData(enemy.name, enemy.CurrentHp, enemy.MaxHp, true);
                 }
@@ -205,6 +219,8 @@ namespace FantasyBattle.Play
 
         private void Start()
         {
+            if (!photonView.IsMine) return;
+
             Initiate();
         }
 
@@ -218,6 +234,7 @@ namespace FantasyBattle.Play
 
 
         #region IPunObservable realization
+
         public override void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
             //if (stream.IsWriting)

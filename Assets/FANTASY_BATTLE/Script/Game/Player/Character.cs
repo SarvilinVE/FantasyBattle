@@ -36,31 +36,36 @@ namespace FantasyBattle.Play
         public int MaxHealth { get => _MaxHealth; set => _MaxHealth = value; }
         public int Mana { get => _mana; set => _mana = value; }
         public int MaxMana { get => _MaxMana; set => _MaxMana = value; }
-        protected abstract FireAction FireAction { get; set; }
 
         protected virtual void Initiate()
         {
-            OnUpdateAction += Movement;
+            if (photonView.IsMine)
+            {
+                OnUpdateAction += Movement;
 
-            //_slotUI = Instantiate(_slotUIObject, FindObjectOfType<PlayerUI>().gameObject.transform);
+                //_slotUI = Instantiate(_slotUIObject, FindObjectOfType<PlayerUI>().gameObject.transform);
 
-            _health = Convert.ToInt32(PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.CHARACTER_HP]);
-            _mana = Convert.ToInt32(PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.CHARACTER_MP]);
+                _health = Convert.ToInt32(PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.CHARACTER_HP]);
+                _mana = Convert.ToInt32(PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.CHARACTER_MP]);
 
-            _MaxHealth = _health;
-            _MaxMana = _mana;    
+                _MaxHealth = _health;
+                _MaxMana = _mana;
 
-            //_slotUI.GetComponent<SlotUI>().InitSlot(PhotonNetwork.LocalPlayer.NickName, _classType._IconClass, Health, Mana);
+                //_slotUI.GetComponent<SlotUI>().InitSlot(PhotonNetwork.LocalPlayer.NickName, _classType._IconClass, Health, Mana);
+            }
         }
 
         private void OnUpdate()
         {
+            if (!photonView.IsMine) return;
             OnUpdateAction?.Invoke();
         }
         public abstract void Movement();
 
         void Update()
         {
+            if (!photonView.IsMine) return;
+
             OnUpdate();
         }
 

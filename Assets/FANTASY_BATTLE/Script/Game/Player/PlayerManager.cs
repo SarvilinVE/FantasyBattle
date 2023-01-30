@@ -45,7 +45,7 @@ namespace FantasyBattle.Play
 
         public void SetupPlayer(Player localPlayer)
         {
-            if (controllable)
+            if (PhotonNetwork.IsMasterClient)
             {
                 if(localPlayer.CustomProperties.TryGetValue(LobbyStatus.NAME_CLASS, out var playerPrefab))
                 {
@@ -53,9 +53,23 @@ namespace FantasyBattle.Play
 
                     var transformPlayer = _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)];
                     PhotonNetwork.Instantiate(player, transformPlayer.position,
-                                transformPlayer.rotation);
+                                transformPlayer.rotation).GetComponent<PlayerView>().Initiate();
+
+                    Debug.Log($"Create Player MAsterClient {localPlayer.ActorNumber}");
                 }
                 
+            }
+            else
+            {
+                if (localPlayer.CustomProperties.TryGetValue(LobbyStatus.NAME_CLASS, out var playerPrefab))
+                {
+                    var player = (string)playerPrefab;
+
+                    var transformPlayer = _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)];
+                    PhotonNetwork.Instantiate(player, transformPlayer.position,
+                                transformPlayer.rotation);
+                    Debug.Log($"Create Player Not MAsterClient {localPlayer.ActorNumber}");
+                }
             }
         }
 

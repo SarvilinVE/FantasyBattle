@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 7023010550887428912}
   - component: {fileID: 7023010550887428913}
   - component: {fileID: 622805739386843022}
+  - component: {fileID: 1273232173324135485}
   - component: {fileID: 1353949987907557594}
   - component: {fileID: 8835204581601350100}
   - component: {fileID: 7907010799970475167}
@@ -211,7 +212,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7023010550887428915}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 57d6dae373dd796439f6c3af0583fa2d, type: 3}
   m_Name: 
@@ -224,6 +225,20 @@ MonoBehaviour:
   _castPoint: {fileID: 2431808980634353319}
   _unitInfoUi: {fileID: 2666443192240526110, guid: 5a293b6350f844f4abff63c3f8060353, type: 3}
   controllable: 1
+--- !u!114 &1273232173324135485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7023010550887428915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb97ed000f17ce44089c4e7eab6f4564, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _movingSpeed: 8
+  _acceleration: 3
 --- !u!114 &1353949987907557594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -244,7 +259,9 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 622805739386843022}
+  - {fileID: 1273232173324135485}
   - {fileID: 8835204581601350100}
+  - {fileID: 7907010799970475167}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

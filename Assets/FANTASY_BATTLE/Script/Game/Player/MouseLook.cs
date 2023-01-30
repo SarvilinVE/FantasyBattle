@@ -6,7 +6,7 @@ using UnityEngine;
 namespace FantasyBattle.Play
 {
 
-    public class MouseLook : MonoBehaviourPun
+    public class MouseLook : MonoBehaviourPun, IPunObservable
     {
         public Camera PlayerCamera => _camera;
         [Range(0.1f, 10.0f)]
@@ -20,18 +20,28 @@ namespace FantasyBattle.Play
         private Camera _camera;
         private void Start()
         {
-            _camera = GetComponentInChildren<Camera>();
-            var rb = GetComponentInChildren<Rigidbody>();
-            if (rb != null)
-                rb.freezeRotation = true;
+            if (photonView.IsMine)
+            {
+                Camera.main.gameObject.SetActive(false);
+                _camera = GetComponentInChildren<Camera>();
+                var rb = GetComponentInChildren<Rigidbody>();
+                if (rb != null)
+                    rb.freezeRotation = true;
+            }
         }
         public void Rotation()
         {
+            if (!photonView.IsMine) return;
+
             _rotationX -= Input.GetAxis("Mouse Y") * _sensitivity;
             _rotationY += Input.GetAxis("Mouse X") * _sensitivity;
             _rotationX = Mathf.Clamp(_rotationX, _minVert, _maxVert);
             transform.rotation = Quaternion.Euler(0, _rotationY, 0);
             _camera.transform.localRotation = Quaternion.Euler(_rotationX, 0, 0);
+        }
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
         }
     }
 }

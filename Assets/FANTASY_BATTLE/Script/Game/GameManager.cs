@@ -40,7 +40,7 @@ namespace FantasyBattle.Battle
         private void Awake()
         {
             Instance = this;
-            PhotonNetwork.AutomaticallySyncScene = true;
+            //PhotonNetwork.AutomaticallySyncScene = true;
         }
 
         private void Start()
@@ -185,16 +185,6 @@ namespace FantasyBattle.Battle
             {
                 StartCoroutine(SpawnBot());
             }
-
-            //if (PhotonNetwork.IsMasterClient)
-            //{
-            //    var countPlayerOnline = PhotonNetwork.CurrentRoom.PlayerCount;
-            //    while(countPlayerOnline < PhotonNetwork.CurrentRoom.MaxPlayers)
-            //    {
-            //        _playerManager.SetupBot(_botPrefabs[0]);
-            //        countPlayerOnline++;
-            //    }
-            //}
         }
 
         private bool CheckAllPlayerLoadedLevel()
