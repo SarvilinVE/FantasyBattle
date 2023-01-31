@@ -5,6 +5,7 @@ namespace FantasyBattle.Abstractions
 
         #region Properties
 
+        public string Name { get; }
         public int CurrentHealth { get; set; }
         public int Health { get; set; }
         public int CurrentMana { get; set; }

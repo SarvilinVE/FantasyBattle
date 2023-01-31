@@ -97,7 +97,6 @@ GameObject:
   - component: {fileID: 7023010550887428919}
   - component: {fileID: 7023010550887428912}
   - component: {fileID: 7023010550887428913}
-  - component: {fileID: 622805739386843022}
   - component: {fileID: 1273232173324135485}
   - component: {fileID: 1353949987907557594}
   - component: {fileID: 8835204581601350100}
@@ -205,26 +204,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &622805739386843022
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7023010550887428915}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57d6dae373dd796439f6c3af0583fa2d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _classType: {fileID: 11400000, guid: 780c46b70ef0fb8448fb8ed7a14dab93, type: 2}
-  _classConteiner: {fileID: 11400000, guid: 864c45eb33b494e4a8f19dcc2715da64, type: 2}
-  _slotUIObject: {fileID: 5618759148399692342, guid: 2156ce05f9de0ee459fab12c3ef681d9, type: 3}
-  _movingSpeed: 8
-  _acceleration: 3
-  _castPoint: {fileID: 2431808980634353319}
-  _unitInfoUi: {fileID: 2666443192240526110, guid: 5a293b6350f844f4abff63c3f8060353, type: 3}
-  controllable: 1
 --- !u!114 &1273232173324135485
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -237,8 +216,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb97ed000f17ce44089c4e7eab6f4564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _classType: {fileID: 11400000, guid: 780c46b70ef0fb8448fb8ed7a14dab93, type: 2}
+  _classConteiner: {fileID: 11400000, guid: 864c45eb33b494e4a8f19dcc2715da64, type: 2}
   _movingSpeed: 8
   _acceleration: 3
+  _castPoint: {fileID: 2431808980634353319}
+  _unitInfoUi: {fileID: 0}
 --- !u!114 &1353949987907557594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -256,7 +239,7 @@ MonoBehaviour:
   prefixField: -1
   Synchronization: 1
   OwnershipTransfer: 0
-  observableSearch: 0
+  observableSearch: 2
   ObservedComponents:
   - {fileID: 1273232173324135485}
   - {fileID: 8835204581601350100}

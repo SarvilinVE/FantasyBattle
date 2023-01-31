@@ -8,7 +8,7 @@ using Photon.Realtime;
 
 namespace FantasyBattle.Spells
 {
-    public class Fireball : MonoBehaviour
+    public class Fireball : MonoBehaviourPun, IPunObservable
     {
         protected Action OnUpdateAction { get; set; }
         public Action<bool> OnDestroyFireball { get; set; }
@@ -88,6 +88,11 @@ namespace FantasyBattle.Spells
             }
 
             PhotonNetwork.Destroy(gameObject);
+        }
+
+        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        {
+            
         }
     }
 }
