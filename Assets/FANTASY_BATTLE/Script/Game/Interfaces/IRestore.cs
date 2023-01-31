@@ -5,8 +5,8 @@ namespace FantasyBattle.Abstractions
 
         #region Methods
 
-        public void RestoreHp(int restoreHp);
-        public void RestoreMp(int restoreMp);
+        public void RestoringHp(int restoreHp);
+        public void RestoringMp(int restoreMp);
 
         #endregion
 

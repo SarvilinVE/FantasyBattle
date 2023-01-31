@@ -100,9 +100,6 @@ namespace FantasyBattle.Play
                 transform.rotation = Quaternion.Lerp(transform.rotation, _botRotation, 0);
                 _currentHp = _correctionHp;
             }
-
-            Debug.Log($"{gameObject.name} current HP {_currentHp}");
-            
         }
         public void Fire(GameObject hitObject)
         {
