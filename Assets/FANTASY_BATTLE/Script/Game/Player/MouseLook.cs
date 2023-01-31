@@ -6,8 +6,11 @@ using UnityEngine;
 namespace FantasyBattle.Play
 {
 
-    public class MouseLook : MonoBehaviourPun, IPunObservable
+    public class MouseLook : MonoBehaviour
     {
+
+        #region Fields
+
         public Camera PlayerCamera => _camera;
         [Range(0.1f, 10.0f)]
         [SerializeField] private float _sensitivity = 2.0f;
@@ -18,21 +21,24 @@ namespace FantasyBattle.Play
         private float _rotationX = .0f;
         private float _rotationY = .0f;
         private Camera _camera;
-        private void Start()
+
+        #endregion
+
+
+        #region Methods
+
+        public void Initiation()
         {
-            if (photonView.IsMine)
-            {
-                Camera.main.gameObject.SetActive(false);
-                _camera = GetComponentInChildren<Camera>();
-                var rb = GetComponentInChildren<Rigidbody>();
-                if (rb != null)
-                    rb.freezeRotation = true;
-            }
+            Camera.main.gameObject.SetActive(false);
+            _camera = GetComponentInChildren<Camera>();
+            var listener= GetComponentInChildren<AudioListener>();
+            listener.enabled = true;
+            var rb = GetComponentInChildren<Rigidbody>();
+            if (rb != null)
+                rb.freezeRotation = true;
         }
         public void Rotation()
         {
-            if (!photonView.IsMine) return;
-
             _rotationX -= Input.GetAxis("Mouse Y") * _sensitivity;
             _rotationY += Input.GetAxis("Mouse X") * _sensitivity;
             _rotationX = Mathf.Clamp(_rotationX, _minVert, _maxVert);
@@ -40,8 +46,7 @@ namespace FantasyBattle.Play
             _camera.transform.localRotation = Quaternion.Euler(_rotationX, 0, 0);
         }
 
-        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-        {
-        }
+        #endregion
+
     }
 }

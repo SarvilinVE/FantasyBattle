@@ -12,7 +12,7 @@ namespace FantasyBattle.Play
     {
         #region Fields
 
-        public static PlayerManager Instance  = null;
+        public static PlayerManager Instance = null;
 
         [SerializeField]
         private GameObject[] _playerPrefab;
@@ -45,32 +45,29 @@ namespace FantasyBattle.Play
 
         public void SetupPlayer(Player localPlayer)
         {
-            if (PhotonNetwork.IsMasterClient)
+
+            if (localPlayer.CustomProperties.TryGetValue(LobbyStatus.NAME_CLASS, out var playerPrefab))
             {
-                if(localPlayer.CustomProperties.TryGetValue(LobbyStatus.NAME_CLASS, out var playerPrefab))
-                {
-                    var player = (string)playerPrefab;
+                var player = (string)playerPrefab;
 
-                    var transformPlayer = _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)];
-                    PhotonNetwork.Instantiate(player, transformPlayer.position,
-                                transformPlayer.rotation).GetComponent<PlayerView>().Initiate();
+                var transformPlayer = _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)];
+                PhotonNetwork.Instantiate(player, transformPlayer.position,
+                            transformPlayer.rotation, 0);
 
-                    Debug.Log($"Create Player MAsterClient {localPlayer.ActorNumber}");
-                }
-                
+                Debug.Log($"Create Player MAsterClient {localPlayer.ActorNumber}");
             }
-            else
-            {
-                if (localPlayer.CustomProperties.TryGetValue(LobbyStatus.NAME_CLASS, out var playerPrefab))
-                {
-                    var player = (string)playerPrefab;
+            //else
+            //{
+            //    if (localPlayer.CustomProperties.TryGetValue(LobbyStatus.NAME_CLASS, out var playerPrefab))
+            //    {
+            //        var player = (string)playerPrefab;
 
-                    var transformPlayer = _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)];
-                    PhotonNetwork.Instantiate(player, transformPlayer.position,
-                                transformPlayer.rotation);
-                    Debug.Log($"Create Player Not MAsterClient {localPlayer.ActorNumber}");
-                }
-            }
+            //        var transformPlayer = _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)];
+            //        PhotonNetwork.Instantiate(player, transformPlayer.position,
+            //                    transformPlayer.rotation, 0);
+            //        Debug.Log($"Create Player Not MAsterClient {localPlayer.ActorNumber}");
+            //    }
+            //}
         }
 
         public void SetupBot(GameObject botPrefab)
@@ -105,7 +102,7 @@ namespace FantasyBattle.Play
 
         private void Update()
         {
-            foreach(var enemy in _enemys)
+            foreach (var enemy in _enemys)
             {
                 enemy.Movement();
             }

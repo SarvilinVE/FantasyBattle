@@ -121,11 +121,11 @@ namespace FantasyBattle.Battle
                 return;
             }
 
-            if(_isStart == false)
+            if (_isStart == false)
             {
                 SetActivePanel(_resultHolder.name);
             }
-            if(_isStart = true && _gameUI.activeSelf)
+            if (_isStart = true && _gameUI.activeSelf)
             {
                 _playerSlotHolder.GetComponent<PlayerUI>().PlayersInfoUpdate();
             }
@@ -164,9 +164,9 @@ namespace FantasyBattle.Battle
 
         private void StartGame()
         {
-            _isStart = true;
+            //_isStart = true;
 
-            _playerSlotHolder.GetComponent<PlayerUI>().CreateSlot();
+            //_playerSlotHolder.GetComponent<PlayerUI>().CreateSlot();
             // on rejoin, we have to figure out if the spaceship exists or not
             // if this is a rejoin (the ship is already network instantiated and will be setup via event) we don't need to call PN.Instantiate
 
@@ -179,12 +179,16 @@ namespace FantasyBattle.Battle
 
             //PhotonNetwork.Instantiate("Spaceship", position, rotation, 0);      // avoid this call on rejoin (ship was network instantiated before)
 
-            _playerManager.SetupPlayer(PhotonNetwork.LocalPlayer);
+            PlayerManager.Instance.SetupPlayer(PhotonNetwork.LocalPlayer);
 
             if (PhotonNetwork.IsMasterClient)
             {
                 StartCoroutine(SpawnBot());
             }
+
+            _isStart = true;
+
+            _playerSlotHolder.GetComponent<PlayerUI>().CreateSlot();
         }
 
         private bool CheckAllPlayerLoadedLevel()

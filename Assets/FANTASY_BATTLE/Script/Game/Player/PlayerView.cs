@@ -39,6 +39,7 @@ namespace FantasyBattle.Play
             OnUpdateAction += Movement;
 
             _mouseLook = GetComponent<MouseLook>();
+            _mouseLook.Initiation();
             _characterController = GetComponent<CharacterController>();
         }
         private void OnUpdate()

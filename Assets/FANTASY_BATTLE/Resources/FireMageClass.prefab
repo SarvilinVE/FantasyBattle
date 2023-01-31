@@ -40,7 +40,7 @@ Camera:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7023010550550312977}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 2
   m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
@@ -83,7 +83,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7023010550550312977}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!1 &7023010550887428915
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,12 +256,10 @@ MonoBehaviour:
   prefixField: -1
   Synchronization: 1
   OwnershipTransfer: 0
-  observableSearch: 2
+  observableSearch: 0
   ObservedComponents:
-  - {fileID: 622805739386843022}
   - {fileID: 1273232173324135485}
   - {fileID: 8835204581601350100}
-  - {fileID: 7907010799970475167}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
