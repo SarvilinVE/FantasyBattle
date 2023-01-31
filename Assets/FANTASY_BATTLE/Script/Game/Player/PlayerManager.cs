@@ -3,6 +3,7 @@ using FantasyBattle.Enemy;
 using FantasyBattle.Fabrica;
 using Photon.Pun;
 using Photon.Realtime;
+using PlayFab.ClientModels;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,8 +35,13 @@ namespace FantasyBattle.Play
         [SerializeField]
         private int _enemyCount;
 
+        [SerializeField]
+        private int _enemyMaxCount;
+
         public bool controllable = true;
-        private List<IEnemy> _enemys = new List<IEnemy>();
+        private List<EnemyView> _enemys = new List<EnemyView>();
+        private int _countCreationEnemy = 0;
+        private GameObject _botPrefab;
 
 
         #endregion
@@ -72,11 +78,11 @@ namespace FantasyBattle.Play
 
         public void SetupBot(GameObject botPrefab)
         {
+            _botPrefab = botPrefab;
             //PhotonNetwork.InstantiateRoomObject(botPrefab.name, _blueSpawnPoints[0].position, _blueSpawnPoints[0].rotation).
             //    GetComponent<BotCharacter>().Coven = LobbyStatus.ENEMY_TAG;
             if (_enemyCount <= _enemys.Count)
             {
-
                 EnemyData enemyData = new EnemyData
                 {
                     PrefabName = botPrefab.name,
@@ -85,8 +91,40 @@ namespace FantasyBattle.Play
                     StratRotation = _blueSpawnPoints[0].rotation
                 };
 
-                UnitCreator enemyCreator = new EnemyMagCreator();
-                _enemys.Add(enemyCreator.Create(enemyData));
+                //UnitCreator enemyCreator = new EnemyMagCreator();
+                var enemy = PhotonNetwork.Instantiate(enemyData.PrefabName, enemyData.StartPostion, enemyData.StratRotation, 0);
+                var enemyView = enemy.GetComponent<EnemyView>();
+                enemyView.Init(enemyData);
+                enemyView.OnDiedEnemy += EnemyView_OnDiedEnemy;
+                _enemys.Add(enemyView);
+                _countCreationEnemy++;
+            }
+        }
+
+        private void EnemyView_OnDiedEnemy(EnemyView view)
+        {
+            _enemys.Remove(view);
+
+            if(_countCreationEnemy <= _enemyMaxCount)
+            {
+                if (_enemyCount <= _enemys.Count)
+                {
+                    EnemyData enemyData = new EnemyData
+                    {
+                        PrefabName = _botPrefab.name,
+                        Hp = 200,
+                        StartPostion = _blueSpawnPoints[0].position,
+                        StratRotation = _blueSpawnPoints[0].rotation
+                    };
+
+                    //UnitCreator enemyCreator = new EnemyMagCreator();
+                    var enemy = PhotonNetwork.Instantiate(enemyData.PrefabName, enemyData.StartPostion, enemyData.StratRotation, 0);
+                    var enemyView = enemy.GetComponent<EnemyView>();
+                    enemyView.Init(enemyData);
+                    enemyView.OnDiedEnemy += EnemyView_OnDiedEnemy;
+                    _enemys.Add(enemyView);
+                    _countCreationEnemy++;
+                }
             }
         }
 
@@ -102,10 +140,10 @@ namespace FantasyBattle.Play
 
         private void Update()
         {
-            foreach (var enemy in _enemys)
-            {
-                enemy.Movement();
-            }
+            //foreach (var enemy in _enemys)
+            //{
+            //    enemy.Movement();
+            //}
         }
 
         #endregion

@@ -34,6 +34,10 @@ namespace FantasyBattle
         public const string CURRENT_MP = "CURRENT_MP";
         public const string CHARACTER_DAMAGE = "CHARACTER_DAMAGE";
         public const string CHARACTER_EXP = "CHARACTER_EXP";
+        //CharacterSetting in game
+        public const string CHARACTER_KILLS = "CHARACTER_KILLS";
+        public const string CHARACTER_COUNTDAMAGE = "CHARACTER_COUNTDAMAGE";
+
          public static Color GetColor(int colorChoice)
         {
             switch (colorChoice)

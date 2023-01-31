@@ -466,7 +466,9 @@ namespace FantasyBattle.Menu
                             {LobbyStatus.CURRENT_HP, result.CharacterStatistics[LobbyStatus.CHARACTER_HP].ToString() },
                             {LobbyStatus.CHARACTER_MP, result.CharacterStatistics[LobbyStatus.CHARACTER_MP].ToString() },
                             {LobbyStatus.CURRENT_MP, result.CharacterStatistics[LobbyStatus.CHARACTER_MP].ToString() },
-                            {LobbyStatus.CHARACTER_DAMAGE, result.CharacterStatistics[LobbyStatus.CHARACTER_DAMAGE].ToString() }
+                            {LobbyStatus.CHARACTER_DAMAGE, result.CharacterStatistics[LobbyStatus.CHARACTER_DAMAGE].ToString() },
+                            {LobbyStatus.CHARACTER_KILLS, "0" },
+                            {LobbyStatus.CHARACTER_COUNTDAMAGE, "0" },
                         });
                     }, OnError);
         }

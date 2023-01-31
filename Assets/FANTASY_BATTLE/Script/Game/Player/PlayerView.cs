@@ -5,15 +5,14 @@ using FantasyBattle.UI;
 using Photon.Pun;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 namespace FantasyBattle.Play
 {
     public class PlayerView : MonoBehaviourPun, IPunObservable, IPlayer
     {
+
         #region Fields
 
         private const float GRAVITY = -9.8f;
@@ -294,6 +293,7 @@ namespace FantasyBattle.Play
 
         #endregion
 
+
         #region IPunObservable
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -319,5 +319,6 @@ namespace FantasyBattle.Play
         
 
         #endregion
+
     }
 }

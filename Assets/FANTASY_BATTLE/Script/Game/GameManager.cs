@@ -268,6 +268,7 @@ namespace FantasyBattle.Battle
             if (Input.GetKeyDown(KeyCode.Tab))
             {
                 _resultHolder.SetActive(true);
+                
                 //SetActivePanel(_resultHolder.name);
             }
 

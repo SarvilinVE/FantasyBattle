@@ -1,8 +1,9 @@
+using ExitGames.Client.Photon;
+using FantasyBattle.Abstractions;
+using FantasyBattle.Enemy;
 using FantasyBattle.Enums;
-using FantasyBattle.Spells;
 using Photon.Pun;
 using Photon.Realtime;
-using PlayFab.ClientModels;
 using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -15,6 +16,8 @@ namespace FantasyBattle.Play
         #region Fields
 
         public event Action<int, Player> OnTakeDamage;
+        public event Action OnUpdateAction;
+        public event Action<EnemyView> OnDiedEnemy;
 
         [SerializeField]
         private float _speed;
@@ -35,6 +38,7 @@ namespace FantasyBattle.Play
         private int _currentHp;
         private int _correctionHp;
         private int _maxHp;
+        private Player _player;
 
         #endregion
 
@@ -59,17 +63,25 @@ namespace FantasyBattle.Play
 
         private void Update()
         {
-            
+            OnUpdate();
         }
         private void OnDestroy()
         {
-            PhotonNetwork.Destroy(photonView);
+            //PhotonNetwork.Destroy(gameObject);
         }
 
         #endregion
 
 
         #region Methods
+
+        public void Init(EnemyData enemyData)
+        {
+            _maxHp = enemyData.Hp;
+            _currentHp = enemyData.Hp;
+
+            OnUpdateAction += Movement;
+        }
 
         public void Movement()
         {
@@ -82,7 +94,7 @@ namespace FantasyBattle.Play
                 {
                     var hitObject = hit.transform.gameObject;
 
-                    if (hitObject.GetComponent<PlayerCharacter>())
+                    if (hitObject.TryGetComponent<IPlayer>(out var player))
                     {
                         _enemyState = EnemyState.Fight;
                     }
@@ -98,7 +110,7 @@ namespace FantasyBattle.Play
             {
                 transform.position = Vector3.SmoothDamp(transform.position, _botPostion, ref _currentVelocity, _speed * Time.deltaTime);
                 transform.rotation = Quaternion.Lerp(transform.rotation, _botRotation, 0);
-                _currentHp = _correctionHp;
+                //_currentHp = _correctionHp;
             }
         }
         public void Fire(GameObject hitObject)
@@ -109,9 +121,52 @@ namespace FantasyBattle.Play
             //fireball.GetComponent<Fireball>().Init(_photonView.Owner, hitObject.transform.position, 5);
         }
 
-        public void TakeDamage(int takeDamage, Player owner)
+        public void TakeDamage(int damage, Player owner)
         {
-            OnTakeDamage?.Invoke(takeDamage, owner);
+            //if (!photonView.IsMine) return;
+
+            //OnTakeDamage?.Invoke(takeDamage, owner);
+            //_player = owner;
+
+            if (_currentHp - damage > 0)
+            {
+                _currentHp -= damage;
+
+                var playerDamage = Convert.ToInt32(owner.CustomProperties[LobbyStatus.CHARACTER_COUNTDAMAGE]);
+                playerDamage += damage;
+
+                var hashTab = new Hashtable
+                {
+                    { LobbyStatus.CHARACTER_COUNTDAMAGE, playerDamage.ToString() }
+                };
+                owner.SetCustomProperties(hashTab);
+            }
+            else
+            {
+                OnDiedEnemy?.Invoke(this);
+
+                var playerKill = Convert.ToInt32(owner.CustomProperties[LobbyStatus.CHARACTER_KILLS]);
+                playerKill++;
+
+                var playerDamage = Convert.ToInt32(owner.CustomProperties[LobbyStatus.CHARACTER_COUNTDAMAGE]);
+                playerDamage += _currentHp;
+
+                var hashTab = new Hashtable
+                {
+                    { LobbyStatus.CHARACTER_KILLS, playerKill.ToString() },
+                    { LobbyStatus.CHARACTER_COUNTDAMAGE, playerDamage.ToString() }
+                };
+                owner.SetCustomProperties(hashTab);
+
+                _currentHp = 0;
+
+                PhotonNetwork.Destroy(gameObject);
+            }
+        }
+
+        public void OnUpdate()
+        {
+            OnUpdateAction?.Invoke();
         }
 
         #endregion
@@ -125,13 +180,15 @@ namespace FantasyBattle.Play
             {
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
+                stream.SendNext(_maxHp);
                 stream.SendNext(_currentHp);
             }
             else
             {
                 _botPostion = (Vector3)stream.ReceiveNext();
                 _botRotation= (Quaternion)stream.ReceiveNext();
-                _correctionHp = (int)stream.ReceiveNext();
+                _maxHp = (int)stream.ReceiveNext();
+                _currentHp = (int)stream.ReceiveNext();
             }
         }
 

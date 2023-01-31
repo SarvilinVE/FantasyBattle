@@ -2350,6 +2350,7 @@ MonoBehaviour:
   - {fileID: 1160321356}
   - {fileID: 804245825}
   _enemyCount: 0
+  _enemyMaxCount: 10
   controllable: 1
 --- !u!4 &2006780257
 Transform:
