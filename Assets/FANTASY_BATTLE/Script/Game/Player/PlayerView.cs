@@ -119,10 +119,12 @@ namespace FantasyBattle.Play
         {
             throw new NotImplementedException();
         }
-
+        [PunRPC]
         public void DamageHp(int damage)
         {
-            throw new NotImplementedException();
+
+            _currentHealth -= damage;
+            UpdateUI();
         }
 
         public void DamageMp(int damage)

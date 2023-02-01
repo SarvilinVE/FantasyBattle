@@ -4,6 +4,7 @@ namespace FantasyBattle.Enums
     {
         None = 0,
         Patroling = 1,
-        Fight = 2,
+        Purshit = 2,
+        Fight = 3,
     }
 }

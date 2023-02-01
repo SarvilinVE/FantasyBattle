@@ -41,6 +41,7 @@ MonoBehaviour:
   - RespawnSpaceship
   - UpdateUI
   - FireBall
+  - DamageHp
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

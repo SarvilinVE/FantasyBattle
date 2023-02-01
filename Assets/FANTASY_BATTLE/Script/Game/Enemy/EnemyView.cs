@@ -6,8 +6,15 @@ using FantasyBattle.Spells;
 using Photon.Pun;
 using Photon.Realtime;
 using System;
+using System.Collections;
+using System.Drawing;
 using UnityEngine;
+using UnityEngine.AI;
+using static UnityEngine.Networking.UnityWebRequest;
+using static UnityEngine.UI.CanvasScaler;
 using static UnityEngine.UI.GridLayoutGroup;
+using Color = UnityEngine.Color;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Random = UnityEngine.Random;
 
 namespace FantasyBattle.Play
@@ -29,20 +36,36 @@ namespace FantasyBattle.Play
 
         [SerializeField]
         private GameObject _fireball;
+        [SerializeField]
+        private int _damage;
+        [SerializeField]
+        private float _attackSpeed;
+        [Space]
+        [Header("NavMesh Settings")]
+        [SerializeField]
+        private float _delayToMove;
+        [SerializeField]
+        private Vector2 _genericPointsRange;
+        [SerializeField]
+        private float _durationMove;
+        [SerializeField]
+        private float _viewRadius;
+        [SerializeField]
+        private float _attackRadius;
 
-        private PhotonView _photonView;
-        public string Coven { get; set; }
-
+        //private PhotonView photonView;
         private Vector3 _botPostion;
         private Quaternion _botRotation;
         private Vector3 _currentVelocity = Vector3.zero;
+        private NavMeshAgent _navMesh;
         private EnemyState _enemyState;
         private int _currentHp;
-        private int _correctionHp;
         private int _maxHp;
-        private Player _player;
+        private float _waitTimeToMove;
+        private float _timerMove;
+        private PlayerView _mainTarget;
 
-        private bool _isTakeDamage = false;
+
 
         #endregion
 
@@ -64,7 +87,14 @@ namespace FantasyBattle.Play
 
 
         #region UnityMethods
-
+        private void Awake()
+        {
+            //photonView = GetComponent<PhotonView>();
+        }
+        private void Start()
+        {
+            _navMesh = GetComponent<NavMeshAgent>();
+        }
         private void Update()
         {
             OnUpdate();
@@ -84,93 +114,184 @@ namespace FantasyBattle.Play
             _maxHp = enemyData.Hp;
             _currentHp = enemyData.Hp;
 
+
+            _enemyState = EnemyState.Patroling;
+            _waitTimeToMove = 0.0f;
+            _timerMove = _durationMove;
             OnUpdateAction += Movement;
         }
 
         public void Movement()
         {
+            //----Старая версия---
+
+            //if (photonView.IsMine)
+            //{
+            //    transform.Translate(0, 0, _speed * Time.deltaTime);
+            //    Ray ray = new Ray(transform.position, transform.forward);
+            //    RaycastHit hit;
+            //    if (Physics.SphereCast(ray, 0.75f, out hit))
+            //    {
+            //        var hitObject = hit.transform.gameObject;
+
+            //        if (hitObject.TryGetComponent<IPlayer>(out var player))
+            //        {
+            //            _enemyState = EnemyState.Fight;
+            //        }
+            //        else if (hit.distance < _obstacleRange)
+            //        {
+            //            _enemyState = EnemyState.Patroling;
+            //            float angle = Random.Range(-100, 100);
+            //            transform.Rotate(0, angle, 0);
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    //transform.position = Vector3.SmoothDamp(transform.position, _botPostion, ref _currentVelocity, _speed * Time.deltaTime);
+            //    //transform.rotation = Quaternion.Lerp(transform.rotation, _botRotation, 0);
+            //    //_currentHp = _correctionHp;
+            //}
+
             if (photonView.IsMine)
             {
-                transform.Translate(0, 0, _speed * Time.deltaTime);
-                Ray ray = new Ray(transform.position, transform.forward);
-                RaycastHit hit;
-                if (Physics.SphereCast(ray, 0.75f, out hit))
+                switch (_enemyState)
                 {
-                    var hitObject = hit.transform.gameObject;
+                    case EnemyState.Patroling:
+                        {
+                            SearchTarget();
+                            Patroling();
+                            break;
+                        }
+                    case EnemyState.Purshit:
+                        {
+                            SearchTarget();
+                            Purshit();
+                            break;
+                        }
+                    case EnemyState.Fight:
+                        {
+                            Attack();
+                            break;
+                        }
+                    default:
+                        break;
+                }
+            }
+        }
+        private void Patroling()
+        {
+            if(_timerMove <= 0)
+            {
+                _navMesh.speed = _speed;
+                _timerMove = _delayToMove;
+                _navMesh.SetDestination(GetGenericPoint());
+            }
+            else
+            {
+                _timerMove -= Time.deltaTime;
+            }
 
-                    if (hitObject.TryGetComponent<IPlayer>(out var player))
-                    {
-                        _enemyState = EnemyState.Fight;
-                    }
-                    else if (hit.distance < _obstacleRange)
-                    {
-                        _enemyState = EnemyState.Patroling;
-                        float angle = Random.Range(-100, 100);
-                        transform.Rotate(0, angle, 0);
-                    }
+            if (_navMesh.remainingDistance <= _navMesh.stoppingDistance)
+            {
+                if (_waitTimeToMove <= 0)
+                {
+                    _navMesh.speed = _speed;
+                    _waitTimeToMove = _delayToMove;
+                    _timerMove = _delayToMove;
+                    _navMesh.SetDestination(GetGenericPoint());
+                }
+                else
+                {
+                    _navMesh.speed = 0.0f;
+                    _waitTimeToMove -= Time.deltaTime;
                 }
             }
             else
             {
-                transform.position = Vector3.SmoothDamp(transform.position, _botPostion, ref _currentVelocity, _speed * Time.deltaTime);
-                transform.rotation = Quaternion.Lerp(transform.rotation, _botRotation, 0);
-                //_currentHp = _correctionHp;
+                ResetPosition();
+                _timerMove = _delayToMove;
             }
         }
-        public void Fire(GameObject hitObject)
+        private void SearchTarget()
         {
-            //var position = transform.TransformPoint(Vector3.forward * 1.5f);
-            //var rotation = transform.rotation;
-            //var fireball = Instantiate(_fireball, position, rotation);
-            //fireball.GetComponent<Fireball>().Init(_photonView.Owner, hitObject.transform.position, 5);
-        }
+            Collider[] targetsInRange = Physics.OverlapSphere(transform.position,
+                _viewRadius);
 
+            foreach(var target in targetsInRange)
+            {
+                if(!target.gameObject.TryGetComponent<PlayerView>(out var playerView))
+                {
+                    continue;
+                }
+
+                Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
+                float distanceToTarget = Vector3.Magnitude(target.transform.position - transform.position);
+
+                bool angleCheck = Vector3.Angle(transform.forward, directionToTarget) < 180.0f / 2;
+                if (angleCheck == false)
+                {
+                    continue;
+                }
+
+                _enemyState = EnemyState.Purshit;
+                _mainTarget = target.gameObject.GetComponent<PlayerView>();
+                _navMesh.SetDestination(target.transform.position);
+            }
+        }
+        private void Purshit()
+        {
+            Debug.DrawLine(transform.position, _mainTarget.gameObject.transform.position, Color.blue, 2);
+            if (_mainTarget == null)
+            {
+                _enemyState = EnemyState.Patroling;
+            }
+
+            if (_navMesh.remainingDistance - _navMesh.stoppingDistance <= _attackRadius)
+            {
+                _enemyState = EnemyState.Fight;
+            }
+        }
+        private void Attack()
+        {
+            if(_mainTarget == null)
+            {
+                _enemyState = EnemyState.Purshit;
+            }
+
+            _mainTarget.gameObject.GetComponent<PhotonView>().RPC("DamageHp", RpcTarget.All, _damage);
+
+            _enemyState = EnemyState.Purshit;
+        }
+        private Vector3 GetGenericPoint()
+        {
+            Vector3 result;
+            var dis = Random.Range(_genericPointsRange.x, _genericPointsRange.y);
+            var randomPoint = Random.insideUnitSphere * dis;
+
+            if(NavMesh.SamplePosition(transform.position + randomPoint, out var hit, dis, _navMesh.areaMask))
+            {
+                result = hit.position;
+            }
+            else
+            {
+                result = Vector3.zero;
+            }
+
+            Debug.DrawRay(result, Vector3.up, Color.blue, 2.0f);
+            Debug.DrawLine(transform.position, result, Color.green, 2);
+            return result;
+        }
+        private void ResetPosition()
+        {
+            if (_navMesh.isStopped)
+            {
+                _navMesh.speed = _speed;
+                _navMesh.SetDestination(GetGenericPoint());
+            }
+        }
         public void TakeDamage(int damage, Player owner)
         {
-            //if (!photonView.IsMine) return;
-
-            //OnTakeDamage?.Invoke(takeDamage, owner);
-            //_player = owner;
-            Debug.Log($"{photonView.ViewID}");
-            //if (!photonView.IsMine)
-            //{
-            //    if (_currentHp - damage > 0)
-            //    {
-            //        _currentHp -= damage;
-
-            //        var playerDamage = Convert.ToInt32(owner.CustomProperties[LobbyStatus.CHARACTER_COUNTDAMAGE]);
-            //        playerDamage += damage;
-
-            //        var hashTab = new Hashtable
-            //    {
-            //        { LobbyStatus.CHARACTER_COUNTDAMAGE, playerDamage.ToString() }
-            //    };
-            //        owner.SetCustomProperties(hashTab);
-            //    }
-            //    else
-            //    {
-            //        OnDiedEnemy?.Invoke(this);
-
-            //        var playerKill = Convert.ToInt32(owner.CustomProperties[LobbyStatus.CHARACTER_KILLS]);
-            //        playerKill++;
-
-            //        var playerDamage = Convert.ToInt32(owner.CustomProperties[LobbyStatus.CHARACTER_COUNTDAMAGE]);
-            //        playerDamage += _currentHp;
-
-            //        var hashTab = new Hashtable
-            //    {
-            //        { LobbyStatus.CHARACTER_KILLS, playerKill.ToString() },
-            //        { LobbyStatus.CHARACTER_COUNTDAMAGE, playerDamage.ToString() }
-            //    };
-            //        owner.SetCustomProperties(hashTab);
-
-            //        _currentHp = 0;
-
-            //        PhotonNetwork.Destroy(gameObject);
-            //    }
-            //    return;
-            //}
-
             if (_currentHp - damage > 0)
             {
                 _currentHp -= damage;
@@ -274,8 +395,8 @@ namespace FantasyBattle.Play
             {
                 Debug.Log($"{photonView.ViewID} Writing HP {_currentHp}");
 
-                stream.SendNext(transform.position);
-                stream.SendNext(transform.rotation);
+                //stream.SendNext(transform.position);
+                //stream.SendNext(transform.rotation);
                 stream.SendNext(_maxHp);
                 stream.SendNext(_currentHp);
             }
@@ -283,8 +404,8 @@ namespace FantasyBattle.Play
             {
                 Debug.Log($"{photonView.ViewID} After Reading HP {_currentHp}");
 
-                _botPostion = (Vector3)stream.ReceiveNext();
-                _botRotation = (Quaternion)stream.ReceiveNext();
+                //_botPostion = (Vector3)stream.ReceiveNext();
+                //_botRotation = (Quaternion)stream.ReceiveNext();
                 _maxHp = (int)stream.ReceiveNext();
                 _currentHp = (int)stream.ReceiveNext();
 
