@@ -2,10 +2,12 @@ using ExitGames.Client.Photon;
 using FantasyBattle.Abstractions;
 using FantasyBattle.Enemy;
 using FantasyBattle.Enums;
+using FantasyBattle.Spells;
 using Photon.Pun;
 using Photon.Realtime;
 using System;
 using UnityEngine;
+using static UnityEngine.UI.GridLayoutGroup;
 using Random = UnityEngine.Random;
 
 namespace FantasyBattle.Play
@@ -39,6 +41,8 @@ namespace FantasyBattle.Play
         private int _correctionHp;
         private int _maxHp;
         private Player _player;
+
+        private bool _isTakeDamage = false;
 
         #endregion
 
@@ -127,6 +131,45 @@ namespace FantasyBattle.Play
 
             //OnTakeDamage?.Invoke(takeDamage, owner);
             //_player = owner;
+            Debug.Log($"{photonView.ViewID}");
+            //if (!photonView.IsMine)
+            //{
+            //    if (_currentHp - damage > 0)
+            //    {
+            //        _currentHp -= damage;
+
+            //        var playerDamage = Convert.ToInt32(owner.CustomProperties[LobbyStatus.CHARACTER_COUNTDAMAGE]);
+            //        playerDamage += damage;
+
+            //        var hashTab = new Hashtable
+            //    {
+            //        { LobbyStatus.CHARACTER_COUNTDAMAGE, playerDamage.ToString() }
+            //    };
+            //        owner.SetCustomProperties(hashTab);
+            //    }
+            //    else
+            //    {
+            //        OnDiedEnemy?.Invoke(this);
+
+            //        var playerKill = Convert.ToInt32(owner.CustomProperties[LobbyStatus.CHARACTER_KILLS]);
+            //        playerKill++;
+
+            //        var playerDamage = Convert.ToInt32(owner.CustomProperties[LobbyStatus.CHARACTER_COUNTDAMAGE]);
+            //        playerDamage += _currentHp;
+
+            //        var hashTab = new Hashtable
+            //    {
+            //        { LobbyStatus.CHARACTER_KILLS, playerKill.ToString() },
+            //        { LobbyStatus.CHARACTER_COUNTDAMAGE, playerDamage.ToString() }
+            //    };
+            //        owner.SetCustomProperties(hashTab);
+
+            //        _currentHp = 0;
+
+            //        PhotonNetwork.Destroy(gameObject);
+            //    }
+            //    return;
+            //}
 
             if (_currentHp - damage > 0)
             {
@@ -172,12 +215,65 @@ namespace FantasyBattle.Play
         #endregion
 
 
+        #region UnityMethods
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (collision.gameObject.TryGetComponent<FireballView>(out var fireBall))
+            {
+                if (photonView.IsMine)
+                {
+
+
+                    if (_currentHp - fireBall.DamageSpell > 0)
+                    {
+                        _currentHp -= fireBall.DamageSpell;
+
+                        var playerDamage = Convert.ToInt32(fireBall.Owner.CustomProperties[LobbyStatus.CHARACTER_COUNTDAMAGE]);
+                        playerDamage += fireBall.DamageSpell;
+
+                        var hashTab = new Hashtable
+                        {
+                            { LobbyStatus.CHARACTER_COUNTDAMAGE, playerDamage.ToString() }
+                        };
+                        fireBall.Owner.SetCustomProperties(hashTab);
+                    }
+                    else
+                    {
+                        OnDiedEnemy?.Invoke(this);
+
+                        var playerKill = Convert.ToInt32(fireBall.Owner.CustomProperties[LobbyStatus.CHARACTER_KILLS]);
+                        playerKill++;
+
+                        var playerDamage = Convert.ToInt32(fireBall.Owner.CustomProperties[LobbyStatus.CHARACTER_COUNTDAMAGE]);
+                        playerDamage += _currentHp;
+
+                        var hashTab = new Hashtable
+                        {
+                            { LobbyStatus.CHARACTER_KILLS, playerKill.ToString() },
+                            { LobbyStatus.CHARACTER_COUNTDAMAGE, playerDamage.ToString() }
+                        };
+                        fireBall.Owner.SetCustomProperties(hashTab);
+
+                        _currentHp = 0;
+
+                        PhotonNetwork.Destroy(gameObject);
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+
         #region IPunObservable
 
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
             if (stream.IsWriting)
             {
+                Debug.Log($"{photonView.ViewID} Writing HP {_currentHp}");
+
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
                 stream.SendNext(_maxHp);
@@ -185,10 +281,14 @@ namespace FantasyBattle.Play
             }
             else
             {
+                Debug.Log($"{photonView.ViewID} After Reading HP {_currentHp}");
+
                 _botPostion = (Vector3)stream.ReceiveNext();
-                _botRotation= (Quaternion)stream.ReceiveNext();
+                _botRotation = (Quaternion)stream.ReceiveNext();
                 _maxHp = (int)stream.ReceiveNext();
                 _currentHp = (int)stream.ReceiveNext();
+
+                Debug.Log($"{photonView.ViewID} Before Reading HP {_currentHp}");
             }
         }
 

@@ -92,7 +92,7 @@ namespace FantasyBattle.Play
                 };
 
                 //UnitCreator enemyCreator = new EnemyMagCreator();
-                var enemy = PhotonNetwork.Instantiate(enemyData.PrefabName, enemyData.StartPostion, enemyData.StratRotation, 0);
+                var enemy = PhotonNetwork.InstantiateRoomObject(enemyData.PrefabName, enemyData.StartPostion, enemyData.StratRotation, 0);
                 var enemyView = enemy.GetComponent<EnemyView>();
                 enemyView.Init(enemyData);
                 enemyView.OnDiedEnemy += EnemyView_OnDiedEnemy;
@@ -118,7 +118,7 @@ namespace FantasyBattle.Play
                     };
 
                     //UnitCreator enemyCreator = new EnemyMagCreator();
-                    var enemy = PhotonNetwork.Instantiate(enemyData.PrefabName, enemyData.StartPostion, enemyData.StratRotation, 0);
+                    var enemy = PhotonNetwork.InstantiateRoomObject(enemyData.PrefabName, enemyData.StartPostion, enemyData.StratRotation, 0);
                     var enemyView = enemy.GetComponent<EnemyView>();
                     enemyView.Init(enemyData);
                     enemyView.OnDiedEnemy += EnemyView_OnDiedEnemy;

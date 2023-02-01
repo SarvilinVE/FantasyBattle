@@ -3,9 +3,11 @@ using FantasyBattle.Classes;
 using FantasyBattle.Spells;
 using FantasyBattle.UI;
 using Photon.Pun;
+using PlayFab.Internal;
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 namespace FantasyBattle.Play
@@ -186,8 +188,9 @@ namespace FantasyBattle.Play
 
             if (Input.GetMouseButtonDown(0))
             {
-                //photonView.RPC("Fire", RpcTarget.AllViaServer, _castPoint.position, _castPoint.rotation);
-                Fire(_castPoint.position, _castPoint.rotation);
+                SpellCast();
+                //photonView.RPC("FireBall", RpcTarget.AllViaServer, _castPoint.position, _castPoint.rotation);
+                //Fire(_castPoint.position, _castPoint.rotation);
             }
         }
         private void RestoreMana()
@@ -241,10 +244,8 @@ namespace FantasyBattle.Play
                 PhotonNetwork.LocalPlayer.SetCustomProperties(hashTab);
             }
         }
-        public void Fire(Vector3 position, Quaternion rotation)
+        private void SpellCast()
         {
-            if (!photonView.IsMine) return;
-
             var spell = _skillUi.GetActiveSpell();
 
             if (_skillUi.IsBlockSkill)
@@ -254,15 +255,45 @@ namespace FantasyBattle.Play
 
             if (_currentMana - (int)spell.CostMP >= 0)
             {
-                GameObject fireball;
-                fireball = PhotonNetwork.Instantiate(spell.SpellPrefab.name, position, Quaternion.identity);
-                fireball.GetComponent<Fireball>().Init(photonView.Owner, (rotation * Vector3.forward), spell.TimeLife, (int)(spell.AdditionalDamage + _classType.BaseDamage));
+                photonView.RPC("FireBall", RpcTarget.AllViaServer, _castPoint.position, _castPoint.rotation, spell.NameSpell);
+
                 _currentMana -= (int)spell.CostMP;
                 UpdateUI();
                 _skillUi.RollbackSkill();
-
             }
         }
+
+        [PunRPC]
+        public void FireBall(Vector3 position, Quaternion rotation, string spellName, PhotonMessageInfo info)
+        {
+            float lag = (float)(PhotonNetwork.Time - info.SentServerTime);
+
+                GameObject fireball;
+                fireball = (GameObject)Instantiate(Resources.Load(spellName), position, Quaternion.identity);
+                fireball.GetComponent<FireballView>().Init(photonView.Owner, (rotation * Vector3.forward), (int)_classType.BaseDamage, Mathf.Abs(lag));
+        }
+        //public void Fire(Vector3 position, Quaternion rotation)
+        //{
+        //    if (!photonView.IsMine) return;
+
+        //    var spell = _skillUi.GetActiveSpell();
+
+        //    if (_skillUi.IsBlockSkill)
+        //    {
+        //        return;
+        //    }
+
+        //    if (_currentMana - (int)spell.CostMP >= 0)
+        //    {
+        //        GameObject fireball;
+        //        fireball = PhotonNetwork.Instantiate(spell.SpellPrefab.name, position, Quaternion.identity);
+        //        fireball.GetComponent<Fireball>().Init(photonView.Owner, (rotation * Vector3.forward), spell.TimeLife, (int)(spell.AdditionalDamage + _classType.BaseDamage));
+        //        _currentMana -= (int)spell.CostMP;
+        //        UpdateUI();
+        //        _skillUi.RollbackSkill();
+
+        //    }
+        //}
 
         #endregion
 
