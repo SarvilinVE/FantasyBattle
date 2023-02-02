@@ -64,6 +64,7 @@ namespace FantasyBattle.Play
         private float _waitTimeToMove;
         private float _timerMove;
         private PlayerView _mainTarget;
+        private bool _isPauseAttack = false;
 
 
 
@@ -217,10 +218,17 @@ namespace FantasyBattle.Play
         {
             Collider[] targetsInRange = Physics.OverlapSphere(transform.position,
                 _viewRadius);
+            //Debug.DrawLine(transform.position, targetsInRange[0].transform.position, Color.red);
+            //if (!targetsInRange[0].gameObject.TryGetComponent<PlayerView>(out var player)) 
+            //{
+            //    _enemyState = EnemyState.Patroling;
+            //    return;
+            //}
 
             foreach(var target in targetsInRange)
             {
-                if(!target.gameObject.TryGetComponent<PlayerView>(out var playerView))
+                Debug.DrawLine(transform.position, target.transform.position, Color.red);
+                if (!target.gameObject.TryGetComponent<PlayerView>(out var playerView))
                 {
                     continue;
                 }
@@ -245,6 +253,7 @@ namespace FantasyBattle.Play
             if (_mainTarget == null)
             {
                 _enemyState = EnemyState.Patroling;
+                return;
             }
 
             if (_navMesh.remainingDistance - _navMesh.stoppingDistance <= _attackRadius)
@@ -257,11 +266,23 @@ namespace FantasyBattle.Play
             if(_mainTarget == null)
             {
                 _enemyState = EnemyState.Purshit;
+                return;
             }
 
-            _mainTarget.gameObject.GetComponent<PhotonView>().RPC("DamageHp", RpcTarget.All, _damage);
+            if (_isPauseAttack == false)
+            {
+                _mainTarget.gameObject.GetComponent<PhotonView>().RPC("DamageHp", RpcTarget.All, _damage);
+                _isPauseAttack = true;
+                StartCoroutine(DurationAttack());
+            }
 
             _enemyState = EnemyState.Purshit;
+        }
+
+        public IEnumerator DurationAttack()
+        {
+            yield return new WaitForSeconds(_attackSpeed);
+            _isPauseAttack = false;
         }
         private Vector3 GetGenericPoint()
         {
@@ -323,7 +344,6 @@ namespace FantasyBattle.Play
                 owner.SetCustomProperties(hashTab);
 
                 _currentHp = 0;
-
                 PhotonNetwork.Destroy(gameObject);
             }
         }

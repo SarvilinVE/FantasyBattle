@@ -277,6 +277,11 @@ namespace FantasyBattle.Battle
                 _resultHolder.SetActive(false);
                 //SetActivePanel(_gameUI.name);
             }
+
+            if(Input.GetKey(KeyCode.Escape))
+            {
+
+            }
         }
     }
 }
