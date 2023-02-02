@@ -1,9 +1,6 @@
-using FantasyBattle.Abstractions;
 using FantasyBattle.Enemy;
-using FantasyBattle.Fabrica;
 using Photon.Pun;
 using Photon.Realtime;
-using PlayFab.ClientModels;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -76,56 +73,19 @@ namespace FantasyBattle.Play
             //}
         }
 
-        public void SetupBot(GameObject botPrefab)
+        public void SetupBot(GameObject botPrefab, Transform enemyTransform)
         {
-            _botPrefab = botPrefab;
-            //PhotonNetwork.InstantiateRoomObject(botPrefab.name, _blueSpawnPoints[0].position, _blueSpawnPoints[0].rotation).
-            //    GetComponent<BotCharacter>().Coven = LobbyStatus.ENEMY_TAG;
-            if (_enemyCount <= _enemys.Count)
+            EnemyData enemyData = new EnemyData
             {
-                EnemyData enemyData = new EnemyData
-                {
-                    PrefabName = botPrefab.name,
-                    Hp = 200,
-                    StartPostion = _blueSpawnPoints[0].position,
-                    StratRotation = _blueSpawnPoints[0].rotation
-                };
+                PrefabName = botPrefab.name,
+                Hp = 20,
+                StartPostion = enemyTransform.position,
+                StratRotation = enemyTransform.rotation
+            };
 
-                //UnitCreator enemyCreator = new EnemyMagCreator();
-                var enemy = PhotonNetwork.InstantiateRoomObject(enemyData.PrefabName, enemyData.StartPostion, enemyData.StratRotation, 0);
-                var enemyView = enemy.GetComponent<EnemyView>();
-                enemyView.Init(enemyData);
-                enemyView.OnDiedEnemy += EnemyView_OnDiedEnemy;
-                _enemys.Add(enemyView);
-                _countCreationEnemy++;
-            }
-        }
-
-        private void EnemyView_OnDiedEnemy(EnemyView view)
-        {
-            _enemys.Remove(view);
-
-            if(_countCreationEnemy <= _enemyMaxCount)
-            {
-                if (_enemyCount <= _enemys.Count)
-                {
-                    EnemyData enemyData = new EnemyData
-                    {
-                        PrefabName = _botPrefab.name,
-                        Hp = 200,
-                        StartPostion = _blueSpawnPoints[0].position,
-                        StratRotation = _blueSpawnPoints[0].rotation
-                    };
-
-                    //UnitCreator enemyCreator = new EnemyMagCreator();
-                    var enemy = PhotonNetwork.InstantiateRoomObject(enemyData.PrefabName, enemyData.StartPostion, enemyData.StratRotation, 0);
-                    var enemyView = enemy.GetComponent<EnemyView>();
-                    enemyView.Init(enemyData);
-                    enemyView.OnDiedEnemy += EnemyView_OnDiedEnemy;
-                    _enemys.Add(enemyView);
-                    _countCreationEnemy++;
-                }
-            }
+            var enemy = PhotonNetwork.InstantiateRoomObject(enemyData.PrefabName, enemyData.StartPostion, enemyData.StratRotation, 0);
+            var enemyView = enemy.GetComponent<EnemyView>();
+            enemyView.Init(enemyData);
         }
 
         #endregion
@@ -136,14 +96,6 @@ namespace FantasyBattle.Play
         private void Awake()
         {
             Instance = this;
-        }
-
-        private void Update()
-        {
-            //foreach (var enemy in _enemys)
-            //{
-            //    enemy.Movement();
-            //}
         }
 
         #endregion

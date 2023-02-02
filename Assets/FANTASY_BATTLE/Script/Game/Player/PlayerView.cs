@@ -55,6 +55,9 @@ namespace FantasyBattle.Play
         private int _playerLevel;
         private bool _isRestoringMp = false;
         private string _playerName;
+        private Renderer _renderer;
+        private Collider _collider;
+        private bool _isControllable;
 
         #endregion
 
@@ -76,12 +79,14 @@ namespace FantasyBattle.Play
         {
             if (!photonView.IsMine) return;
 
+            _isControllable= true;
             CreatePlayer();
             OnUpdateAction += Movement;
         }
         void Update()
         {
             if (!photonView.IsMine) return;
+            if (!_isControllable) return;
 
             OnUpdate();
         }
@@ -94,6 +99,11 @@ namespace FantasyBattle.Play
         public void CreatePlayer()
         {
             if (!photonView.IsMine) return;
+            if (!_isControllable) return;
+
+            _renderer = GetComponent<Renderer>();
+            _collider = GetComponent<Collider>();
+            _isControllable = true;
 
             _unitInfoUi = FindObjectOfType<UnitInfoUI>();
             _unitInfoUi.gameObject.SetActive(false);
@@ -122,8 +132,19 @@ namespace FantasyBattle.Play
         [PunRPC]
         public void DamageHp(int damage)
         {
+            if (_currentHealth - damage > 0)
+            {
+                _currentHealth -= damage;
+            }
+            else
+            {
+                _currentHealth = 0;
 
-            _currentHealth -= damage;
+                _isControllable = false;
+                _collider.enabled = false;
+                _renderer.enabled = false;
+            }
+
             UpdateUI();
         }
 

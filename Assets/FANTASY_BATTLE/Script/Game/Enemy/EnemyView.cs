@@ -381,8 +381,6 @@ namespace FantasyBattle.Play
                     }
                     else
                     {
-                        OnDiedEnemy?.Invoke(this);
-
                         var playerKill = Convert.ToInt32(fireBall.Owner.CustomProperties[LobbyStatus.CHARACTER_KILLS]);
                         playerKill++;
 
@@ -397,6 +395,13 @@ namespace FantasyBattle.Play
                         fireBall.Owner.SetCustomProperties(hashTab);
 
                         _currentHp = 0;
+
+                        var currentCountEnemies = Convert.ToInt32(PhotonNetwork.CurrentRoom.CustomProperties[LobbyStatus.CURRENT_COUNT_ENEMIES]) - 1;
+                        var roomProps = new Hashtable
+                        {
+                            {LobbyStatus.CURRENT_COUNT_ENEMIES, currentCountEnemies }
+                        };
+                        PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
 
                         PhotonNetwork.Destroy(gameObject);
                     }

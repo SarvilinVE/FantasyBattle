@@ -4,6 +4,8 @@ namespace FantasyBattle
 {
     public class LobbyStatus
     {
+        //ROOM PROPERTIES
+        public const string CURRENT_COUNT_ENEMIES = "CURRENT_COUNT_ENEMIES";
         public const string EMPTY = "EMPTY";
         //ENEMY DATA
         public const float ENEMY_SPAWN_TIME = 5.0f;

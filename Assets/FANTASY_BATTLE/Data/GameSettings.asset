@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02d7399d90f518344bfea455d9d7349c, type: 3}
+  m_Name: GameSettings
+  m_EditorClassIdentifier: 
+  _botPrefab:
+  - {fileID: 3073840003712661970, guid: 3db42a558dd552145ab5a0d14aea7de5, type: 3}
+  _startEnemiesPosition:
+  - {fileID: 5727696100986590949, guid: b3934c3aa138cb94ea225223bfaa4909, type: 3}
+  - {fileID: 7144233584811893446, guid: 917bb27afa88fa24c932e8c3a4c72897, type: 3}
+  _maxCountEnemiesForWin: 2
+  _countSimultaneousEnemies: 1

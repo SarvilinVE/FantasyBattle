@@ -1,6 +1,9 @@
 
 using System.Collections;
+using FantasyBattle.Data;
+using FantasyBattle.Enums;
 using FantasyBattle.Play;
+using FantasyBattle.UI;
 using Photon.Pun;
 using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
@@ -14,7 +17,7 @@ namespace FantasyBattle.Battle
         public static GameManager Instance = null;
 
         [SerializeField]
-        private GameObject[] _botPrefabs;
+        private GameSettings _settings;
 
         [Header("Result Holder")]
         [SerializeField]
@@ -28,12 +31,17 @@ namespace FantasyBattle.Battle
         [SerializeField]
         private GameObject _playerSlotHolder;
 
+        [Header("End Game UI")]
+        [SerializeField]
+        private GameObject _EndGameHolderUI;
+
         [Header("Play Manager")]
         [SerializeField]
         private PlayerManager _playerManager;
 
         private bool _isStart = false;
         private int _countBots;
+        private ResultGameState _resultGameState;
 
         #region UNITY
 
@@ -51,6 +59,14 @@ namespace FantasyBattle.Battle
             };
             PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
+            Hashtable roomProps = new Hashtable
+            {
+                {LobbyStatus.CURRENT_COUNT_ENEMIES, _settings.MaxCountEnemiesForWin }
+            };
+
+            PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
+
+            _resultGameState = ResultGameState.None;
             _countBots = 0;
         }
         public override void OnEnable()
@@ -66,23 +82,33 @@ namespace FantasyBattle.Battle
 
         private IEnumerator SpawnBot()
         {
-            while (true)
+            while ((int)PhotonNetwork.CurrentRoom.CustomProperties[LobbyStatus.CURRENT_COUNT_ENEMIES] - 1 > 0)
             {
                 yield return new WaitForSeconds(Random.Range(LobbyStatus.ENEMY_SPAWN_TIME, LobbyStatus.ENEMY_MAX_SPAWN_TIME));
 
-                if (_countBots + 1 <= 3)
+                if (_countBots < _settings.CountsimultaneousEnemies)
                 {
-                    _playerManager.SetupBot(_botPrefabs[0]);
+                    var enemyObject = _settings.BotPrefab[Random.Range(0, _settings.BotPrefab.Count - 1)];
+                    var enemyPosition = _settings.StartEnemiesPosition[Random.Range(0, _settings.StartEnemiesPosition.Count - 1)]
+                        .transform;
+
+                    _playerManager.SetupBot(enemyObject, enemyPosition);
                     _countBots++;
                 }
             }
         }
 
-        private IEnumerator EndOfGame(string winner, int score)
+        private IEnumerator EndOfGame(string winner)
         {
             SetActivePanel(_resultHolder.name);
 
             yield return new WaitForSecondsRealtime(5);
+
+            SetActivePanel(_EndGameHolderUI.name);
+            _EndGameHolderUI.GetComponent<EndGameUI>().ShowText(winner);
+
+            yield return new WaitForSecondsRealtime(5);
+
             PhotonNetwork.LeaveRoom();
         }
 
@@ -115,7 +141,7 @@ namespace FantasyBattle.Battle
 
         public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
         {
-            if (changedProps.ContainsKey(LobbyStatus.PLAYER_LIVES))
+            if (changedProps.ContainsKey(LobbyStatus.CURRENT_HP))
             {
                 CheckEndOfGame();
                 return;
@@ -157,6 +183,31 @@ namespace FantasyBattle.Battle
                 }
             }
 
+        }
+
+        public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
+        {
+            if (propertiesThatChanged.ContainsKey(LobbyStatus.CURRENT_COUNT_ENEMIES))
+            {
+                if (propertiesThatChanged.TryGetValue(LobbyStatus.CURRENT_COUNT_ENEMIES, out var currentCountEnemies))
+                {
+                    if ((int)currentCountEnemies == _settings.MaxCountEnemiesForWin)
+                    {
+                        return;
+                    }
+                }
+
+                if((int)currentCountEnemies == 0)
+                {
+                    _resultGameState = ResultGameState.Win;
+                    CheckEndOfGame();
+                }
+
+                if (_countBots - 1 >= 0)
+                {
+                    _countBots--;
+                }
+            }
         }
 
         #endregion
@@ -213,42 +264,57 @@ namespace FantasyBattle.Battle
 
         private void CheckEndOfGame()
         {
-            bool allDestroyed = true;
-
-            foreach (Player p in PhotonNetwork.PlayerList)
-            {
-                object currentHP;
-                if (p.CustomProperties.TryGetValue(LobbyStatus.CURRENT_HP, out currentHP))
-                {
-                    if ((int)currentHP > 0)
-                    {
-                        allDestroyed = false;
-                        break;
-                    }
-                }
-            }
-
-            if (allDestroyed)
+            if (_resultGameState == ResultGameState.Win)
             {
                 if (PhotonNetwork.IsMasterClient)
                 {
                     StopAllCoroutines();
                 }
 
-                string winner = "";
-                int score = -1;
-
-                foreach (Player p in PhotonNetwork.PlayerList)
-                {
-                    if (p.GetScore() > score)
-                    {
-                        winner = p.NickName;
-                        score = p.GetScore();
-                    }
-                }
-
-                StartCoroutine(EndOfGame(winner, score));
+                string resultText = $"Ñongratulations {PhotonNetwork.LocalPlayer.NickName}. You have won";
+                StartCoroutine(EndOfGame(resultText));
             }
+            else
+            {
+                string resultText = $"Sorry {PhotonNetwork.LocalPlayer.NickName}. You died and lost";
+                StartCoroutine(EndOfGame(resultText));
+            }
+            //bool allDestroyed = true;
+
+            //foreach (Player p in PhotonNetwork.PlayerList)
+            //{
+            //    object currentHP;
+            //    if (p.CustomProperties.TryGetValue(LobbyStatus.CURRENT_HP, out currentHP))
+            //    {
+            //        if ((int)currentHP > 0)
+            //        {
+            //            allDestroyed = false;
+            //            break;
+            //        }
+            //    }
+            //}
+
+            //if (allDestroyed)
+            //{
+            //    if (PhotonNetwork.IsMasterClient)
+            //    {
+            //        StopAllCoroutines();
+            //    }
+
+            //    string winner = "";
+            //    int score = -1;
+
+            //    foreach (Player p in PhotonNetwork.PlayerList)
+            //    {
+            //        if (p.GetScore() > score)
+            //        {
+            //            winner = p.NickName;
+            //            score = p.GetScore();
+            //        }
+            //    }
+
+            //    StartCoroutine(EndOfGame(winner, score));
+            //}
         }
 
         private void OnCountdownTimerIsExpired()
@@ -261,6 +327,7 @@ namespace FantasyBattle.Battle
         {
             _resultHolder.SetActive(activePanel.Equals(_resultHolder.name));
             _gameUI.SetActive(activePanel.Equals(_gameUI.name));
+            _EndGameHolderUI.SetActive(activePanel.Equals(_EndGameHolderUI.name));
         }
 
         void Update()
