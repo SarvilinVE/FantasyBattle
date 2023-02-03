@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using FantasyBattle.Data;
 using FantasyBattle.Enums;
 using FantasyBattle.Play;
@@ -8,6 +9,9 @@ using FantasyBattle.UI;
 using Photon.Pun;
 using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
+using PlayFab.ClientModels;
+using PlayFab;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Random = UnityEngine.Random;
@@ -21,6 +25,9 @@ namespace FantasyBattle.Battle
         [SerializeField]
         private GameSettings _settings;
 
+        [SerializeField]
+        private LevelUpSettings _levelUpSettings;
+
         [Header("Result Holder")]
         [SerializeField]
         private GameObject _resultHolder;
@@ -28,6 +35,10 @@ namespace FantasyBattle.Battle
         [Header("Game UI")]
         [SerializeField]
         private GameObject _gameUI;
+
+        [Header("UnitInfo UI")]
+        [SerializeField]
+        private GameObject _unitInfoUi;
 
         [Header("PLayer UI")]
         [SerializeField]
@@ -103,8 +114,8 @@ namespace FantasyBattle.Battle
 
                 if (_countBots < _settings.CountsimultaneousEnemies)
                 {
-                    var enemyObject = _settings.BotPrefab[Random.Range(0, _settings.BotPrefab.Count - 1)];
-                    var enemyPosition = _settings.StartEnemiesPosition[Random.Range(0, _settings.StartEnemiesPosition.Count - 1)]
+                    var enemyObject = _settings.BotPrefab[Random.Range(0, _settings.BotPrefab.Count)];
+                    var enemyPosition = _settings.StartEnemiesPosition[Random.Range(0, _settings.StartEnemiesPosition.Count)]
                         .transform;
 
                     _playerManager.SetupBot(enemyObject, enemyPosition);
@@ -124,6 +135,8 @@ namespace FantasyBattle.Battle
 
             yield return new WaitForSecondsRealtime(5);
 
+            _EndGameHolderUI.GetComponent<EndGameUI>().ShowText(SetReward(PhotonNetwork.LocalPlayer, winner));
+            yield return new WaitForSecondsRealtime(5);
             PhotonNetwork.LeaveRoom();
         }
 
@@ -226,7 +239,7 @@ namespace FantasyBattle.Battle
                     }
                 }
 
-                if((int)currentCountEnemies == 0)
+                if ((int)currentCountEnemies == 0)
                 {
                     _resultGameState = ResultGameState.Win;
                     CheckEndOfGame();
@@ -291,7 +304,7 @@ namespace FantasyBattle.Battle
                 string resultText = $"Ñongratulations {PhotonNetwork.LocalPlayer.NickName}. You have won";
                 StartCoroutine(EndOfGame(resultText));
             }
-            if(_resultGameState == ResultGameState.Died)
+            if (_resultGameState == ResultGameState.Died)
             {
                 //if (PhotonNetwork.IsMasterClient)
                 //{
@@ -321,7 +334,7 @@ namespace FantasyBattle.Battle
             if (Input.GetKeyDown(KeyCode.Tab))
             {
                 _resultHolder.SetActive(true);
-                
+
                 //SetActivePanel(_resultHolder.name);
             }
 
@@ -331,60 +344,142 @@ namespace FantasyBattle.Battle
                 //SetActivePanel(_gameUI.name);
             }
 
-            if(Input.GetKey(KeyCode.Escape))
+            if (Input.GetKey(KeyCode.Escape))
             {
 
             }
         }
+        private string SetReward(Player player, string defaultText)
+        {
+            int baseExp = 0;
+            int giveExp = 0;
+
+            var currentLevel = Convert.ToInt32(player.CustomProperties[(LobbyStatus.CHARACTER_LEVEL)]);
+            var currentExp = Convert.ToInt32(player.CustomProperties[LobbyStatus.CHARACTER_EXP]);
+            var kills = Convert.ToInt32(player.CustomProperties[LobbyStatus.CHARACTER_KILLS]);
+            var damage = Convert.ToInt32(player.CustomProperties[LobbyStatus.CHARACTER_COUNTDAMAGE]);
+
+            foreach (var lvl in _levelUpSettings.Data)
+            {
+                if (lvl.x == currentLevel)
+                {
+                    baseExp = (int)lvl.z;
+
+                    if (_resultGameState == ResultGameState.Win)
+                    {
+                        giveExp = baseExp * kills + damage;
+                    }
+                    else
+                    {
+                        giveExp = (baseExp * kills + damage) / 2;
+                    }
+
+                    break;
+                }
+            }
+            Debug.Log($"{kills} * {baseExp} + {damage}");
+            var tempLevel = currentLevel;
+            foreach (var lvl in _levelUpSettings.Data)
+            {
+                if (lvl.x == tempLevel)
+                {
+                    if (lvl.y < giveExp + currentExp)
+                    {
+                        giveExp = currentExp + giveExp - (int)lvl.y;
+                        tempLevel = (int)lvl.x;
+                        continue;
+                    }
+                    else
+                    {
+                        giveExp = currentExp + giveExp;
+                    }
+
+                    PlayFabClientAPI.UpdateCharacterStatistics(new UpdateCharacterStatisticsRequest
+                    {
+                        CharacterId = player.CustomProperties[LobbyStatus.CHARACTER_ID].ToString(),
+                        CharacterStatistics = new Dictionary<string, int>
+                            {
+                                {LobbyStatus.CHARACTER_LEVEL, tempLevel },
+                                {LobbyStatus.CHARACTER_EXP, giveExp}
+                            }
+                    }, result =>
+                        {
+                            Debug.Log($"Character {player.NickName} update complete {giveExp}");
+                        }, OnError);
+
+                    if (tempLevel == currentLevel)
+                    {
+                        return $"You have gained {giveExp} experience";
+                    }
+                    else
+                    {
+                        return $"You have gained {giveExp} experience and increased your level to {tempLevel}";
+                    }
+                }
+
+            }
+            return defaultText;
+        }
+        private void OnError(PlayFabError error)
+        {
+            var errorMesssage = error.GenerateErrorReport();
+            if (errorMesssage.Contains("Item not owned"))
+            {
+                Debug.Log($"No character cuppon. Buy it!");
+                return;
+            }
+
+            Debug.LogError($"{errorMesssage}");
+        }
     }
 }
 
-        #region OLD_VERSON
-    //    private void Awake()
-    //    {
-    //        _playerManager.SetupPlayer(true);
-    //        SetActivePanel(_resultHolder.name);
-    //        StartCoroutine("ShowTabPlayers");
-    //    }
+#region OLD_VERSON
+//    private void Awake()
+//    {
+//        _playerManager.SetupPlayer(true);
+//        SetActivePanel(_resultHolder.name);
+//        StartCoroutine("ShowTabPlayers");
+//    }
 
-    //    IEnumerator ShowTabPlayers()
-    //    {
-    //        yield return new WaitForSecondsRealtime(5.0f);
-    //        SetActivePanel(_gameUI.name);
+//    IEnumerator ShowTabPlayers()
+//    {
+//        yield return new WaitForSecondsRealtime(5.0f);
+//        SetActivePanel(_gameUI.name);
 
-    //        if (PhotonNetwork.MasterClient.IsMasterClient)
-    //        {
-    //            if (PhotonNetwork.CurrentRoom.PlayerCount != PhotonNetwork.CurrentRoom.MaxPlayers)
-    //            {
-    //                _playerManager.SetupPlayer(false);
-    //            }
-    //        }
-    //        //_playerManager.SetupPlayer();
-    //    }
+//        if (PhotonNetwork.MasterClient.IsMasterClient)
+//        {
+//            if (PhotonNetwork.CurrentRoom.PlayerCount != PhotonNetwork.CurrentRoom.MaxPlayers)
+//            {
+//                _playerManager.SetupPlayer(false);
+//            }
+//        }
+//        //_playerManager.SetupPlayer();
+//    }
 
-    //    private void SetActivePanel(string activePanel)
-    //    {
-    //        _resultHolder.SetActive(activePanel.Equals(_resultHolder.name));
-    //        _gameUI.SetActive(activePanel.Equals(_gameUI.name));
-    //    }
-    //    void Start()
-    //    {
+//    private void SetActivePanel(string activePanel)
+//    {
+//        _resultHolder.SetActive(activePanel.Equals(_resultHolder.name));
+//        _gameUI.SetActive(activePanel.Equals(_gameUI.name));
+//    }
+//    void Start()
+//    {
 
-    //    }
+//    }
 
-    //    void Update()
-    //    {
-    //        if (Input.GetKeyDown(KeyCode.Tab))
-    //        {
-    //            SetActivePanel(_resultHolder.name);
-    //        }
+//    void Update()
+//    {
+//        if (Input.GetKeyDown(KeyCode.Tab))
+//        {
+//            SetActivePanel(_resultHolder.name);
+//        }
 
-    //        if (Input.GetKeyUp(KeyCode.Tab))
-    //        {
-    //            SetActivePanel(_gameUI.name);
-    //        }
-    //    }
-    //}
+//        if (Input.GetKeyUp(KeyCode.Tab))
+//        {
+//            SetActivePanel(_gameUI.name);
+//        }
+//    }
+//}
 
-    #endregion
+#endregion
 

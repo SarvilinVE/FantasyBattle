@@ -686,8 +686,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _settings: {fileID: 11400000, guid: f5ea062dc994c0a409e8d24097eb97d8, type: 2}
+  _levelUpSettings: {fileID: 11400000, guid: 6e19e8725fe5d0c41b9c2b71dc90f899, type: 2}
   _resultHolder: {fileID: 1432706624}
   _gameUI: {fileID: 2067221947}
+  _unitInfoUi: {fileID: 381447509}
   _playerSlotHolder: {fileID: 1302100379}
   _EndGameHolderUI: {fileID: 1915355051}
   _playerManager: {fileID: 2006780256}
@@ -2892,7 +2894,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2666443192240526099, guid: 5a293b6350f844f4abff63c3f8060353, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5a293b6350f844f4abff63c3f8060353, type: 3}

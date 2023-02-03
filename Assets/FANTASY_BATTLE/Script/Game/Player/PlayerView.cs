@@ -57,6 +57,7 @@ namespace FantasyBattle.Play
         private string _playerName;
         private Renderer _renderer;
         private Collider _collider;
+        private bool _isEnabale = true;
         private bool _isControllable;
 
         #endregion
@@ -94,7 +95,7 @@ namespace FantasyBattle.Play
         {
             if (!photonView.IsMine) return;
 
-            _unitInfoUi.gameObject.SetActive(true);
+            //_unitInfoUi.gameObject.SetActive(true);
             PhotonNetwork.Destroy(photonView.gameObject);
         }
 
@@ -112,7 +113,8 @@ namespace FantasyBattle.Play
             _collider = GetComponent<Collider>();
             _isControllable = true;
 
-            _unitInfoUi = FindObjectOfType<UnitInfoUI>();
+            var parent = GameObject.Find("GameUI");
+            _unitInfoUi = Instantiate(_unitInfoUi.gameObject, parent.transform).GetComponent<UnitInfoUI>();
             _unitInfoUi.gameObject.SetActive(false);
 
             _mouseLook = GetComponent<MouseLook>();
@@ -139,6 +141,8 @@ namespace FantasyBattle.Play
         [PunRPC]
         public void DamageHp(int damage)
         {
+            if (!_isControllable) return;
+
             if (_currentHealth - damage > 0)
             {
                 _currentHealth -= damage;
@@ -189,7 +193,11 @@ namespace FantasyBattle.Play
                 return;
             }
 
-            if (!photonView.IsMine) return;
+            if (!photonView.IsMine) 
+            {
+                _collider.enabled = _isEnabale;
+                _renderer.enabled = _isEnabale;
+            }
 
             _mouseLook.PlayerCamera.enabled = true;
             
@@ -364,6 +372,7 @@ namespace FantasyBattle.Play
                 stream.SendNext(_currentHealth);
                 stream.SendNext(_health);
                 stream.SendNext(_playerName);
+                stream.SendNext(_isEnabale);
             }
             else
             {
@@ -372,6 +381,7 @@ namespace FantasyBattle.Play
                 _currentHealth = (int)stream.ReceiveNext();
                 _health = (int)stream.ReceiveNext();
                 _playerName = (string)stream.ReceiveNext();
+                _isEnabale = (bool)stream.ReceiveNext();
             }
         }
 

@@ -19,3 +19,4 @@ MonoBehaviour:
   - {fileID: 7144233584811893446, guid: 917bb27afa88fa24c932e8c3a4c72897, type: 3}
   _maxCountEnemiesForWin: 2
   _countSimultaneousEnemies: 1
+  _levelUpSettings: {fileID: 11400000, guid: 6e19e8725fe5d0c41b9c2b71dc90f899, type: 2}

@@ -265,6 +265,11 @@ namespace FantasyBattle.Play
         }
         private void Purshit()
         {
+            if (_mainTarget == null)
+            {
+                _enemyState = EnemyState.Patroling;
+                return;
+            }
             Debug.DrawLine(transform.position, _mainTarget.gameObject.transform.position, Color.blue, 2);
             if (_mainTarget.gameObject.GetComponent<Collider>().enabled == false)
             {
@@ -279,6 +284,12 @@ namespace FantasyBattle.Play
         }
         private void Attack()
         {
+            if(_mainTarget == null)
+            {
+                _enemyState = EnemyState.Purshit;
+                return;
+            }
+
             if(_mainTarget.gameObject.GetComponent<Collider>().enabled == false)
             {
                 _enemyState = EnemyState.Purshit;

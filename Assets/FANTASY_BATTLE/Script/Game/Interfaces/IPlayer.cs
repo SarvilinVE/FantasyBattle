@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace FantasyBattle.Abstractions
 {
     public interface IPlayer : IDamage,IRestore

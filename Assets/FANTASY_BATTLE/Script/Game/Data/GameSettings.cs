@@ -19,6 +19,10 @@ namespace FantasyBattle.Data
         [Tooltip ("The number of enemies at the same time in the game")]
         [SerializeField] private int _countSimultaneousEnemies;
 
+        [Space]
+        [Header("Level up settings")]
+        [SerializeField] private LevelUpSettings _levelUpSettings;
+
         #endregion
 
 
@@ -28,6 +32,7 @@ namespace FantasyBattle.Data
         public List<GameObject> StartEnemiesPosition => _startEnemiesPosition;
         public int MaxCountEnemiesForWin => _maxCountEnemiesForWin;
         public int CountsimultaneousEnemies => _countSimultaneousEnemies;
+        public LevelUpSettings LevelUpSettings => _levelUpSettings;
 
         #endregion
 

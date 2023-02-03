@@ -56,21 +56,7 @@ namespace FantasyBattle.Play
                 var transformPlayer = _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)];
                 PhotonNetwork.Instantiate(player, transformPlayer.position,
                             transformPlayer.rotation, 0);
-
-                Debug.Log($"Create Player MAsterClient {localPlayer.ActorNumber}");
             }
-            //else
-            //{
-            //    if (localPlayer.CustomProperties.TryGetValue(LobbyStatus.NAME_CLASS, out var playerPrefab))
-            //    {
-            //        var player = (string)playerPrefab;
-
-            //        var transformPlayer = _redSpawnPoints[Random.Range(0, _redSpawnPoints.Length)];
-            //        PhotonNetwork.Instantiate(player, transformPlayer.position,
-            //                    transformPlayer.rotation, 0);
-            //        Debug.Log($"Create Player Not MAsterClient {localPlayer.ActorNumber}");
-            //    }
-            //}
         }
 
         public void SetupBot(GameObject botPrefab, Transform enemyTransform)
@@ -99,7 +85,6 @@ namespace FantasyBattle.Play
         }
         private void OnDestroy()
         {
-            Debug.Log($"DESTROY PlayerManager");
             Destroy(Instance);
         }
 

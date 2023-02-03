@@ -221,7 +221,7 @@ MonoBehaviour:
   _movingSpeed: 8
   _acceleration: 3
   _castPoint: {fileID: 2431808980634353319}
-  _unitInfoUi: {fileID: 0}
+  _unitInfoUi: {fileID: 2666443192240526110, guid: 5a293b6350f844f4abff63c3f8060353, type: 3}
 --- !u!114 &1353949987907557594
 MonoBehaviour:
   m_ObjectHideFlags: 0
