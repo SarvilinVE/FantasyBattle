@@ -97,6 +97,11 @@ namespace FantasyBattle.Play
         {
             Instance = this;
         }
+        private void OnDestroy()
+        {
+            Debug.Log($"DESTROY PlayerManager");
+            Destroy(Instance);
+        }
 
         #endregion
 

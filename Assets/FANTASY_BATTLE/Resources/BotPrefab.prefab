@@ -163,7 +163,7 @@ MonoBehaviour:
   _genericPointsRange: {x: 8, y: 10}
   _durationMove: 6
   _viewRadius: 20
-  _attackRadius: 0
+  _attackRadius: 0.5
 --- !u!114 &758776226666495059
 MonoBehaviour:
   m_ObjectHideFlags: 0

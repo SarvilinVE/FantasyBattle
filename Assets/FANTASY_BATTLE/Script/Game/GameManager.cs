@@ -1,4 +1,5 @@
 
+using System;
 using System.Collections;
 using FantasyBattle.Data;
 using FantasyBattle.Enums;
@@ -9,6 +10,7 @@ using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using Random = UnityEngine.Random;
 
 namespace FantasyBattle.Battle
 {
@@ -68,12 +70,25 @@ namespace FantasyBattle.Battle
 
             _resultGameState = ResultGameState.None;
             _countBots = 0;
+            Debug.Log($"START GAMEMANAGER");
         }
         public override void OnEnable()
         {
             base.OnEnable();
 
+            Debug.Log($"ENABLE GAMEMANAGER");
             CountdownTimer.OnCountdownTimerHasExpired += OnCountdownTimerIsExpired;
+        }
+        public override void OnDisable()
+        {
+            base.OnDisable();
+
+            CountdownTimer.OnCountdownTimerHasExpired -= OnCountdownTimerIsExpired;
+        }
+        private void OnDestroy()
+        {
+            Debug.Log($"DESTROY GameManager");
+            Destroy(Instance);
         }
 
         #endregion
@@ -82,7 +97,7 @@ namespace FantasyBattle.Battle
 
         private IEnumerator SpawnBot()
         {
-            while ((int)PhotonNetwork.CurrentRoom.CustomProperties[LobbyStatus.CURRENT_COUNT_ENEMIES] - 1 > 0)
+            while (Convert.ToInt32(PhotonNetwork.CurrentRoom.CustomProperties[LobbyStatus.CURRENT_COUNT_ENEMIES]) - 1 > 0)
             {
                 yield return new WaitForSeconds(Random.Range(LobbyStatus.ENEMY_SPAWN_TIME, LobbyStatus.ENEMY_MAX_SPAWN_TIME));
 
@@ -118,11 +133,18 @@ namespace FantasyBattle.Battle
 
         public override void OnDisconnected(DisconnectCause cause)
         {
+            PhotonNetwork.LocalPlayer.CustomProperties.Clear();
+
             UnityEngine.SceneManagement.SceneManager.LoadScene(1);
         }
 
         public override void OnLeftRoom()
         {
+            if (PhotonNetwork.IsMasterClient)
+                StopAllCoroutines();
+
+            PhotonNetwork.LocalPlayer.CustomProperties.Clear();
+
             PhotonNetwork.Disconnect();
         }
 
@@ -141,10 +163,17 @@ namespace FantasyBattle.Battle
 
         public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
         {
-            if (changedProps.ContainsKey(LobbyStatus.CURRENT_HP))
+            if (targetPlayer == PhotonNetwork.LocalPlayer)
             {
-                CheckEndOfGame();
-                return;
+                if (changedProps.ContainsKey(LobbyStatus.CURRENT_HP))
+                {
+                    if (Convert.ToInt32(PhotonNetwork.LocalPlayer.CustomProperties[LobbyStatus.CURRENT_HP]) == 0)
+                    {
+                        _resultGameState = ResultGameState.Died;
+                        CheckEndOfGame();
+                        return;
+                    }
+                }
             }
 
             if (_isStart == false)
@@ -201,9 +230,10 @@ namespace FantasyBattle.Battle
                 {
                     _resultGameState = ResultGameState.Win;
                     CheckEndOfGame();
+                    return;
                 }
 
-                if (_countBots - 1 >= 0)
+                if (_countBots > 0)
                 {
                     _countBots--;
                 }
@@ -215,25 +245,12 @@ namespace FantasyBattle.Battle
 
         private void StartGame()
         {
-            //_isStart = true;
-
-            //_playerSlotHolder.GetComponent<PlayerUI>().CreateSlot();
-            // on rejoin, we have to figure out if the spaceship exists or not
-            // if this is a rejoin (the ship is already network instantiated and will be setup via event) we don't need to call PN.Instantiate
-
-
-            //float angularStart = (360.0f / PhotonNetwork.CurrentRoom.PlayerCount) * PhotonNetwork.LocalPlayer.GetPlayerNumber();
-            //float x = 20.0f * Mathf.Sin(angularStart * Mathf.Deg2Rad);
-            //float z = 20.0f * Mathf.Cos(angularStart * Mathf.Deg2Rad);
-            //Vector3 position = new Vector3(x, 0.0f, z);
-            //Quaternion rotation = Quaternion.Euler(0.0f, angularStart, 0.0f);
-
-            //PhotonNetwork.Instantiate("Spaceship", position, rotation, 0);      // avoid this call on rejoin (ship was network instantiated before)
 
             PlayerManager.Instance.SetupPlayer(PhotonNetwork.LocalPlayer);
 
             if (PhotonNetwork.IsMasterClient)
             {
+                //StopAllCoroutines();
                 StartCoroutine(SpawnBot());
             }
 
@@ -274,47 +291,16 @@ namespace FantasyBattle.Battle
                 string resultText = $"Ñongratulations {PhotonNetwork.LocalPlayer.NickName}. You have won";
                 StartCoroutine(EndOfGame(resultText));
             }
-            else
+            if(_resultGameState == ResultGameState.Died)
             {
+                //if (PhotonNetwork.IsMasterClient)
+                //{
+                //    StopAllCoroutines();
+                //}
+
                 string resultText = $"Sorry {PhotonNetwork.LocalPlayer.NickName}. You died and lost";
                 StartCoroutine(EndOfGame(resultText));
             }
-            //bool allDestroyed = true;
-
-            //foreach (Player p in PhotonNetwork.PlayerList)
-            //{
-            //    object currentHP;
-            //    if (p.CustomProperties.TryGetValue(LobbyStatus.CURRENT_HP, out currentHP))
-            //    {
-            //        if ((int)currentHP > 0)
-            //        {
-            //            allDestroyed = false;
-            //            break;
-            //        }
-            //    }
-            //}
-
-            //if (allDestroyed)
-            //{
-            //    if (PhotonNetwork.IsMasterClient)
-            //    {
-            //        StopAllCoroutines();
-            //    }
-
-            //    string winner = "";
-            //    int score = -1;
-
-            //    foreach (Player p in PhotonNetwork.PlayerList)
-            //    {
-            //        if (p.GetScore() > score)
-            //        {
-            //            winner = p.NickName;
-            //            score = p.GetScore();
-            //        }
-            //    }
-
-            //    StartCoroutine(EndOfGame(winner, score));
-            //}
         }
 
         private void OnCountdownTimerIsExpired()

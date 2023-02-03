@@ -90,6 +90,13 @@ namespace FantasyBattle.Play
 
             OnUpdate();
         }
+        private void OnDestroy()
+        {
+            if (!photonView.IsMine) return;
+
+            _unitInfoUi.gameObject.SetActive(true);
+            PhotonNetwork.Destroy(photonView.gameObject);
+        }
 
         #endregion
 
@@ -212,8 +219,6 @@ namespace FantasyBattle.Play
             if (Input.GetMouseButtonDown(0))
             {
                 SpellCast();
-                //photonView.RPC("FireBall", RpcTarget.AllViaServer, _castPoint.position, _castPoint.rotation);
-                //Fire(_castPoint.position, _castPoint.rotation);
             }
         }
         private void RestoreMana()

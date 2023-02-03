@@ -216,14 +216,15 @@ namespace FantasyBattle.Play
         }
         private void SearchTarget()
         {
+            var distanceToTarget = Vector3.zero.magnitude;
+
+            if(_mainTarget!= null)
+            {
+                distanceToTarget = Vector3.Magnitude(_mainTarget.transform.position - transform.position);
+            }
+
             Collider[] targetsInRange = Physics.OverlapSphere(transform.position,
                 _viewRadius);
-            //Debug.DrawLine(transform.position, targetsInRange[0].transform.position, Color.red);
-            //if (!targetsInRange[0].gameObject.TryGetComponent<PlayerView>(out var player)) 
-            //{
-            //    _enemyState = EnemyState.Patroling;
-            //    return;
-            //}
 
             foreach(var target in targetsInRange)
             {
@@ -234,7 +235,7 @@ namespace FantasyBattle.Play
                 }
 
                 Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
-                float distanceToTarget = Vector3.Magnitude(target.transform.position - transform.position);
+                float distanceToCurrentTarget = Vector3.Magnitude(target.transform.position - transform.position);
 
                 bool angleCheck = Vector3.Angle(transform.forward, directionToTarget) < 180.0f / 2;
                 if (angleCheck == false)
@@ -242,15 +243,30 @@ namespace FantasyBattle.Play
                     continue;
                 }
 
-                _enemyState = EnemyState.Purshit;
-                _mainTarget = target.gameObject.GetComponent<PlayerView>();
-                _navMesh.SetDestination(target.transform.position);
+                if(distanceToTarget == Vector3.zero.magnitude)
+                {
+                    distanceToTarget = distanceToCurrentTarget;
+                }
+
+                if (distanceToCurrentTarget <= distanceToTarget)
+                {
+                    _enemyState = EnemyState.Purshit;
+                    _mainTarget = target.gameObject.GetComponent<PlayerView>();
+                    _navMesh.SetDestination(target.transform.position);
+                    _navMesh.speed = _speed;
+                }
+            }
+
+            if(_mainTarget != null)
+            {
+                if(_mainTarget.gameObject.GetComponent<Collider>().enabled == false)
+                    _enemyState = EnemyState.Patroling;
             }
         }
         private void Purshit()
         {
             Debug.DrawLine(transform.position, _mainTarget.gameObject.transform.position, Color.blue, 2);
-            if (_mainTarget == null)
+            if (_mainTarget.gameObject.GetComponent<Collider>().enabled == false)
             {
                 _enemyState = EnemyState.Patroling;
                 return;
@@ -263,7 +279,7 @@ namespace FantasyBattle.Play
         }
         private void Attack()
         {
-            if(_mainTarget == null)
+            if(_mainTarget.gameObject.GetComponent<Collider>().enabled == false)
             {
                 _enemyState = EnemyState.Purshit;
                 return;
