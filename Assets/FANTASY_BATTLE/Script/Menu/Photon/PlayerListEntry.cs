@@ -42,6 +42,8 @@ namespace FantasyBattle.Menu
 
                 PlayerReadyButton.onClick.AddListener(() =>
                 {
+                    SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
                     isPlayerReady = !isPlayerReady;
                     SetPlayerReady(isPlayerReady);
 

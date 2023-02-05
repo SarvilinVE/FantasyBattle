@@ -45,6 +45,12 @@ namespace FantasyBattle.Menu
 
         void Start()
         {
+            if (!Cursor.visible)
+            {
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+
             _userInfoPanel.SetActive(true);
             _characterInfoPanel.SetActive(false);
             _catalogPanel.SetActive(false);
@@ -63,6 +69,8 @@ namespace FantasyBattle.Menu
 
         private void ShowCharacterInfo()
         {
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             _userInfoPanel.SetActive(false);
             _characterInfoPanel.SetActive(true);
             _catalogPanel.SetActive(false);
@@ -76,6 +84,8 @@ namespace FantasyBattle.Menu
 
         private void ShowLobby()
         {
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             _userInfoPanel.SetActive(false);
             _characterInfoPanel.SetActive(false);
             _catalogPanel.SetActive(false);
@@ -89,6 +99,8 @@ namespace FantasyBattle.Menu
 
         private void ShowCatalog()
         {
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             _userInfoPanel.SetActive(false);
             _characterInfoPanel.SetActive(false);
             _catalogPanel.SetActive(true);
@@ -102,6 +114,8 @@ namespace FantasyBattle.Menu
 
         private void ShowInfo()
         {
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             _userInfoPanel.SetActive(true);
             _characterInfoPanel.SetActive(false);
             _catalogPanel.SetActive(false);

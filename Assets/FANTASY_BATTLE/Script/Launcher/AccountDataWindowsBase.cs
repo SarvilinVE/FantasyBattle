@@ -17,6 +17,9 @@ namespace FantasyBattle.Launcher
 
         private void Start()
         {
+            SoundManager.SetMusicVolume(0.1f);
+            SoundManager.SetSoundVolume(0.5f);
+            SoundManager.PlayMusic(LobbyStatus.MENU_THEME);
             SubscriptionElementsUi();
         }
 
@@ -38,6 +41,14 @@ namespace FantasyBattle.Launcher
 
         protected void EnterInGameScene()
         {
+            if (PlayerPrefs.HasKey(LobbyStatus.CHARACTER_ID))
+            {
+                PlayerPrefs.DeleteKey(LobbyStatus.CHARACTER_ID);
+                PlayerPrefs.DeleteKey(LobbyStatus.NAME_CLASS);
+                Debug.Log("Clear Prefs");
+            }
+
+            
             SceneManager.LoadScene(1);
         }
     }

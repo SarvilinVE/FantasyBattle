@@ -30,6 +30,8 @@ namespace FantasyBattle.Launcher
 
         private void CreateAccount()
         {
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             PlayFabClientAPI.RegisterPlayFabUser(new RegisterPlayFabUserRequest
             {
                 Username = _username,

@@ -16,10 +16,13 @@ public class RoomListEntry : MonoBehaviour
     {
         JoinRoomButton.onClick.AddListener(() =>
         {
-        if (PhotonNetwork.InLobby)
-        {
-            PhotonNetwork.LeaveLobby();
-        }
+
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
+            if (PhotonNetwork.InLobby)
+            {
+                PhotonNetwork.LeaveLobby();
+            }
 
             PhotonNetwork.JoinRoom(roomName);
         });

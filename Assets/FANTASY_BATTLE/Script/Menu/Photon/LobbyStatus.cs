@@ -4,6 +4,11 @@ namespace FantasyBattle
 {
     public class LobbyStatus
     {
+        //SOUND_NAME
+        public const string CLICK = "click1";
+        public const string MENU_THEME = "MenuTheme";
+        public const string GAME_MUSIC = "GameMusic";
+        public const string AVADA_KEDAVRA = "AvadaKedavra";
         //ROOM PROPERTIES
         public const string CURRENT_COUNT_ENEMIES = "CURRENT_COUNT_ENEMIES";
         public const string EMPTY = "EMPTY";

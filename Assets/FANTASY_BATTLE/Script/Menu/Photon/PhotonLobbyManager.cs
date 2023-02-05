@@ -277,11 +277,15 @@ namespace FantasyBattle.Menu
 
         public void OnOpenCreateRoomPanel()
         {
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             CreateRoomPanel.SetActive(true);
         }
 
         public void OnCreateRoomButtonClicked()
         {
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             string roomName = $"{RoomNameInputField.text}";
             roomName = (roomName.Equals(string.Empty)) ? $"Room {Random.Range(1000, 10000)} ({PhotonNetwork.LocalPlayer.NickName})" :
                 $"{roomName} {PhotonNetwork.LocalPlayer.NickName}";
@@ -302,6 +306,8 @@ namespace FantasyBattle.Menu
 
         public void OnLeaveGameButtonClicked()
         {
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             PhotonNetwork.LeaveRoom();
         }
 
@@ -332,9 +338,12 @@ namespace FantasyBattle.Menu
 
         public void OnStartGameButtonClicked()
         {
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             PhotonNetwork.CurrentRoom.IsOpen = false;
             PhotonNetwork.CurrentRoom.IsVisible = false;
 
+            
             PhotonNetwork.LoadLevel(2);
         }
 

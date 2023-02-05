@@ -41,6 +41,8 @@ namespace FantasyBattle.Launcher
 
         private void SendMail()
         {
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             PlayFabClientAPI.SendAccountRecoveryEmail(new SendAccountRecoveryEmailRequest
             {
                 Email = _emailRestore,

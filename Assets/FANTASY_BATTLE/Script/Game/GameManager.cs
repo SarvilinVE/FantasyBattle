@@ -1,7 +1,4 @@
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using FantasyBattle.Data;
 using FantasyBattle.Enums;
 using FantasyBattle.Play;
@@ -9,9 +6,11 @@ using FantasyBattle.UI;
 using Photon.Pun;
 using Photon.Pun.UtilityScripts;
 using Photon.Realtime;
-using PlayFab.ClientModels;
 using PlayFab;
-using UnityEditor.PackageManager;
+using PlayFab.ClientModels;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Random = UnityEngine.Random;
@@ -48,6 +47,10 @@ namespace FantasyBattle.Battle
         [SerializeField]
         private GameObject _EndGameHolderUI;
 
+        [Header("Esc Menu UI")]
+        [SerializeField]
+        private GameObject _escMenuUi;
+
         [Header("Play Manager")]
         [SerializeField]
         private PlayerManager _playerManager;
@@ -66,6 +69,9 @@ namespace FantasyBattle.Battle
 
         private void Start()
         {
+            SoundManager.StopMusic();
+            SoundManager.PlayMusic(LobbyStatus.GAME_MUSIC);
+
             Hashtable props = new Hashtable
             {
                 {LobbyStatus.PLAYER_LOADED_LEVEL, true}
@@ -124,19 +130,19 @@ namespace FantasyBattle.Battle
             }
         }
 
-        private IEnumerator EndOfGame(string winner)
+        private IEnumerator EndOfGame(string winner, ResultGameState resultGameState)
         {
             SetActivePanel(_resultHolder.name);
 
-            yield return new WaitForSecondsRealtime(5);
+            yield return new WaitForSecondsRealtime(4);
 
             SetActivePanel(_EndGameHolderUI.name);
             _EndGameHolderUI.GetComponent<EndGameUI>().ShowText(winner);
 
-            yield return new WaitForSecondsRealtime(5);
+            yield return new WaitForSecondsRealtime(2.5f);
 
-            _EndGameHolderUI.GetComponent<EndGameUI>().ShowText(SetReward(PhotonNetwork.LocalPlayer, winner));
-            yield return new WaitForSecondsRealtime(5);
+            _EndGameHolderUI.GetComponent<EndGameUI>().ShowText(SetReward(PhotonNetwork.LocalPlayer, resultGameState, winner));
+            yield return new WaitForSecondsRealtime(2.5f);
             PhotonNetwork.LeaveRoom();
         }
 
@@ -155,6 +161,12 @@ namespace FantasyBattle.Battle
         {
             if (PhotonNetwork.IsMasterClient)
                 StopAllCoroutines();
+
+            SoundManager.StopMusic();
+            SoundManager.PlayMusic(LobbyStatus.MENU_THEME);
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
 
             PhotonNetwork.LocalPlayer.CustomProperties.Clear();
 
@@ -176,6 +188,11 @@ namespace FantasyBattle.Battle
 
         public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
         {
+            if(_resultGameState == ResultGameState.EndGame)
+            {
+                return;
+            }
+
             if (targetPlayer == PhotonNetwork.LocalPlayer)
             {
                 if (changedProps.ContainsKey(LobbyStatus.CURRENT_HP))
@@ -229,6 +246,11 @@ namespace FantasyBattle.Battle
 
         public override void OnRoomPropertiesUpdate(Hashtable propertiesThatChanged)
         {
+            if(_resultGameState == ResultGameState.EndGame)
+            {
+                return;
+            }
+
             if (propertiesThatChanged.ContainsKey(LobbyStatus.CURRENT_COUNT_ENEMIES))
             {
                 if (propertiesThatChanged.TryGetValue(LobbyStatus.CURRENT_COUNT_ENEMIES, out var currentCountEnemies))
@@ -267,6 +289,9 @@ namespace FantasyBattle.Battle
                 StartCoroutine(SpawnBot());
             }
 
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
             _isStart = true;
 
             _playerSlotHolder.GetComponent<PlayerUI>().CreateSlot();
@@ -302,7 +327,8 @@ namespace FantasyBattle.Battle
                 }
 
                 string resultText = $"Ñongratulations {PhotonNetwork.LocalPlayer.NickName}. You have won";
-                StartCoroutine(EndOfGame(resultText));
+                StartCoroutine(EndOfGame(resultText, _resultGameState));
+                _resultGameState = ResultGameState.EndGame;
             }
             if (_resultGameState == ResultGameState.Died)
             {
@@ -312,7 +338,8 @@ namespace FantasyBattle.Battle
                 //}
 
                 string resultText = $"Sorry {PhotonNetwork.LocalPlayer.NickName}. You died and lost";
-                StartCoroutine(EndOfGame(resultText));
+                StartCoroutine(EndOfGame(resultText, _resultGameState));
+                _resultGameState = ResultGameState.EndGame;
             }
         }
 
@@ -344,12 +371,15 @@ namespace FantasyBattle.Battle
                 //SetActivePanel(_gameUI.name);
             }
 
-            if (Input.GetKey(KeyCode.Escape))
+            if (Input.GetKeyUp(KeyCode.Escape))
             {
-
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                var parent = FindObjectOfType<Canvas>();
+                Instantiate(_escMenuUi, parent.transform);
             }
         }
-        private string SetReward(Player player, string defaultText)
+        private string SetReward(Player player, ResultGameState resultGameState, string defaultText)
         {
             int baseExp = 0;
             int giveExp = 0;
@@ -365,7 +395,7 @@ namespace FantasyBattle.Battle
                 {
                     baseExp = (int)lvl.z;
 
-                    if (_resultGameState == ResultGameState.Win)
+                    if (resultGameState == ResultGameState.Win)
                     {
                         giveExp = baseExp * kills + damage;
                     }
@@ -378,20 +408,30 @@ namespace FantasyBattle.Battle
                 }
             }
             Debug.Log($"{kills} * {baseExp} + {damage}");
+            var expForMessage = giveExp;
             var tempLevel = currentLevel;
+
             foreach (var lvl in _levelUpSettings.Data)
             {
-                if (lvl.x == tempLevel)
+                if ((int)lvl.x == tempLevel)
                 {
-                    if (lvl.y < giveExp + currentExp)
+                    if ((int)lvl.y < giveExp + currentExp)
                     {
                         giveExp = currentExp + giveExp - (int)lvl.y;
-                        tempLevel = (int)lvl.x;
+                        tempLevel ++;
                         continue;
+                    }
+
+                    string message = LobbyStatus.EMPTY;
+
+                    if (tempLevel == currentLevel)
+                    {
+                        giveExp = currentExp + giveExp;
+                        message = $"You have gained {expForMessage} experience";
                     }
                     else
                     {
-                        giveExp = currentExp + giveExp;
+                        message = $"You have gained {expForMessage} experience and increased your level to {tempLevel}";
                     }
 
                     PlayFabClientAPI.UpdateCharacterStatistics(new UpdateCharacterStatisticsRequest
@@ -407,16 +447,9 @@ namespace FantasyBattle.Battle
                             Debug.Log($"Character {player.NickName} update complete {giveExp}");
                         }, OnError);
 
-                    if (tempLevel == currentLevel)
-                    {
-                        return $"You have gained {giveExp} experience";
-                    }
-                    else
-                    {
-                        return $"You have gained {giveExp} experience and increased your level to {tempLevel}";
-                    }
+                    return message;
                 }
-
+                
             }
             return defaultText;
         }

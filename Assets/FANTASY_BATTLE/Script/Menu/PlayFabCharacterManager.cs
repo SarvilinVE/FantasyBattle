@@ -41,12 +41,11 @@ namespace FantasyBattle.Menu
             GetCharacters();
 
             _emptySlot.onClick.AddListener(CharacterCreateWindow);
-            //_createCharacterButton.onClick.AddListener(CreateCharacter);
         }
         public void CreateCharacter(ClassCard card)
         {
-            //if (_nameCharacter.text == "")
-            //    return;
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             PlayerPrefs.GetString(LobbyStatus.NAME_CLASS, card.NameClass.text);
 
             PlayFabClientAPI.GrantCharacterToUser(new GrantCharacterToUserRequest
@@ -90,6 +89,8 @@ namespace FantasyBattle.Menu
 
         private void CharacterCreateWindow()
         {
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             _emptySlot.gameObject.SetActive(false);
             foreach(var slot in _slots)
             {

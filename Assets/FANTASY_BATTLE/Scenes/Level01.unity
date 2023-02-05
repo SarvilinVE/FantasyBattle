@@ -692,6 +692,7 @@ MonoBehaviour:
   _unitInfoUi: {fileID: 381447509}
   _playerSlotHolder: {fileID: 1302100379}
   _EndGameHolderUI: {fileID: 1915355051}
+  _escMenuUi: {fileID: 8549199631186643121, guid: 8ab53bbb0ade52f42bc36e5d9f66c412, type: 3}
   _playerManager: {fileID: 2006780256}
 --- !u!4 &657636352
 Transform:

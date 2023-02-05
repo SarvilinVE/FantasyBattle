@@ -303,7 +303,8 @@ MonoBehaviour:
   _levelCharacter: {fileID: 471368362557863633}
   _mattackCharacter: {fileID: 471368361821350588}
   _xpCharacter: {fileID: 4002530170756605383}
-  _fightButton: {fileID: 2628969957832135272}
+  _selectButton: {fileID: 2628969957832135272}
+  _selectButtonText: {fileID: 1881575847351786924}
 --- !u!1 &471368362557863635
 GameObject:
   m_ObjectHideFlags: 0
@@ -584,7 +585,7 @@ GameObject:
   - component: {fileID: 7799850724154409202}
   - component: {fileID: 1881575847351786924}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: ButtonText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

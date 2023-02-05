@@ -29,6 +29,8 @@ namespace FantasyBattle.Launcher
 
         private void SignIn()
         {
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             PlayFabClientAPI.LoginWithPlayFab(new LoginWithPlayFabRequest
             {
                 Username = _username,

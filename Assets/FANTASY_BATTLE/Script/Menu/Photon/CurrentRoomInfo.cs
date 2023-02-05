@@ -1,3 +1,4 @@
+using FantasyBattle;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -51,6 +52,8 @@ public class CurrentRoomInfo : MonoBehaviour
 
     private void StartGame()
     {
+        SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
         if (_connectLobby.lbc.CurrentRoom.IsOpen)
         {
             _connectLobby.lbc.CurrentRoom.IsOpen = false;
@@ -62,6 +65,8 @@ public class CurrentRoomInfo : MonoBehaviour
 
     private void SwitchOpenRoom()
     {
+        SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
         Debug.Log($"{_connectLobby.lbc.CurrentRoom.IsOpen}");
         if (_connectLobby.lbc.CurrentRoom.IsOpen)
         {
@@ -85,6 +90,8 @@ public class CurrentRoomInfo : MonoBehaviour
 
     private void SwitchVisibleRoom()
     {
+        SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
         if (_connectLobby.lbc.CurrentRoom.IsVisible)
         {
             var buttonColor = _visibleRoom.colors;

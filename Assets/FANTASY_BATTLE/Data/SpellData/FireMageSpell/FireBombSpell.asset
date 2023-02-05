@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cf4135c0e07b554abd0b482d7c15feb, type: 3}
   m_Name: FireBombSpell
   m_EditorClassIdentifier: 
-  _nameSpell: FireBomb
+  _nameSpell: FireBall
   _iconSpell: {fileID: 21300000, guid: 97616f8e7cb1b06489f3fdb40e4dd58f, type: 3}
   _unitClass: 1
-  _unitLevels: 1
+  _unitLevels: 2
   _costMP: 20
   _additionalDamage: 15
   _durationTime: 5

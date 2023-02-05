@@ -64,7 +64,7 @@ namespace FantasyBattle.Play
             EnemyData enemyData = new EnemyData
             {
                 PrefabName = botPrefab.name,
-                Hp = 20,
+                Hp = 100,
                 StartPostion = enemyTransform.position,
                 StratRotation = enemyTransform.rotation
             };

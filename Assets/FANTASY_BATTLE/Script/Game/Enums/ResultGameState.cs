@@ -4,6 +4,7 @@ namespace FantasyBattle.Enums
     {
         None = 0,
         Died = 1,
-        Win = 2
+        Win = 2,
+        EndGame = 3,
     }
 }

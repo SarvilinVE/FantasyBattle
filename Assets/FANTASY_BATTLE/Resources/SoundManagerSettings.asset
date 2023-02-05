@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8841fd1d92da7f14a96a8fc87eaf3f18, type: 3}
+  m_Name: SoundManagerSettings
+  m_EditorClassIdentifier: 
+  AutoPause: 1
+  MusicVolumeCorrection: 1
+  SoundVolumeCorrection: 1
+  MusicFadeTime: 2
+  MusicAudioMixerGroup: {fileID: 24300002, guid: e511497ff601be84aaa8f23555d3fd6e, type: 2}
+  SoundAudioMixerGroup: {fileID: 24300002, guid: d95a2c4c211023d449ef7d602efe2688, type: 2}
+  PreloadedLoadedClips:
+  - {fileID: 8300000, guid: eeb5fd4d5d895244c887aff11a65604a, type: 3}

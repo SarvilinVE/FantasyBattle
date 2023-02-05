@@ -1,5 +1,3 @@
-using ExitGames.Client.Photon;
-using FantasyBattle.Abstractions;
 using FantasyBattle.Enemy;
 using FantasyBattle.Enums;
 using FantasyBattle.Spells;
@@ -7,12 +5,8 @@ using Photon.Pun;
 using Photon.Realtime;
 using System;
 using System.Collections;
-using System.Drawing;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.Networking.UnityWebRequest;
-using static UnityEngine.UI.CanvasScaler;
-using static UnityEngine.UI.GridLayoutGroup;
 using Color = UnityEngine.Color;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Random = UnityEngine.Random;

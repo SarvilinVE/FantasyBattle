@@ -44,6 +44,8 @@ namespace FantasyBattle.Play
         [SerializeField]
         private UnitInfoUI _unitInfoUi;
 
+        private AudioSource _audioSource;
+
         private MouseLook _mouseLook;
         private CharacterController _characterController;
 
@@ -111,6 +113,7 @@ namespace FantasyBattle.Play
 
             _renderer = GetComponent<Renderer>();
             _collider = GetComponent<Collider>();
+            _audioSource = GetComponent<AudioSource>();
             _isControllable = true;
 
             var parent = GameObject.Find("GameUI");
@@ -291,6 +294,9 @@ namespace FantasyBattle.Play
 
             if (_currentMana - (int)spell.CostMP >= 0)
             {
+                _audioSource.clip = Resources.Load<AudioClip>($"Sound/{LobbyStatus.AVADA_KEDAVRA}");
+                _audioSource.Play();
+
                 photonView.RPC("FireBall", RpcTarget.AllViaServer, _castPoint.position, _castPoint.rotation, spell.NameSpell);
 
                 _currentMana -= (int)spell.CostMP;

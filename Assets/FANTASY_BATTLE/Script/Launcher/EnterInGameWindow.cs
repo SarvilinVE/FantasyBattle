@@ -37,6 +37,8 @@ namespace FantasyBattle.Launcher
 
         private void OpenSingInWindow()
         {
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             _enterInGameCanvas.enabled = false;
             _restoreAccountCanvas.enabled = false;
             _signInCanvas.enabled = true;
@@ -44,6 +46,8 @@ namespace FantasyBattle.Launcher
 
         private void OpenCreateAccountWindow()
         {
+            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
+
             _enterInGameCanvas.enabled = false;
             _restoreAccountCanvas.enabled = false;
             _createAccountCanvas.enabled = true;
