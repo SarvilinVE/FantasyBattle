@@ -22,6 +22,9 @@ namespace FantasyBattle.UI
         [SerializeField] Slider _soundVolume;
         [SerializeField] Button _returnButton;
 
+        private bool _defaultVisibleCursor;
+        private CursorLockMode _defaultLockMode;
+
         #endregion
 
 
@@ -39,7 +42,7 @@ namespace FantasyBattle.UI
                     _exitRoomButton.enabled = true;
                     _exitRoomButton.onClick.AddListener(OnExitRoom);
                 }
-                else 
+                else
                 {
                     _exitGameButton.enabled = false;
                 }
@@ -53,6 +56,13 @@ namespace FantasyBattle.UI
 
             _mainMenuHolder.SetActive(true);
             _settingWindow.SetActive(false);
+
+            _defaultVisibleCursor = Cursor.visible;
+            _defaultLockMode = Cursor.lockState;
+            Debug.Log($"DVB BEFORE {_defaultVisibleCursor}");
+
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
 
         private void OnDestroy()
@@ -84,7 +94,14 @@ namespace FantasyBattle.UI
         private void OnCloseEscMenu()
         {
             SoundManager.PlaySoundUI(LobbyStatus.CLICK);
-            Destroy(gameObject);
+            Debug.Log($"CLOSE WINDOW");
+
+            Debug.Log($"DVB AFTER {_defaultVisibleCursor}");
+            Debug.Log($"Cursor Before {Cursor.visible}");
+            Cursor.lockState = _defaultLockMode;
+            Cursor.visible = _defaultVisibleCursor;
+            Debug.Log($"Cursor AFTER {Cursor.visible}");
+            Destroy(gameObject, 0.1f);
         }
         private void OnReturnMainMenu()
         {

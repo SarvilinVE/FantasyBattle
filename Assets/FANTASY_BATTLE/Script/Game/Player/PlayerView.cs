@@ -1,4 +1,5 @@
 using FantasyBattle.Abstractions;
+using FantasyBattle.Battle;
 using FantasyBattle.Classes;
 using FantasyBattle.Spells;
 using FantasyBattle.UI;
@@ -203,7 +204,8 @@ namespace FantasyBattle.Play
             }
 
             _mouseLook.PlayerCamera.enabled = true;
-            
+            //Debug.Log($"Cursor {UnityEngine.Cursor.visible}  {GameManager.Instance._isMenuActive}");
+            //if (GameManager.Instance._isMenuActive) return;
 
             var moveX = Input.GetAxis("Horizontal") * _movingSpeed;
             var moveZ = Input.GetAxis("Vertical") * _movingSpeed;
@@ -263,7 +265,7 @@ namespace FantasyBattle.Play
 
                 if (hitObject.TryGetComponent<EnemyView>(out var enemy))
                 {
-                    _unitInfoUi.SetData(enemy.name, enemy.CurrentHp, enemy.MaxHp, true);
+                    _unitInfoUi.SetData(enemy.nameBot, enemy.CurrentHp, enemy.MaxHp, true);
                 }
                 else
                 {

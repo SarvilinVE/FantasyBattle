@@ -58,6 +58,7 @@ namespace FantasyBattle.Battle
         private bool _isStart = false;
         private int _countBots;
         private ResultGameState _resultGameState;
+        public bool _isMenuActive = false;
 
         #region UNITY
 
@@ -371,13 +372,15 @@ namespace FantasyBattle.Battle
                 //SetActivePanel(_gameUI.name);
             }
 
-            if (Input.GetKeyUp(KeyCode.Escape))
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
+                //Cursor.lockState = CursorLockMode.None;
+                //Cursor.visible = true;
                 var parent = FindObjectOfType<Canvas>();
                 Instantiate(_escMenuUi, parent.transform);
             }
+            
+            //_isMenuActive = Cursor.visible;
         }
         private string SetReward(Player player, ResultGameState resultGameState, string defaultText)
         {

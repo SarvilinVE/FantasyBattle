@@ -87,6 +87,19 @@ namespace FantasyBattle.Menu
                 }, OnError);
         }
 
+        private void ReturnCharacterWindow()
+        {
+            _selectCharacterPanel.SetActive(false);
+
+            _emptySlot.gameObject.SetActive(true);
+            foreach (var slot in _slots)
+            {
+                slot.gameObject.SetActive(true);
+            }
+
+            GetCharacters();
+        }
+
         private void CharacterCreateWindow()
         {
             SoundManager.PlaySoundUI(LobbyStatus.CLICK);
@@ -99,6 +112,10 @@ namespace FantasyBattle.Menu
 
             _selectCharacterPanel.SetActive(true);
             _selectCharacterPanel.GetComponent<SelectCharacterPanel>().ShowClassCards();
+
+            var returnButton = _selectCharacterPanel.GetComponent<SelectCharacterPanel>().ReturnCharacterWindow;
+            returnButton.onClick.AddListener(ReturnCharacterWindow);
+
             var classCards = _selectCharacterPanel.GetComponent<SelectCharacterPanel>().ClassCardsReturn();
             foreach(var card in classCards)
             {

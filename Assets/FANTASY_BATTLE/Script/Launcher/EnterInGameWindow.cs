@@ -23,10 +23,23 @@ namespace FantasyBattle.Launcher
         [SerializeField]
         private Canvas _restoreAccountCanvas;
 
+        [SerializeField]
+        private Button _backRestoreButton;
+
+        [SerializeField]
+        private Button _backSignInButton;
+
+        [SerializeField]
+        private Button _backCreateAccountButton;
+
         private void Start()
         {
             _signInButton.onClick.AddListener(OpenSingInWindow);
             _createAcoountButton.onClick.AddListener(OpenCreateAccountWindow);
+
+            _backCreateAccountButton.onClick.AddListener(OnOpenOptionWindow);
+            _backRestoreButton.onClick.AddListener(OnOpenOptionWindow);
+            _backSignInButton.onClick.AddListener(OnOpenOptionWindow);
         }
 
         private void OnDestroy()
@@ -51,6 +64,13 @@ namespace FantasyBattle.Launcher
             _enterInGameCanvas.enabled = false;
             _restoreAccountCanvas.enabled = false;
             _createAccountCanvas.enabled = true;
+        }
+
+        private void OnOpenOptionWindow()
+        {
+            _enterInGameCanvas.enabled = true;
+            _restoreAccountCanvas.enabled = false;
+            _signInCanvas.enabled = false;
         }
     }
 }

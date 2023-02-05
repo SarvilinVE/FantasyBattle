@@ -2,11 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using FantasyBattle.Classes;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace FantasyBattle.Menu
 {
     public class SelectCharacterPanel : MonoBehaviour
     {
+        [SerializeField]
+        private Button _returnCharacterWindow;
+
         [SerializeField]
         private ClassConteiner _classConteiner;
 
@@ -17,8 +21,9 @@ namespace FantasyBattle.Menu
         private GameObject _classCard;
         private List<ClassCard> _classCards = new List<ClassCard>();
         public List<ClassCard> ClassCards => _classCards;
+        public Button ReturnCharacterWindow { get => _returnCharacterWindow; set => _returnCharacterWindow = value; }
 
-        
+
 
         public void Start()
         {

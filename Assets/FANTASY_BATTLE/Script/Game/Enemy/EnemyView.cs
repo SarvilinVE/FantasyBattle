@@ -47,10 +47,7 @@ namespace FantasyBattle.Play
         [SerializeField]
         private float _attackRadius;
 
-        //private PhotonView photonView;
-        private Vector3 _botPostion;
-        private Quaternion _botRotation;
-        private Vector3 _currentVelocity = Vector3.zero;
+        public string nameBot = "Angry Zomb";
         private NavMeshAgent _navMesh;
         private EnemyState _enemyState;
         private int _currentHp;

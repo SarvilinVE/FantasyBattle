@@ -96,7 +96,7 @@ namespace FantasyBattle.Menu
 
         public override void OnConnectedToMaster()
         {
-            _stateLobby.text = PhotonNetwork.NetworkClientState.ToString();
+            //_stateLobby.text = PhotonNetwork.NetworkClientState.ToString();
 
             if (!PhotonNetwork.InLobby)
             {
@@ -116,7 +116,7 @@ namespace FantasyBattle.Menu
         {
             _cachedRoomList.Clear();
             ClearRoomListView();
-            _stateLobby.text = PhotonNetwork.NetworkClientState.ToString();
+            //_stateLobby.text = PhotonNetwork.NetworkClientState.ToString();
 
             AddAvatar(PhotonNetwork.LocalPlayer);
         }
@@ -129,12 +129,12 @@ namespace FantasyBattle.Menu
 
         public override void OnCreateRoomFailed(short returnCode, string message)
         {
-            _stateLobby.text = message;
+            //_stateLobby.text = message;
         }
 
         public override void OnJoinRoomFailed(short returnCode, string message)
         {
-            _stateLobby.text = message;
+            //_stateLobby.text = message;
         }
 
         public override void OnJoinRandomFailed(short returnCode, string message)

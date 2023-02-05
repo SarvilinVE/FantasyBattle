@@ -242,8 +242,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Create Room
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: fdc2abb0fbe87524086f670251a4e3a6, type: 2}
-  m_sharedMaterial: {fileID: -567046120606735660, guid: fdc2abb0fbe87524086f670251a4e3a6, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -451,8 +451,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: EmptySlot
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: fdc2abb0fbe87524086f670251a4e3a6, type: 2}
-  m_sharedMaterial: {fileID: -567046120606735660, guid: fdc2abb0fbe87524086f670251a4e3a6, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
