@@ -42,8 +42,8 @@ namespace FantasyBattle.Menu
 
         private void OnGetAccount(GetAccountInfoResult result)
         {
-            _userId.text = $"User ID: {result.AccountInfo.PlayFabId}";
-            _userName.text = $"User Name: {result.AccountInfo.Username}";
+            //_userId.text = $"User ID: {result.AccountInfo.PlayFabId}";
+            _userName.text = $"Welcome to Fantasy Battle {result.AccountInfo.Username}. Go to Character Panel.";
             _dateCreationAccount.text = $"Date of creation account: {result.AccountInfo.Created}";
 
             _playFabId = result.AccountInfo.PlayFabId;
@@ -83,8 +83,8 @@ namespace FantasyBattle.Menu
             },
             result =>
             {
-                _currentHP.text = result.Data[HEALTH_POINT].Value;
-                _currentMP.text = result.Data[MANA_POINT].Value;
+                //_currentHP.text = result.Data[HEALTH_POINT].Value;
+                //_currentMP.text = result.Data[MANA_POINT].Value;
             }, OnError);
         }
     }
