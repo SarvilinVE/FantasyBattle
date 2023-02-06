@@ -5335,6 +5335,7 @@ MonoBehaviour:
   _EndGameHolderUI: {fileID: 1915355051}
   _escMenuUi: {fileID: 8549199631186643121, guid: 8ab53bbb0ade52f42bc36e5d9f66c412, type: 3}
   _playerManager: {fileID: 2006780256}
+  _isMenuActive: 0
 --- !u!4 &657636352
 Transform:
   m_ObjectHideFlags: 0
@@ -19332,7 +19333,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5727696100986590946, guid: b3934c3aa138cb94ea225223bfaa4909, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 10
+      value: 3.37
       objectReference: {fileID: 0}
     - target: {fileID: 5727696100986590946, guid: b3934c3aa138cb94ea225223bfaa4909, type: 3}
       propertyPath: m_LocalPosition.y
@@ -19340,7 +19341,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5727696100986590946, guid: b3934c3aa138cb94ea225223bfaa4909, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -1.75
       objectReference: {fileID: 0}
     - target: {fileID: 5727696100986590946, guid: b3934c3aa138cb94ea225223bfaa4909, type: 3}
       propertyPath: m_LocalRotation.w
@@ -19393,7 +19394,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7144233584811893447, guid: 917bb27afa88fa24c932e8c3a4c72897, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -10
+      value: -7.9
       objectReference: {fileID: 0}
     - target: {fileID: 7144233584811893447, guid: 917bb27afa88fa24c932e8c3a4c72897, type: 3}
       propertyPath: m_LocalPosition.y

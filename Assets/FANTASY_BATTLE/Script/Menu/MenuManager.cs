@@ -19,11 +19,11 @@ namespace FantasyBattle.Menu
         [SerializeField]
         private TMP_Text _characterInfoText;
 
-        //[SerializeField]
-        //private Button _catalog;
+        [SerializeField]
+        private Button _catalog;
 
-        //[SerializeField]
-        //private TMP_Text _catalogText;
+        [SerializeField]
+        private TMP_Text _catalogText;
 
         [SerializeField]
         private Button _lobby;
@@ -37,8 +37,8 @@ namespace FantasyBattle.Menu
         [SerializeField]
         private GameObject _characterInfoPanel;
 
-        //[SerializeField]
-        //private GameObject _catalogPanel;
+        [SerializeField]
+        private GameObject _catalogPanel;
 
         [SerializeField]
         private GameObject _lobbyPanel;
@@ -56,17 +56,17 @@ namespace FantasyBattle.Menu
 
             //_userInfoPanel.SetActive(true);
             _characterInfoPanel.SetActive(true);
-            //_catalogPanel.SetActive(false);
+            _catalogPanel.SetActive(false);
             _lobbyPanel.SetActive(false);
 
             //_userInfoText.color = Color.green;
             _characterInfoText.color = Color.green;
-            //_catalogText.color = Color.black;
+            _catalogText.color = Color.black;
             _lobbyText.color = Color.black;
 
             //_userInfo.onClick.AddListener(ShowInfo);
             _characterInfo.onClick.AddListener(ShowCharacterInfo);
-            //_catalog.onClick.AddListener(ShowCatalog);
+            _catalog.onClick.AddListener(ShowCatalog);
             _lobby.onClick.AddListener(ShowLobby);
 
             _infoBottonText.text = $"Create or Select a character. Then go to the Lobby";
@@ -78,12 +78,12 @@ namespace FantasyBattle.Menu
 
             //_userInfoPanel.SetActive(false);
             _characterInfoPanel.SetActive(true);
-            //_catalogPanel.SetActive(false);
+            _catalogPanel.SetActive(false);
             _lobbyPanel.SetActive(false);
 
             //_userInfoText.color = Color.black;
             _characterInfoText.color = Color.green;
-            //_catalogText.color = Color.black;
+            _catalogText.color = Color.black;
             _lobbyText.color = Color.black;
 
             _infoBottonText.text = $"Create or Select a character. Then go to the Lobby";
@@ -95,12 +95,12 @@ namespace FantasyBattle.Menu
 
             //_userInfoPanel.SetActive(false);
             _characterInfoPanel.SetActive(false);
-            //_catalogPanel.SetActive(false);
+            _catalogPanel.SetActive(false);
             _lobbyPanel.SetActive(true);
 
             //_userInfoText.color = Color.black;
             _characterInfoText.color = Color.black;
-            //_catalogText.color = Color.black;
+            _catalogText.color = Color.black;
             _lobbyText.color = Color.green;
 
             _infoBottonText.text = $"Create or enter a room";
@@ -112,12 +112,12 @@ namespace FantasyBattle.Menu
 
             //_userInfoPanel.SetActive(false);
             _characterInfoPanel.SetActive(false);
-            //_catalogPanel.SetActive(true);
+            _catalogPanel.SetActive(true);
             _lobbyPanel.SetActive(false);
 
             //_userInfoText.color = Color.black;
             _characterInfoText.color = Color.black;
-            //_catalogText.color = Color.green;
+            _catalogText.color = Color.green;
             _lobbyText.color = Color.black;
         }
 
@@ -127,12 +127,12 @@ namespace FantasyBattle.Menu
 
             //_userInfoPanel.SetActive(true);
             _characterInfoPanel.SetActive(false);
-            //_catalogPanel.SetActive(false);
+            _catalogPanel.SetActive(false);
             _lobbyPanel.SetActive(false);
 
             //_userInfoText.color = Color.green;
             _characterInfoText.color = Color.black;
-            //_catalogText.color = Color.black;
+            _catalogText.color = Color.black;
             _lobbyText.color = Color.black;
         }
 

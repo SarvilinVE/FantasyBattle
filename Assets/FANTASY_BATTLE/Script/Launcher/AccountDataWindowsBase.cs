@@ -1,3 +1,5 @@
+using PlayFab.ClientModels;
+using PlayFab;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -6,6 +8,8 @@ namespace FantasyBattle.Launcher
 {
     public class AccountDataWindowsBase : MonoBehaviour
     {
+        private const string CUPPON = "Character_cuppon";
+
         [SerializeField]
         private InputField _usernameField;
 
@@ -14,6 +18,10 @@ namespace FantasyBattle.Launcher
 
         protected string _username;
         protected string _password;
+
+        private CatalogItem _catalogItem;
+
+        private string _typeCurrency;
 
         private void Start()
         {
@@ -48,8 +56,24 @@ namespace FantasyBattle.Launcher
                 Debug.Log("Clear Prefs");
             }
 
-            
+            //PlayFabClientAPI.PurchaseItem(new PurchaseItemRequest
+            //{
+            //    CatalogVersion = _catalogItem.CatalogVersion,
+            //    ItemId = CUPPON
+            //},
+            //result =>
+            //{
+            //    Debug.Log($"Получил купон");
+            //},
+            //OnLoginError);
+
+
             SceneManager.LoadScene(1);
+        }
+
+        private void OnLoginError(PlayFabError error)
+        {
+            Debug.Log($"{error.ErrorMessage}");
         }
     }
 }

@@ -111,12 +111,10 @@ namespace FantasyBattle.UI
         }
         private void OnChangeVolumeSound(float volumeValue)
         {
-            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
             SoundManager.SetSoundVolume(volumeValue);
         }
         private void OnChangeVolumeMusic(float volumeValue)
         {
-            SoundManager.PlaySoundUI(LobbyStatus.CLICK);
             SoundManager.SetMusicVolume(volumeValue);
         }
         private void OnExitRoom()
